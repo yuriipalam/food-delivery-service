@@ -2,8 +2,10 @@ package repository
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"fmt"
 	"food_delivery/model"
+	"strings"
 )
 
 type ProductRepositoryI interface {
@@ -35,6 +37,7 @@ func (cr *ProductRepository) GetAllProducts() ([]model.Product, error) {
 
 	for rows.Next() {
 		var product model.Product
+		var driverValue driver.Value
 
 		err := rows.Scan(
 			&product.ID,
@@ -42,12 +45,19 @@ func (cr *ProductRepository) GetAllProducts() ([]model.Product, error) {
 			&product.Name,
 			&product.Image,
 			&product.Description,
-			&product.Ingredients,
+			&driverValue,
 			&product.Price,
 		)
 		if err != nil {
+			fmt.Println(err)
 			return nil, fmt.Errorf("cannot scan product")
 		}
+
+		strSlice, err := convertDriverValueToStrSlice(driverValue)
+		if err != nil {
+			return nil, err
+		}
+		product.Ingredients = strSlice
 
 		products = append(products, product)
 	}
@@ -57,4 +67,21 @@ func (cr *ProductRepository) GetAllProducts() ([]model.Product, error) {
 	}
 
 	return products, nil
+}
+
+func convertStrSliceToSqlArr(strSlice []string) string {
+	for i, str := range strSlice {
+		strSlice[i] = "'" + str + "'"
+	}
+
+	return "{" + strings.Join(strSlice, ",") + "}"
+}
+
+func convertDriverValueToStrSlice(value driver.Value) ([]string, error) {
+	bytesValue, ok := value.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("error converting driver.Value to []bytes")
+	}
+
+	return strings.Split(strings.Trim(string(bytesValue), "{}"), ","), nil
 }
