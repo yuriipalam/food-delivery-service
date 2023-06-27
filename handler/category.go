@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"food_delivery/repository"
 	"food_delivery/response"
 	"net/http"
@@ -20,6 +21,11 @@ func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Reque
 	categories, err := ch.repo.GetAllCategories()
 	if err != nil {
 		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(categories) == 0 {
+		response.SendNotFoundError(w, fmt.Errorf("no categories found"))
 		return
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"food_delivery/repository"
 	"food_delivery/response"
 	"net/http"
@@ -20,6 +21,11 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 	suppliers, err := sh.repo.GetAllSuppliers()
 	if err != nil {
 		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(suppliers) == 0 {
+		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
 		return
 	}
 

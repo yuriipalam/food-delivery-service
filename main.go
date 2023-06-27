@@ -28,6 +28,10 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryRepository)
 	r.HandleFunc("/categories", categoryHandler.GetAllCategories).Methods(http.MethodGet)
 
+	productRepository := repository.NewProductRepository(db)
+	productHandler := handler.NewProductHandler(productRepository)
+	r.HandleFunc("/products", productHandler.GetAllProducts).Methods(http.MethodGet)
+
 	fmt.Println("Server is started...")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
