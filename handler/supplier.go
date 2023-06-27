@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"encoding/json"
 	"food_delivery/repository"
+	"food_delivery/response"
 	"net/http"
 )
 
@@ -16,20 +16,12 @@ func NewSupplierHandler(repo repository.SupplierRepositoryI) *SupplierHandler {
 	}
 }
 
-func (sh *SupplierHandler) GetListOfSuppliers(w http.ResponseWriter, r *http.Request) {
-	// call db and get list
-
+func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {
 	suppliers, err := sh.repo.GetAllSuppliers()
 	if err != nil {
-		// prompt error
+		response.SendInternalServerError(w, err)
+		return
 	}
 
-	data, err := json.Marshal(suppliers)
-	if err != nil {
-		// prompt error
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	response.SendOK(w, suppliers)
 }
