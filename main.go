@@ -22,7 +22,11 @@ func main() {
 
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)
-	r.HandleFunc("/suppliers", supplierHandler.GetListOfSuppliers).Methods(http.MethodGet)
+	r.HandleFunc("/suppliers", supplierHandler.GetAllSuppliers).Methods(http.MethodGet)
+
+	categoryRepository := repository.NewCategoryRepository(db)
+	categoryHandler := handler.NewCategoryHandler(categoryRepository)
+	r.HandleFunc("/categories", categoryHandler.GetAllCategories).Methods(http.MethodGet)
 
 	fmt.Println("Server is started...")
 	log.Fatal(http.ListenAndServe(":8080", r))
