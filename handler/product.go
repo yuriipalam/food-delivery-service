@@ -39,6 +39,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 	supplierID, err := strconv.Atoi(vars["supplier_id"])
 	if err != nil {
 		response.SendBadRequestError(w, fmt.Errorf("supplied_id must be integer"))
+		return
 	}
 
 	products, err := ph.repo.GetAllProductsBySupplierID(supplierID)
@@ -49,6 +50,55 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 
 	if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products with supplied_id %d found", supplierID))
+		return
+	}
+
+	response.SendOK(w, products)
+}
+
+func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	categoryID, err := strconv.Atoi(vars["category_id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		return
+	}
+
+	products, err := ph.repo.GetAllProductsByCategoryID(categoryID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(products) == 0 {
+		response.SendNotFoundError(w, fmt.Errorf("no products with category_id %d found", categoryID))
+		return
+	}
+
+	response.SendOK(w, products)
+}
+
+func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	supplierID, err := strconv.Atoi(vars["supplier_id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("supplier_id must be integer"))
+		return
+	}
+	categoryID, err := strconv.Atoi(vars["category_id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		return
+	}
+
+	products, err := ph.repo.GetAllProductsBySupplierIDAndCategoryID(supplierID, categoryID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(products) == 0 {
+		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d and category_id %d found", supplierID, categoryID))
 		return
 	}
 
