@@ -1,6 +1,6 @@
 # Food Delivery Service (Golang)
 
-Final project for the Golang course at NIX
+Final project for the Golang course at NIX.
 
 Stack used:
 1. Pure GO
