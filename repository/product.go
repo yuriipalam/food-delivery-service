@@ -10,6 +10,9 @@ import (
 
 type ProductRepositoryI interface {
 	GetAllProducts() ([]model.Product, error)
+	GetAllProductsBySupplierID(int) ([]model.Product, error)
+	GetAllProductsByCategoryID(int) ([]model.Product, error)
+	GetAllProductsBySupplierIDAndCategoryID(int, int) ([]model.Product, error)
 }
 
 type ProductRepository struct {
@@ -22,13 +25,30 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	}
 }
 
-func (cr *ProductRepository) GetAllProducts() ([]model.Product, error) {
-	stmt, err := cr.db.Prepare("SELECT * FROM product")
+func (pr *ProductRepository) GetAllProducts() ([]model.Product, error) {
+	return pr.selectProductsQuery("SELECT * FROM product")
+}
+
+func (pr *ProductRepository) GetAllProductsBySupplierID(id int) ([]model.Product, error) {
+	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1", id)
+}
+
+func (pr *ProductRepository) GetAllProductsByCategoryID(id int) ([]model.Product, error) {
+	return pr.selectProductsQuery("SELECT * FROM product WHERE $1 IN (SELECT category_id FROM supplier WHERE id = product.supplier_id)", id)
+}
+
+func (pr *ProductRepository) GetAllProductsBySupplierIDAndCategoryID(sID int, cID int) ([]model.Product, error) {
+	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1 AND $2 IN (SELECT category_id FROM supplier WHERE id = product.supplier_id)", sID, cID)
+}
+
+func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]model.Product, error) {
+	stmt, err := pr.db.Prepare(query)
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
-	rows, err := stmt.Query()
+
+	rows, err := stmt.Query(data...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query")
 	}
