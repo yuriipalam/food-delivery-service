@@ -23,6 +23,7 @@ func main() {
 
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)
+	r.HandleFunc("/supplier/{id}", supplierHandler.GetSupplierByID).Methods(http.MethodGet)
 	r.HandleFunc("/suppliers", supplierHandler.GetAllSuppliers).Methods(http.MethodGet)
 
 	categoryRepository := repository.NewCategoryRepository(db)
