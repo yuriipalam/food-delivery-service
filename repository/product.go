@@ -32,12 +32,12 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 		return nil, fmt.Errorf("could not select a product with id %d", id)
 	}
 
-	row, err := stmt.Query(id)
-	if err != nil {
+	row := stmt.QueryRow(id)
+	if row.Err() != nil {
 		return nil, fmt.Errorf("cannot run a query for a given id %d", id)
 	}
 
-	var product *model.Product
+	var product model.Product
 	var driverValue driver.Value
 
 	err = row.Scan(
@@ -50,6 +50,9 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 		&product.Price,
 	)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("cannot scan product")
 	}
 
@@ -59,7 +62,7 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	}
 	product.Ingredients = strSlice
 
-	return product, nil
+	return &product, nil
 }
 
 func (pr *ProductRepository) GetAllProducts() ([]model.Product, error) {

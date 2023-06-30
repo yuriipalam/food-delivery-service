@@ -60,7 +60,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 	vars := mux.Vars(r)
 	supplierID, err := strconv.Atoi(vars["supplier_id"])
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("supplied_id must be integer"))
+		response.SendBadRequestError(w, fmt.Errorf("supplier_id must be integer"))
 		return
 	}
 
@@ -71,7 +71,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 	}
 
 	if len(products) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no products with supplied_id %d found", supplierID))
+		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d found", supplierID))
 		return
 	}
 
