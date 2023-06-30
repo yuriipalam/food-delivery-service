@@ -19,6 +19,28 @@ func NewProductHandler(repo repository.ProductRepositoryI) *ProductHandler {
 	}
 }
 
+func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		return
+	}
+
+	product, err := ph.repo.GetProductByID(id)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	if product == nil {
+		response.SendNotFoundError(w, fmt.Errorf("no products found with given id %d", id))
+		return
+	}
+
+	response.SendOK(w, product)
+}
+
 func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	products, err := ph.repo.GetAllProducts()
 	if err != nil {

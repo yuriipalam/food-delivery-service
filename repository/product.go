@@ -9,6 +9,7 @@ import (
 )
 
 type ProductRepositoryI interface {
+	GetProductByID(int) (*model.Product, error)
 	GetAllProducts() ([]model.Product, error)
 	GetAllProductsBySupplierID(int) ([]model.Product, error)
 	GetAllProductsByCategoryID(int) ([]model.Product, error)
@@ -23,6 +24,42 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{
 		db: db,
 	}
+}
+
+func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
+	stmt, err := pr.db.Prepare("SELECT * FROM product WHERE id = $1")
+	if err != nil {
+		return nil, fmt.Errorf("could not select a product with id %d", id)
+	}
+
+	row, err := stmt.Query(id)
+	if err != nil {
+		return nil, fmt.Errorf("cannot run a query for a given id %d", id)
+	}
+
+	var product *model.Product
+	var driverValue driver.Value
+
+	err = row.Scan(
+		&product.ID,
+		&product.SupplierID,
+		&product.Name,
+		&product.Image,
+		&product.Description,
+		&driverValue,
+		&product.Price,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("cannot scan product")
+	}
+
+	strSlice, err := convertDriverValueToStrSlice(driverValue)
+	if err != nil {
+		return nil, err
+	}
+	product.Ingredients = strSlice
+
+	return product, nil
 }
 
 func (pr *ProductRepository) GetAllProducts() ([]model.Product, error) {
@@ -69,7 +106,6 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 			&product.Price,
 		)
 		if err != nil {
-			fmt.Println(err)
 			return nil, fmt.Errorf("cannot scan product")
 		}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"food_delivery/handler"
 	"food_delivery/repository"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
@@ -30,11 +31,12 @@ func main() {
 
 	productRepository := repository.NewProductRepository(db)
 	productHandler := handler.NewProductHandler(productRepository)
+	r.HandleFunc("/product/{id}", productHandler.GetProductByID).Methods(http.MethodGet)
 	r.HandleFunc("/products", productHandler.GetAllProductsBySupplierIDAndCategoryID).Queries("supplier_id", "{supplier_id}", "category_id", "{category_id}").Methods(http.MethodGet)
 	r.HandleFunc("/products", productHandler.GetAllProductsByCategoryID).Queries("category_id", "{category_id}").Methods(http.MethodGet)
 	r.HandleFunc("/products", productHandler.GetAllProductsBySupplierID).Queries("supplier_id", "{supplier_id}").Methods(http.MethodGet)
 	r.HandleFunc("/products", productHandler.GetAllProducts).Methods(http.MethodGet)
 
 	fmt.Println("Server is started...")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 }
