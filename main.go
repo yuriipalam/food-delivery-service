@@ -24,6 +24,7 @@ func main() {
 	customerRepository := repository.NewCustomerRepository(db)
 	customerHandler := handler.NewCustomerHandler(customerRepository)
 	r.HandleFunc("/customer/{id}", customerHandler.DeleteCustomerByID).Methods(http.MethodDelete)
+	r.HandleFunc("/customer/{id}", customerHandler.GetCustomerByID).Methods(http.MethodGet)
 	r.HandleFunc("/customer", customerHandler.CreateCustomer).Methods(http.MethodPost)
 
 	supplierRepository := repository.NewSupplierRepository(db)

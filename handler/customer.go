@@ -55,6 +55,28 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 	response.SendOK(w, customer)
 }
 
+func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		return
+	}
+
+	customer, err := ch.repo.GetCustomerByID(id)
+	if err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch customer with id %d", id))
+		return
+	}
+
+	if customer == nil {
+		response.SendBadRequestError(w, fmt.Errorf("customer with id %d does not exist", id))
+		return
+	}
+
+	response.SendOK(w, customer)
+}
+
 func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -70,7 +92,7 @@ func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Req
 	}
 
 	if c == nil {
-		response.SendBadRequestError(w, fmt.Errorf("user with id %d does not exist", id))
+		response.SendBadRequestError(w, fmt.Errorf("customer with id %d does not exist", id))
 		return
 	}
 
