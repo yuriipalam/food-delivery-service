@@ -14,6 +14,10 @@ func SendOK(w http.ResponseWriter, data any) {
 	sendJSON(w, http.StatusOK, data)
 }
 
+func SendNoContent(w http.ResponseWriter) {
+	sendJSON(w, http.StatusNoContent, "")
+}
+
 func sendJSON(w http.ResponseWriter, code int, data any) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {

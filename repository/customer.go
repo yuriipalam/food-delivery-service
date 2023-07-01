@@ -12,6 +12,7 @@ type CustomerRepositoryI interface {
 	GetCustomerByEmail(string) (*model.Customer, error)
 	GetCustomerByPhone(string) (*model.Customer, error)
 	CreateCustomer(*model.Customer) error
+	DeleteCustomerByID(int) error
 }
 
 type CustomerRepository struct {
@@ -147,6 +148,25 @@ func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
 	}
 
 	customer.ID = lastInsertedID
+
+	return nil
+}
+
+func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
+	stmt, err := cr.db.Prepare("DELETE FROM customer WHERE id = $1")
+	if err != nil {
+		return fmt.Errorf("cannot prepare statement for id %d", id)
+	}
+
+	result, err := stmt.Exec(id)
+	if err != nil {
+		return fmt.Errorf("cannot exec query for id %d", id)
+	}
+
+	_, err = result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affacted")
+	}
 
 	return nil
 }

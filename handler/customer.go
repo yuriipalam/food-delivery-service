@@ -6,7 +6,9 @@ import (
 	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
+	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 )
 
 type CustomerHandler struct {
@@ -51,4 +53,31 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 	}
 
 	response.SendOK(w, customer)
+}
+
+func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		return
+	}
+
+	c, err := ch.repo.GetCustomerByID(id)
+	if err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch customer with id %d", id))
+		return
+	}
+
+	if c == nil {
+		response.SendBadRequestError(w, fmt.Errorf("user with id %d does not exist", id))
+		return
+	}
+
+	if err := ch.repo.DeleteCustomerByID(id); err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendNoContent(w)
 }
