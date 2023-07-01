@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"food_delivery/config"
 	"food_delivery/handler"
 	"food_delivery/repository"
 	"github.com/gorilla/handlers"
@@ -19,10 +20,12 @@ func main() {
 		panic(err)
 	}
 
+	cfg := config.NewConfig()
+
 	r := mux.NewRouter()
 
 	customerRepository := repository.NewCustomerRepository(db)
-	customerHandler := handler.NewCustomerHandler(customerRepository)
+	customerHandler := handler.NewCustomerHandler(customerRepository, cfg)
 	r.HandleFunc("/customer/{id}", customerHandler.GetCustomerByID).Methods(http.MethodGet)
 	r.HandleFunc("/customer/{id}", customerHandler.UpdateCustomerByID).Methods(http.MethodPut)
 	r.HandleFunc("/customer/{id}", customerHandler.DeleteCustomerByID).Methods(http.MethodDelete)
