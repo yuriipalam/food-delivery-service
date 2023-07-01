@@ -10,9 +10,8 @@ import (
 type CustomerRepositoryI interface {
 	GetCustomerByID(int) (*model.Customer, error)
 	GetCustomerByEmail(string) (*model.Customer, error)
+	GetCustomerByPhone(string) (*model.Customer, error)
 	CreateCustomer(*model.Customer) error
-	CheckIfEmailAlreadyExist(string) error
-	CheckIfPhoneAlreadyExist(string) error
 }
 
 type CustomerRepository struct {
@@ -89,6 +88,38 @@ func (cr *CustomerRepository) GetCustomerByEmail(email string) (*model.Customer,
 	return &customer, nil
 }
 
+func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer, error) {
+	stmt, err := cr.db.Prepare("SELECT * FROM customer WHERE phone = $1")
+	if err != nil {
+		return nil, fmt.Errorf("could not prepare a statement for phone %s", phone)
+	}
+
+	row := stmt.QueryRow(phone)
+	if row.Err() != nil {
+		return nil, fmt.Errorf("cannot run query for phone %s", phone)
+	}
+
+	var customer model.Customer
+
+	err = row.Scan(
+		&customer.ID,
+		&customer.Email,
+		&customer.Password,
+		&customer.Phone,
+		&customer.FirstName,
+		&customer.LastName,
+		&customer.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("cannot scan customer with phone %s", phone)
+	}
+
+	return &customer, nil
+}
+
 func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
 	stmt, err := cr.db.Prepare(`INSERT INTO customer (email, password, phone, first_name, last_name, created_at)
 									  VALUES ($1, $2, $3, $4, $5, $6)
@@ -116,54 +147,6 @@ func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
 	}
 
 	customer.ID = lastInsertedID
-
-	return nil
-}
-
-func (cr *CustomerRepository) CheckIfEmailAlreadyExist(email string) error {
-	stmt, err := cr.db.Prepare("SELECT email FROM customer WHERE email = $1")
-	if err != nil {
-		return fmt.Errorf("cannot prepare statement for email %s", email)
-	}
-
-	row := stmt.QueryRow(email)
-	if row.Err() != nil {
-		return fmt.Errorf("cannot run statement for email %s", email)
-	}
-
-	var tempEmail string
-
-	err = row.Scan(&tempEmail)
-	if err == nil {
-		return fmt.Errorf("given email already exist")
-	}
-	if err != sql.ErrNoRows {
-		return fmt.Errorf("cannot scan customer with email %s", email)
-	}
-
-	return nil
-}
-
-func (cr *CustomerRepository) CheckIfPhoneAlreadyExist(phone string) error {
-	stmt, err := cr.db.Prepare("SELECT phone FROM customer WHERE phone = $1")
-	if err != nil {
-		return fmt.Errorf("cannot prepare statement for phone %s", phone)
-	}
-
-	row := stmt.QueryRow(phone)
-	if row.Err() != nil {
-		return fmt.Errorf("cannot run statement for phone %s", phone)
-	}
-
-	var tempPhone string
-
-	err = row.Scan(&tempPhone)
-	if err == nil {
-		return fmt.Errorf("given phone already exist")
-	}
-	if err != sql.ErrNoRows {
-		return fmt.Errorf("cannot scan customer with phone %s", phone)
-	}
 
 	return nil
 }

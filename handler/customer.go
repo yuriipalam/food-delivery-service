@@ -27,12 +27,21 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := ch.repo.CheckIfEmailAlreadyExist(customer.Email); err != nil {
+	c, err := ch.repo.GetCustomerByEmail(customer.Email)
+	if err != nil {
 		response.SendBadRequestError(w, err)
 		return
+	} else if c != nil {
+		response.SendBadRequestError(w, fmt.Errorf("email %s already exist", customer.Email))
+		return
 	}
-	if err := ch.repo.CheckIfPhoneAlreadyExist(customer.Phone); err != nil {
+
+	c, err = ch.repo.GetCustomerByPhone(customer.Phone)
+	if err != nil {
 		response.SendBadRequestError(w, err)
+		return
+	} else if c != nil {
+		response.SendBadRequestError(w, fmt.Errorf("phone %s already exist", customer.Phone))
 		return
 	}
 
