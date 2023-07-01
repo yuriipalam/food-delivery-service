@@ -7,6 +7,7 @@ import (
 )
 
 type CategoryRepositoryI interface {
+	GetCategoryByID(int) (*model.Category, error)
 	GetAllCategories() ([]model.Category, error)
 }
 
@@ -18,6 +19,35 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 	return &CategoryRepository{
 		db: db,
 	}
+}
+
+func (cr *CategoryRepository) GetCategoryByID(id int) (*model.Category, error) {
+	stmt, err := cr.db.Prepare("SELECT * FROM category WHERE id = $1")
+	if err != nil {
+		return nil, fmt.Errorf("cannot prepare statement for id %d", id)
+	}
+
+	row := stmt.QueryRow(id)
+	if row.Err() != nil {
+		return nil, fmt.Errorf("cannot run query for category id %d", id)
+	}
+
+	var category model.Category
+
+	err = row.Scan(
+		&category.ID,
+		&category.Name,
+		&category.Image,
+		&category.Description,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("cannot scan category with id %d", id)
+	}
+
+	return &category, nil
 }
 
 func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
@@ -41,7 +71,7 @@ func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 			&category.Name,
 			&category.Image,
 			&category.Description,
-			)
+		)
 		if err != nil {
 			return nil, fmt.Errorf("cannot scan category")
 		}
