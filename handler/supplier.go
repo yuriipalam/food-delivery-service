@@ -41,8 +41,26 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, supplier)
 }
 
-func (sh *SupplierHandler) GetSupplierByCategoryID(w http.ResponseWriter, r *http.Request) {
+func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	categoryID, err := strconv.Atoi(vars["category_id"])
+	if err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		return
+	}
 
+	suppliers, err := sh.repo.GetSuppliersByCategoryID(categoryID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(suppliers) == 0 {
+		response.SendNotFoundError(w, fmt.Errorf("no suppliers found with category_id %d", categoryID))
+		return
+	}
+
+	response.SendOK(w, suppliers)
 }
 
 func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {

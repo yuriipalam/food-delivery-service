@@ -121,10 +121,6 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 		products = append(products, product)
 	}
 
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("type mismatch on scanning rows")
-	}
-
 	return products, nil
 }
 

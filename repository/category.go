@@ -79,9 +79,5 @@ func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 		categories = append(categories, category)
 	}
 
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("type mismatch on scanning rows")
-	}
-
 	return categories, nil
 }

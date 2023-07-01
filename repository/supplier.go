@@ -7,9 +7,9 @@ import (
 )
 
 type SupplierRepositoryI interface {
-	GetAllSuppliers() ([]model.Supplier, error)
 	GetSupplierByID(int) (*model.Supplier, error)
-	//GetSupplierByCategoryID(int) (*model.Supplier, error)
+	GetSuppliersByCategoryID(int) ([]model.Supplier, error)
+	GetAllSuppliers() ([]model.Supplier, error)
 }
 
 type SupplierRepository struct {
@@ -54,6 +54,45 @@ func (sr *SupplierRepository) GetSupplierByID(id int) (*model.Supplier, error) {
 	return &supplier, nil
 }
 
+func (sr *SupplierRepository) GetSuppliersByCategoryID(id int) ([]model.Supplier, error) {
+	stmt, err := sr.db.Prepare("SELECT * FROM supplier WHERE category_id = $1")
+	if err != nil {
+		return nil, fmt.Errorf("cannot prepare statement for %d category_id", id)
+	}
+
+	rows, err := stmt.Query(id)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query for category_id %d", id)
+	}
+
+	var suppliers []model.Supplier
+
+	for rows.Next() {
+		var supplier model.Supplier
+
+		err = rows.Scan(
+			&supplier.ID,
+			&supplier.CategoryID,
+			&supplier.Name,
+			&supplier.Image,
+			&supplier.Description,
+			&supplier.TimeOpening,
+			&supplier.TimeClosing,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("cannot scan product")
+		}
+
+		suppliers = append(suppliers, supplier)
+	}
+
+	if len(suppliers) == 0 {
+		return nil, nil
+	}
+
+	return suppliers, nil
+}
+
 func (sr *SupplierRepository) GetAllSuppliers() ([]model.Supplier, error) {
 	stmt, err := sr.db.Prepare("SELECT * FROM supplier")
 	if err != nil {
@@ -84,10 +123,6 @@ func (sr *SupplierRepository) GetAllSuppliers() ([]model.Supplier, error) {
 		}
 
 		suppliers = append(suppliers, supplier)
-	}
-
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("type mismatch on scanning rows")
 	}
 
 	return suppliers, nil
