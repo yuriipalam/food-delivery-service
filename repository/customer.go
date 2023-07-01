@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"food_delivery/model"
+	"food_delivery/utils"
+	"reflect"
 	"time"
 )
 
@@ -12,6 +14,7 @@ type CustomerRepositoryI interface {
 	GetCustomerByEmail(string) (*model.Customer, error)
 	GetCustomerByPhone(string) (*model.Customer, error)
 	CreateCustomer(*model.Customer) error
+	UpdateCustomerByID(int, *model.Customer) error
 	DeleteCustomerByID(int) error
 }
 
@@ -152,6 +155,43 @@ func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
 	return nil
 }
 
+func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *model.Customer) error {
+	customerFromDB, err := cr.GetCustomerByID(id)
+	if err != nil {
+		return err
+	}
+	if customerFromDB == nil {
+		return nil
+	}
+
+	count := 0
+
+	customerType := reflect.TypeOf(*customer)
+	customerValueOf := reflect.ValueOf(*customer)
+	customerFromDBValueOf := reflect.ValueOf(*customerFromDB)
+
+	for i := 0; i < customerType.NumField(); i++ {
+		customerVal := customerValueOf.Field(i).Interface()
+		customerFromDBVal := customerFromDBValueOf.Field(i).Interface()
+
+		if !reflect.DeepEqual(customerVal, customerFromDBVal) && !utils.IsDefaultValue(customerVal) {
+			fieldName := customerType.Field(i).Tag.Get("json")
+
+			if err := cr.updateField(id, fieldName, customerVal); err != nil {
+				return err
+			}
+
+			count++
+		}
+	}
+
+	if count == 0 {
+		return fmt.Errorf("all the fields in provided structs are the same as in db")
+	}
+
+	return nil
+}
+
 func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 	stmt, err := cr.db.Prepare("DELETE FROM customer WHERE id = $1")
 	if err != nil {
@@ -166,6 +206,21 @@ func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 	_, err = result.RowsAffected()
 	if err != nil {
 		return fmt.Errorf("failed to get rows affacted")
+	}
+
+	return nil
+}
+
+func (cr *CustomerRepository) updateField(id int, fieldName string, fieldVal any) error {
+	stmtStr := fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", fieldName)
+	stmt, err := cr.db.Prepare(stmtStr)
+	if err != nil {
+		return fmt.Errorf("cannot prepare statement for id %d, fieldname %s", id, fieldName)
+	}
+
+	_, err = stmt.Exec(fieldVal, id)
+	if err != nil {
+		return fmt.Errorf("cannot execute query for id %d, fieldname %s", id, fieldName)
 	}
 
 	return nil

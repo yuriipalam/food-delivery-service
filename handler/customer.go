@@ -6,9 +6,8 @@ import (
 	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
-	"github.com/gorilla/mux"
+	"food_delivery/utils"
 	"net/http"
-	"strconv"
 )
 
 type CustomerHandler struct {
@@ -56,10 +55,9 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 }
 
 func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -77,11 +75,48 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	c, err := ch.repo.GetCustomerByID(id)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	} else if c == nil {
+		response.SendNotFoundError(w, fmt.Errorf("customer with id %d not found", id))
+		return
+	}
+
+	var customer *model.Customer
+
+	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
+		return
+	}
+
+	err = ch.repo.UpdateCustomerByID(id, customer)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	customer, err = ch.repo.GetCustomerByID(id)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, customer)
+}
+
+func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.GetIDFromMuxVars(r)
+	if err != nil {
+		response.SendBadRequestError(w, err)
 		return
 	}
 
