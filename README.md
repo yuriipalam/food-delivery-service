@@ -3,6 +3,6 @@
 Final project for the Golang course at NIX
 
 Stack used:
-1. Pure GO
+1. Golang (http/net and gorilla/mux)
 2. PostgreSQL
 3. Vue.js
