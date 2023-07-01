@@ -29,7 +29,7 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	stmt, err := pr.db.Prepare("SELECT * FROM product WHERE id = $1")
 	if err != nil {
-		return nil, fmt.Errorf("could not select a product with id %d", id)
+		return nil, fmt.Errorf("could not prepare statement for a product with id %d", id)
 	}
 
 	row := stmt.QueryRow(id)

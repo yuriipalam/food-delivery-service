@@ -21,6 +21,10 @@ func main() {
 
 	r := mux.NewRouter()
 
+	customerRepository := repository.NewCustomerRepository(db)
+	customerHandler := handler.NewCustomerHandler(customerRepository)
+	r.HandleFunc("/customer", customerHandler.CreateCustomer).Methods(http.MethodPost)
+
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)
 	r.HandleFunc("/supplier/{id}", supplierHandler.GetSupplierByID).Methods(http.MethodGet)
