@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"food_delivery/config"
-	"food_delivery/model"
 	"food_delivery/repository"
+	"food_delivery/request"
 	"food_delivery/response"
 	"food_delivery/utils"
 	"net/http"
@@ -24,14 +24,15 @@ func NewCustomerHandler(repo repository.CustomerRepositoryI, cfg *config.Config)
 }
 
 func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request) {
-	var customer *model.Customer
+	var req *request.RegisterRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.SendBadRequestError(w, fmt.Errorf("cannot decode to json provided customer"))
 		return
 	}
 
-	if err := ch.repo.CreateCustomer(customer); err != nil {
+	customer, err := ch.repo.CreateCustomer(req)
+	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
 	}
@@ -62,7 +63,7 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	var customer *model.Customer
+	var customer *request.UpdateCustomer
 
 	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
 		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
@@ -75,13 +76,13 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	customer, err = ch.repo.GetCustomerByID(id)
+	customerFromDB, err := ch.repo.GetCustomerByID(id)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
 	}
 
-	response.SendOK(w, customer)
+	response.SendOK(w, customerFromDB)
 }
 
 func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {

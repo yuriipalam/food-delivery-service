@@ -7,6 +7,7 @@ import (
 	"food_delivery/repository"
 	"food_delivery/request"
 	"food_delivery/response"
+	"food_delivery/service"
 	"net/http"
 )
 
@@ -30,6 +31,29 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	customer, err := ah.repo.CreateCustomer(&req)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
 
+	tokenService := service.NewTokenService(ah.cfg)
 
+	accessString, err := tokenService.GenerateAccessToken(customer.ID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+	refreshString, err := tokenService.GenerateAccessToken(customer.ID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	resp := response.LoginResponse{
+		AccessToken: accessString,
+		RefreshToken: refreshString,
+	}
+
+	response.SendOK(w, resp)
 }

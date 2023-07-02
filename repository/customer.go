@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"food_delivery/model"
-	"food_delivery/utils"
-	"reflect"
+	"food_delivery/request"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -13,8 +13,8 @@ type CustomerRepositoryI interface {
 	GetCustomerByID(int) (*model.Customer, error)
 	GetCustomerByEmail(string) (*model.Customer, error)
 	GetCustomerByPhone(string) (*model.Customer, error)
-	CreateCustomer(*model.Customer) error
-	UpdateCustomerByID(int, *model.Customer) error
+	CreateCustomer(registerRequest *request.RegisterRequest) (*model.Customer, error)
+	UpdateCustomerByID(int, *request.UpdateCustomer) error
 	DeleteCustomerByID(int) error
 }
 
@@ -124,69 +124,89 @@ func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer,
 	return &customer, nil
 }
 
-func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
-	if err := cr.checkIfEmailOrPhoneAlreadyExist(customer.Email, customer.Phone); err != nil {
-		return err
+func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*model.Customer, error) {
+	if err := cr.checkIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
+		return nil, err
 	}
 
 	stmt, err := cr.db.Prepare(`INSERT INTO customer (email, password, phone, first_name, last_name, created_at)
 									  VALUES ($1, $2, $3, $4, $5, $6)
 									  RETURNING id`)
 	if err != nil {
-		return fmt.Errorf("cannot prepare statement for the given customer model")
+		return nil, fmt.Errorf("cannot prepare statement for the given customer model")
 	}
 
+	p, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+
 	row := stmt.QueryRow(
-		customer.Email,
-		customer.Password,
-		customer.Phone,
-		customer.FirstName,
-		customer.LastName,
+		req.Email,
+		p,
+		req.Phone,
+		req.FirstName,
+		req.LastName,
 		time.Now(),
 	)
 	if row.Err() != nil {
-		return fmt.Errorf("cannot execute query for the given customer")
+		return nil, fmt.Errorf("cannot execute query for the given customer")
 	}
 
 	var lastInsertedID int
 	err = row.Scan(&lastInsertedID)
 	if err != nil {
-		return fmt.Errorf("cannot scan last inserted id")
+		return nil, fmt.Errorf("cannot scan last inserted id")
 	}
 
-	customer.ID = lastInsertedID
-
-	return nil
+	return cr.GetCustomerByID(lastInsertedID)
 }
 
-func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *model.Customer) error {
+func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *request.UpdateCustomer) error {
 	customerFromDB, err := cr.checkIfCustomerExistByID(id)
 	if err != nil {
 		return err
 	}
 
-	count := 0
+	anyChanges := false
 
-	customerType := reflect.TypeOf(*customer)
-	customerValueOf := reflect.ValueOf(*customer)
-	customerFromDBValueOf := reflect.ValueOf(*customerFromDB)
-
-	for i := 0; i < customerType.NumField(); i++ {
-		customerVal := customerValueOf.Field(i).Interface()
-		customerFromDBVal := customerFromDBValueOf.Field(i).Interface()
-
-		if !reflect.DeepEqual(customerVal, customerFromDBVal) && !utils.IsDefaultValue(customerVal) {
-			fieldName := customerType.Field(i).Tag.Get("json")
-
-			if err := cr.updateField(id, fieldName, customerVal); err != nil {
-				return err
-			}
-
-			count++
+	if customer.Phone != customerFromDB.Phone {
+		if err := cr.updateField(id, "phone", customer.Phone); err != nil {
+			return err
 		}
+		anyChanges = true
+	}
+	if customer.FirstName != customerFromDB.FirstName {
+		if err := cr.updateField(id, "first_name", customer.FirstName); err != nil {
+			return err
+		}
+		anyChanges = true
+	}
+	if customer.LastName != customerFromDB.LastName {
+		if err := cr.updateField(id, "last_name", customer.LastName); err != nil {
+			return err
+		}
+		anyChanges = true
 	}
 
-	if count == 0 {
+
+	//customerType := reflect.TypeOf(*customer)
+	//customerValueOf := reflect.ValueOf(*customer)
+	//customerFromDBValueOf := reflect.ValueOf(*customerFromDB)
+	//
+	//for i := 0; i < customerType.NumField(); i++ {
+	//	customerVal := customerValueOf.Field(i).Interface()
+	//	customerFromDBVal := customerFromDBValueOf.Field(i).Interface()
+	//
+	//	if !reflect.DeepEqual(customerVal, customerFromDBVal) && !utils.IsDefaultValue(customerVal) {
+	//		fieldName := customerType.Field(i).Tag.Get("json")
+	//
+	//		if err := cr.updateField(id, fieldName, customerVal); err != nil {
+	//			return err
+	//		}
+	//
+	//		count++
+	//	}
+	//}
+
+	if !anyChanges {
 		return fmt.Errorf("all the fields in provided structs are the same as in db")
 	}
 
