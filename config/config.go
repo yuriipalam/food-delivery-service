@@ -9,8 +9,8 @@ import (
 
 type Config struct {
 	Port                   string
-	AccessSecret           string
-	RefreshSecret          string
+	AccessTokenSecret      string
+	RefreshTokenSecret     string
 	AccessLifetimeMinutes  int
 	RefreshLifetimeMinutes int
 }
@@ -31,8 +31,8 @@ func NewConfig() *Config {
 
 	return &Config{
 		Port:                   os.Getenv("PORT"),
-		AccessSecret:           os.Getenv("ACCESS_TOKEN_SECRET"),
-		RefreshSecret:          os.Getenv("REFRESH_TOKEN_SECRET"),
+		AccessTokenSecret:      os.Getenv("ACCESS_TOKEN_SECRET"),
+		RefreshTokenSecret:     os.Getenv("REFRESH_TOKEN_SECRET"),
 		AccessLifetimeMinutes:  accessMin,
 		RefreshLifetimeMinutes: refreshMin,
 	}

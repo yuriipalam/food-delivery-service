@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"food_delivery/config"
 	"food_delivery/handler"
+	"food_delivery/middleware"
 	"food_delivery/repository"
+	"food_delivery/utils"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -34,7 +36,10 @@ func main() {
 	authHandler := handler.NewAuthHandler(customerRepository, cfg)
 	r.HandleFunc("/register", authHandler.Register).Methods(http.MethodPost)
 	r.HandleFunc("/login", authHandler.Login).Methods(http.MethodPost)
-	r.HandleFunc("/refresh", authHandler.Refresh).Methods(http.MethodGet)
+	refToken := r.PathPrefix("/refresh").Subrouter()
+	refToken.HandleFunc("", authHandler.Refresh).Methods(http.MethodGet)
+	refToken.Use(utils.SendCfgToMiddleware(cfg))
+	refToken.Use(middleware.ValidateRefreshToken)
 
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)

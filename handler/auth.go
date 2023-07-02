@@ -85,14 +85,9 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ah *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
-	AuthHeader := r.Header.Get("Authorization")
-
-	tokenService := service.NewTokenService(ah.cfg)
-	refreshTokenString := tokenService.GetTokenFromBearerString(AuthHeader)
-
-	claims, err := tokenService.ValidateRefreshToken(refreshTokenString)
-	if err != nil {
-		response.SendStatusUnauthorizedError(w, err)
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendStatusUnauthorizedError(w, fmt.Errorf("failed to retrive claims"))
 		return
 	}
 

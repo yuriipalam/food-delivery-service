@@ -24,19 +24,19 @@ func NewTokenService(cfg *config.Config) *TokenService {
 }
 
 func (s *TokenService) GenerateAccessToken(userID int) (string, error) {
-	return s.generateToken(userID, s.cfg.AccessLifetimeMinutes, s.cfg.AccessSecret)
+	return s.generateToken(userID, s.cfg.AccessLifetimeMinutes, s.cfg.AccessTokenSecret)
 }
 
 func (s *TokenService) GenerateRefreshToken(userID int) (string, error) {
-	return s.generateToken(userID, s.cfg.RefreshLifetimeMinutes, s.cfg.RefreshSecret)
+	return s.generateToken(userID, s.cfg.RefreshLifetimeMinutes, s.cfg.RefreshTokenSecret)
 }
 
 func (s *TokenService) ValidateAccessToken(tokenString string) (*JwtCustomClaims, error) {
-	return s.validateToken(tokenString, s.cfg.AccessSecret)
+	return s.validateToken(tokenString, s.cfg.AccessTokenSecret)
 }
 
 func (s *TokenService) ValidateRefreshToken(tokenString string) (*JwtCustomClaims, error) {
-	return s.validateToken(tokenString, s.cfg.RefreshSecret)
+	return s.validateToken(tokenString, s.cfg.RefreshTokenSecret)
 }
 
 func (s *TokenService) GetTokenFromBearerString(bearerString string) string {
