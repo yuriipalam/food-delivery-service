@@ -34,6 +34,7 @@ func main() {
 	authHandler := handler.NewAuthHandler(customerRepository, cfg)
 	r.HandleFunc("/register", authHandler.Register).Methods(http.MethodPost)
 	r.HandleFunc("/login", authHandler.Login).Methods(http.MethodPost)
+	r.HandleFunc("/refresh", authHandler.Refresh).Methods(http.MethodGet)
 
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)

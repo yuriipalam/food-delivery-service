@@ -24,6 +24,12 @@ func SendMethodNotAllowedError(w http.ResponseWriter, err error) {
 	})
 }
 
+func SendStatusUnauthorizedError(w http.ResponseWriter, err error) {
+	sendJSON(w, http.StatusUnauthorized, Basic{
+		Message: err.Error(),
+	})
+}
+
 func SendBadRequestError(w http.ResponseWriter, err error) {
 	sendJSON(w, http.StatusBadRequest, Basic{
 		Message: err.Error(),

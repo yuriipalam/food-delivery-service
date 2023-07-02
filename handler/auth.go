@@ -84,6 +84,32 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	response.SendOK(w, resp)
 }
 
+func (ah *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+	AuthHeader := r.Header.Get("Authorization")
+
+	tokenService := service.NewTokenService(ah.cfg)
+	refreshTokenString := tokenService.GetTokenFromBearerString(AuthHeader)
+
+	claims, err := tokenService.ValidateRefreshToken(refreshTokenString)
+	if err != nil {
+		response.SendStatusUnauthorizedError(w, err)
+		return
+	}
+
+	accessString, refreshString, err := ah.generatePairOfTokens(claims.ID)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	resp := response.LoginResponse{
+		AccessToken: accessString,
+		RefreshToken: refreshString,
+	}
+
+	response.SendOK(w, resp)
+}
+
 func (ah *AuthHandler) generatePairOfTokens(id int) (string, string, error) {
 	tokenService := service.NewTokenService(ah.cfg)
 
@@ -91,7 +117,7 @@ func (ah *AuthHandler) generatePairOfTokens(id int) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	refreshString, err := tokenService.GenerateAccessToken(id)
+	refreshString, err := tokenService.GenerateRefreshToken(id)
 	if err != nil {
 		return "", "", err
 	}
