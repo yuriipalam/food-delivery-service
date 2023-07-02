@@ -8,6 +8,7 @@ import (
 	"food_delivery/request"
 	"food_delivery/response"
 	"food_delivery/service"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -21,6 +22,38 @@ func NewAuthHandler(repo repository.CustomerRepositoryI, cfg *config.Config) *Au
 		repo: repo,
 		cfg: cfg,
 	}
+}
+
+func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var req request.LoginRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	customer, err := ah.repo.GetCustomerByEmail(req.Email)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("invalid credentials"))
+	}
+
+	accessString, refreshString, err := ah.generatePairOfTokens(customer.ID)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	resp := response.LoginResponse{
+		AccessToken: accessString,
+		RefreshToken: refreshString,
+	}
+
+	response.SendOK(w, resp)
 }
 
 func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -37,16 +70,9 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenService := service.NewTokenService(ah.cfg)
-
-	accessString, err := tokenService.GenerateAccessToken(customer.ID)
+	accessString, refreshString, err := ah.generatePairOfTokens(customer.ID)
 	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-	refreshString, err := tokenService.GenerateAccessToken(customer.ID)
-	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -56,4 +82,19 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.SendOK(w, resp)
+}
+
+func (ah *AuthHandler) generatePairOfTokens(id int) (string, string, error) {
+	tokenService := service.NewTokenService(ah.cfg)
+
+	accessString, err := tokenService.GenerateAccessToken(id)
+	if err != nil {
+		return "", "", err
+	}
+	refreshString, err := tokenService.GenerateAccessToken(id)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessString, refreshString, nil
 }

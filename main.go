@@ -33,6 +33,7 @@ func main() {
 
 	authHandler := handler.NewAuthHandler(customerRepository, cfg)
 	r.HandleFunc("/register", authHandler.Register).Methods(http.MethodPost)
+	r.HandleFunc("/login", authHandler.Login).Methods(http.MethodPost)
 
 	supplierRepository := repository.NewSupplierRepository(db)
 	supplierHandler := handler.NewSupplierHandler(supplierRepository)
