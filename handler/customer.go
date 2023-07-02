@@ -31,24 +31,6 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	c, err := ch.repo.GetCustomerByEmail(customer.Email)
-	if err != nil {
-		response.SendBadRequestError(w, err)
-		return
-	} else if c != nil {
-		response.SendBadRequestError(w, fmt.Errorf("email %s already exist", customer.Email))
-		return
-	}
-
-	c, err = ch.repo.GetCustomerByPhone(customer.Phone)
-	if err != nil {
-		response.SendBadRequestError(w, err)
-		return
-	} else if c != nil {
-		response.SendBadRequestError(w, fmt.Errorf("phone %s already exist", customer.Phone))
-		return
-	}
-
 	if err := ch.repo.CreateCustomer(customer); err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -66,12 +48,7 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 
 	customer, err := ch.repo.GetCustomerByID(id)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch customer with id %d", id))
-		return
-	}
-
-	if customer == nil {
-		response.SendBadRequestError(w, fmt.Errorf("customer with id %d does not exist", id))
+		response.SendInternalServerError(w, err)
 		return
 	}
 
@@ -82,15 +59,6 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
 		response.SendBadRequestError(w, err)
-		return
-	}
-
-	c, err := ch.repo.GetCustomerByID(id)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	} else if c == nil {
-		response.SendNotFoundError(w, fmt.Errorf("customer with id %d not found", id))
 		return
 	}
 
@@ -120,17 +88,6 @@ func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Req
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
 		response.SendBadRequestError(w, err)
-		return
-	}
-
-	c, err := ch.repo.GetCustomerByID(id)
-	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch customer with id %d", id))
-		return
-	}
-
-	if c == nil {
-		response.SendBadRequestError(w, fmt.Errorf("customer with id %d does not exist", id))
 		return
 	}
 

@@ -52,7 +52,7 @@ func (cr *CustomerRepository) GetCustomerByID(id int) (*model.Customer, error) {
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, fmt.Errorf("customer with id %d does not exist", id)
 		}
 		return nil, fmt.Errorf("cannot scan customer with id %d", id)
 	}
@@ -125,6 +125,10 @@ func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer,
 }
 
 func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
+	if err := cr.checkIfEmailOrPhoneAlreadyExist(customer.Email, customer.Phone); err != nil {
+		return err
+	}
+
 	stmt, err := cr.db.Prepare(`INSERT INTO customer (email, password, phone, first_name, last_name, created_at)
 									  VALUES ($1, $2, $3, $4, $5, $6)
 									  RETURNING id`)
@@ -156,12 +160,9 @@ func (cr *CustomerRepository) CreateCustomer(customer *model.Customer) error {
 }
 
 func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *model.Customer) error {
-	customerFromDB, err := cr.GetCustomerByID(id)
+	customerFromDB, err := cr.checkIfCustomerExistByID(id)
 	if err != nil {
 		return err
-	}
-	if customerFromDB == nil {
-		return nil
 	}
 
 	count := 0
@@ -193,6 +194,10 @@ func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *model.Custome
 }
 
 func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
+	if _, err := cr.checkIfCustomerExistByID(id); err != nil {
+		return err
+	}
+
 	stmt, err := cr.db.Prepare("DELETE FROM customer WHERE id = $1")
 	if err != nil {
 		return fmt.Errorf("cannot prepare statement for id %d", id)
@@ -224,4 +229,33 @@ func (cr *CustomerRepository) updateField(id int, fieldName string, fieldVal any
 	}
 
 	return nil
+}
+
+func (cr *CustomerRepository) checkIfEmailOrPhoneAlreadyExist(email string, phone string) error {
+	c, err := cr.GetCustomerByEmail(email)
+	if err != nil {
+		return err
+	} else if c != nil {
+		return fmt.Errorf("email %s already exist", email)
+	}
+
+	c, err = cr.GetCustomerByPhone(phone)
+	if err != nil {
+		return err
+	} else if c != nil {
+		return fmt.Errorf("phone %s already exist", phone)
+	}
+
+	return nil
+}
+
+func (cr *CustomerRepository) checkIfCustomerExistByID(id int) (*model.Customer, error) {
+	customerFromDB, err := cr.GetCustomerByID(id)
+	if err != nil {
+		return nil, err
+	} else if customerFromDB == nil {
+		return nil, fmt.Errorf("customer with id %d not found", id)
+	}
+
+	return customerFromDB, nil
 }
