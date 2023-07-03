@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"food_delivery/repository"
 	"food_delivery/response"
-	"github.com/gorilla/mux"
+	"food_delivery/utils"
 	"net/http"
-	"strconv"
 )
 
 type ProductHandler struct {
@@ -20,10 +19,9 @@ func NewProductHandler(repo repository.ProductRepositoryI) *ProductHandler {
 }
 
 func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -31,9 +29,7 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		response.SendBadRequestError(w, err)
 		return
-	}
-
-	if product == nil {
+	} else if product == nil {
 		response.SendNotFoundError(w, fmt.Errorf("no products found with given id %d", id))
 		return
 	}
@@ -46,9 +42,7 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(products) == 0 {
+	} else if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
@@ -57,10 +51,9 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	supplierID, err := strconv.Atoi(vars["supplier_id"])
+	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("supplier_id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -68,9 +61,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(products) == 0 {
+	} else if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d found", supplierID))
 		return
 	}
@@ -79,10 +70,9 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 }
 
 func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	categoryID, err := strconv.Atoi(vars["category_id"])
+	categoryID, err := utils.GetIntValueByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -90,9 +80,7 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(products) == 0 {
+	} else if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products with category_id %d found", categoryID))
 		return
 	}
@@ -101,15 +89,15 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	supplierID, err := strconv.Atoi(vars["supplier_id"])
+	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("supplier_id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
-	categoryID, err := strconv.Atoi(vars["category_id"])
+
+	categoryID, err := utils.GetIntValueByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -117,9 +105,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(products) == 0 {
+	} else if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d and category_id %d found", supplierID, categoryID))
 		return
 	}

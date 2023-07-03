@@ -86,10 +86,6 @@ func (sr *SupplierRepository) GetSuppliersByCategoryID(id int) ([]model.Supplier
 		suppliers = append(suppliers, supplier)
 	}
 
-	if len(suppliers) == 0 {
-		return nil, nil
-	}
-
 	return suppliers, nil
 }
 

@@ -31,6 +31,11 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if err := ch.repo.CheckIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
 	customer, err := ch.repo.CreateCustomer(req)
 	if err != nil {
 		response.SendInternalServerError(w, err)
@@ -47,8 +52,34 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	customer, err := ch.repo.GetCustomerByID(id)
+	customer, ok := ch.repo.TryToGetCustomerByID(id, w)
+	if !ok {
+		return
+	}
+
+	response.SendOK(w, customer)
+}
+
+func (ch *CustomerHandler) UpdateCustomerNameByID(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	var req *request.UpdateCustomer
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
+		return
+	}
+
+	customer, ok := ch.repo.TryToGetCustomerByID(id, w)
+	if !ok {
+		return
+	}
+
+	if err := ch.repo.UpdateCustomerNameByID(id, req, customer); err != nil {
 		response.SendInternalServerError(w, err)
 		return
 	}
@@ -56,39 +87,15 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.GetIDFromMuxVars(r)
-	if err != nil {
-		response.SendBadRequestError(w, err)
-		return
-	}
-
-	var customer *request.UpdateCustomer
-
-	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
-		return
-	}
-
-	err = ch.repo.UpdateCustomerByID(id, customer)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	customerFromDB, err := ch.repo.GetCustomerByID(id)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, customerFromDB)
-}
-
 func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
 		response.SendBadRequestError(w, err)
+		return
+	}
+
+	_, ok := ch.repo.TryToGetCustomerByID(id, w)
+	if !ok {
 		return
 	}
 

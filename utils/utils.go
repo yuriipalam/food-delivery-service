@@ -20,6 +20,16 @@ func GetIDFromMuxVars(r *http.Request) (int, error) {
 	return id, nil
 }
 
+func GetIntValueByKeyFromMuxVars(key string, r *http.Request) (int, error) {
+	vars := mux.Vars(r)
+	value, err := strconv.Atoi(vars[key])
+	if err != nil {
+		return 0, fmt.Errorf("%s must be integer", key)
+	}
+
+	return value, nil
+}
+
 func IsDefaultValue(value interface{}) bool {
 	defaultValue := reflect.Zero(reflect.TypeOf(value)).Interface()
 	return reflect.DeepEqual(value, defaultValue)

@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"food_delivery/repository"
 	"food_delivery/response"
-	"github.com/gorilla/mux"
+	"food_delivery/utils"
 	"net/http"
-	"strconv"
 )
 
 type SupplierHandler struct {
@@ -20,10 +19,9 @@ func NewSupplierHandler(repo repository.SupplierRepositoryI) *SupplierHandler {
 }
 
 func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -31,9 +29,7 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if supplier == nil {
+	} else if supplier == nil {
 		response.SendNotFoundError(w, fmt.Errorf("cannot find supplier with id %d", id))
 		return
 	}
@@ -42,10 +38,9 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 }
 
 func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	categoryID, err := strconv.Atoi(vars["category_id"])
+	categoryID, err := utils.GetIntValueByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("category_id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -53,9 +48,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(suppliers) == 0 {
+	} else if len(suppliers) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no suppliers found with category_id %d", categoryID))
 		return
 	}
@@ -68,9 +61,7 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	}
-
-	if len(suppliers) == 0 {
+	} else if len(suppliers) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
 		return
 	}

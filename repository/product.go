@@ -87,7 +87,6 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
-
 	rows, err := stmt.Query(data...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query")

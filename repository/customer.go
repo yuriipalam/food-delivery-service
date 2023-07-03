@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"food_delivery/model"
 	"food_delivery/request"
+	"food_delivery/response"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 	"time"
 )
 
@@ -14,8 +16,11 @@ type CustomerRepositoryI interface {
 	GetCustomerByEmail(string) (*model.Customer, error)
 	GetCustomerByPhone(string) (*model.Customer, error)
 	CreateCustomer(registerRequest *request.RegisterRequest) (*model.Customer, error)
-	UpdateCustomerByID(int, *request.UpdateCustomer) error
+	UpdateCustomerNameByID(int, *request.UpdateCustomer, *model.Customer) error
 	DeleteCustomerByID(int) error
+	//CheckAndGetIfCustomerExistByID(int) (*model.Customer, error)
+	CheckIfEmailOrPhoneAlreadyExist(string, string) error
+	TryToGetCustomerByID(int, http.ResponseWriter) (*model.Customer, bool)
 }
 
 type CustomerRepository struct {
@@ -52,7 +57,7 @@ func (cr *CustomerRepository) GetCustomerByID(id int) (*model.Customer, error) {
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("customer with id %d does not exist", id)
+			return nil, nil
 		}
 		return nil, fmt.Errorf("cannot scan customer with id %d", id)
 	}
@@ -125,10 +130,6 @@ func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer,
 }
 
 func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*model.Customer, error) {
-	if err := cr.checkIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
-		return nil, err
-	}
-
 	stmt, err := cr.db.Prepare(`INSERT INTO customer (email, password, phone, first_name, last_name, created_at)
 									  VALUES ($1, $2, $3, $4, $5, $6)
 									  RETURNING id`)
@@ -159,52 +160,23 @@ func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*mod
 	return cr.GetCustomerByID(lastInsertedID)
 }
 
-func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *request.UpdateCustomer) error {
-	customerFromDB, err := cr.checkIfCustomerExistByID(id)
-	if err != nil {
-		return err
-	}
-
+func (cr *CustomerRepository) UpdateCustomerNameByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
 	anyChanges := false
 
-	if customer.Phone != customerFromDB.Phone {
-		if err := cr.updateField(id, "phone", customer.Phone); err != nil {
-			return err
-		}
-		anyChanges = true
-	}
-	if customer.FirstName != customerFromDB.FirstName {
+	if req.FirstName != customer.FirstName {
 		if err := cr.updateField(id, "first_name", customer.FirstName); err != nil {
 			return err
 		}
 		anyChanges = true
+		customer.FirstName = req.FirstName
 	}
-	if customer.LastName != customerFromDB.LastName {
+	if req.LastName != customer.LastName {
 		if err := cr.updateField(id, "last_name", customer.LastName); err != nil {
 			return err
 		}
 		anyChanges = true
+		customer.LastName = req.LastName
 	}
-
-
-	//customerType := reflect.TypeOf(*customer)
-	//customerValueOf := reflect.ValueOf(*customer)
-	//customerFromDBValueOf := reflect.ValueOf(*customerFromDB)
-	//
-	//for i := 0; i < customerType.NumField(); i++ {
-	//	customerVal := customerValueOf.Field(i).Interface()
-	//	customerFromDBVal := customerFromDBValueOf.Field(i).Interface()
-	//
-	//	if !reflect.DeepEqual(customerVal, customerFromDBVal) && !utils.IsDefaultValue(customerVal) {
-	//		fieldName := customerType.Field(i).Tag.Get("json")
-	//
-	//		if err := cr.updateField(id, fieldName, customerVal); err != nil {
-	//			return err
-	//		}
-	//
-	//		count++
-	//	}
-	//}
 
 	if !anyChanges {
 		return fmt.Errorf("all the fields in provided structs are the same as in db")
@@ -214,10 +186,6 @@ func (cr *CustomerRepository) UpdateCustomerByID(id int, customer *request.Updat
 }
 
 func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
-	if _, err := cr.checkIfCustomerExistByID(id); err != nil {
-		return err
-	}
-
 	stmt, err := cr.db.Prepare("DELETE FROM customer WHERE id = $1")
 	if err != nil {
 		return fmt.Errorf("cannot prepare statement for id %d", id)
@@ -236,22 +204,18 @@ func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 	return nil
 }
 
-func (cr *CustomerRepository) updateField(id int, fieldName string, fieldVal any) error {
-	stmtStr := fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", fieldName)
-	stmt, err := cr.db.Prepare(stmtStr)
-	if err != nil {
-		return fmt.Errorf("cannot prepare statement for id %d, fieldname %s", id, fieldName)
-	}
+//func (cr *CustomerRepository) CheckAndGetIfCustomerExistByID(id int) (*model.Customer, error) {
+//	customerFromDB, err := cr.GetCustomerByID(id)
+//	if err != nil {
+//		return nil, err
+//	} else if customerFromDB == nil {
+//		return nil, fmt.Errorf("customer with id %d not found", id)
+//	}
+//
+//	return customerFromDB, nil
+//}
 
-	_, err = stmt.Exec(fieldVal, id)
-	if err != nil {
-		return fmt.Errorf("cannot execute query for id %d, fieldname %s", id, fieldName)
-	}
-
-	return nil
-}
-
-func (cr *CustomerRepository) checkIfEmailOrPhoneAlreadyExist(email string, phone string) error {
+func (cr *CustomerRepository) CheckIfEmailOrPhoneAlreadyExist(email string, phone string) error {
 	c, err := cr.GetCustomerByEmail(email)
 	if err != nil {
 		return err
@@ -269,13 +233,30 @@ func (cr *CustomerRepository) checkIfEmailOrPhoneAlreadyExist(email string, phon
 	return nil
 }
 
-func (cr *CustomerRepository) checkIfCustomerExistByID(id int) (*model.Customer, error) {
-	customerFromDB, err := cr.GetCustomerByID(id)
+func (cr *CustomerRepository) TryToGetCustomerByID(id int, w http.ResponseWriter) (*model.Customer, bool) {
+	customer, err := cr.GetCustomerByID(id)
 	if err != nil {
-		return nil, err
-	} else if customerFromDB == nil {
-		return nil, fmt.Errorf("customer with id %d not found", id)
+		response.SendInternalServerError(w, err)
+		return nil, false
+	} else if customer == nil {
+		response.SendNotFoundError(w, fmt.Errorf("customer with id %d not found", id))
+		return nil, false
 	}
 
-	return customerFromDB, nil
+	return customer, true
+}
+
+func (cr *CustomerRepository) updateField(id int, fieldName string, fieldVal any) error {
+	stmtStr := fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", fieldName)
+	stmt, err := cr.db.Prepare(stmtStr)
+	if err != nil {
+		return fmt.Errorf("cannot prepare statement for id %d, fieldname %s", id, fieldName)
+	}
+
+	_, err = stmt.Exec(fieldVal, id)
+	if err != nil {
+		return fmt.Errorf("cannot execute query for id %d, fieldname %s", id, fieldName)
+	}
+
+	return nil
 }

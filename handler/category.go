@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"food_delivery/repository"
 	"food_delivery/response"
-	"github.com/gorilla/mux"
+	"food_delivery/utils"
 	"net/http"
-	"strconv"
 )
 
 type CategoryHandler struct {
@@ -20,10 +19,9 @@ func NewCategoryHandler(repo repository.CategoryRepositoryI) *CategoryHandler {
 }
 
 func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("id must be integer"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 
@@ -31,10 +29,8 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		response.SendBadRequestError(w, err)
 		return
-	}
-
-	if category == nil {
-		response.SendNotFoundError(w, fmt.Errorf("no category found with id %d", id))
+	} else if category == nil {
+		response.SendNotFoundError(w, fmt.Errorf("category with id %d not found", id))
 		return
 	}
 
