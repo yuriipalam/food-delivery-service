@@ -32,6 +32,7 @@ type Supplier struct {
 type Product struct {
 	ID          int      `json:"id"`
 	SupplierID  string   `json:"supplier_id"`
+	CategoryID  int      `json:"category_id"`
 	Name        string   `json:"name"`
 	Image       []byte   `json:"image"`
 	Description string   `json:"description"`

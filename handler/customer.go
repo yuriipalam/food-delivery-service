@@ -13,13 +13,13 @@ import (
 
 type CustomerHandler struct {
 	repo repository.CustomerRepositoryI
-	cfg *config.Config
+	cfg  *config.Config
 }
 
 func NewCustomerHandler(repo repository.CustomerRepositoryI, cfg *config.Config) *CustomerHandler {
 	return &CustomerHandler{
 		repo: repo,
-		cfg: cfg,
+		cfg:  cfg,
 	}
 }
 

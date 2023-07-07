@@ -43,6 +43,7 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	err = row.Scan(
 		&product.ID,
 		&product.SupplierID,
+		&product.CategoryID,
 		&product.Name,
 		&product.Image,
 		&product.Description,
@@ -101,6 +102,7 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 		err := rows.Scan(
 			&product.ID,
 			&product.SupplierID,
+			&product.CategoryID,
 			&product.Name,
 			&product.Image,
 			&product.Description,

@@ -8,6 +8,7 @@ import (
 
 type CategoryRepositoryI interface {
 	GetCategoryByID(int) (*model.Category, error)
+	GetCategoriesBySupplierID(int) ([]model.Category, error)
 	GetAllCategories() ([]model.Category, error)
 }
 
@@ -82,13 +83,45 @@ func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 	return categories, nil
 }
 
-func (cr *CategoryRepository) checkIfCategoryExistByID(id int) (*model.Category, error) {
-	categoryFromDB, err := cr.GetCategoryByID(id)
+func (cr *CategoryRepository) GetCategoriesBySupplierID(id int) ([]model.Category, error) {
+	stmt, err := cr.db.Prepare("SELECT * FROM category WHERE id IN (SELECT category_id FROM supplier WHERE id = $1)")
 	if err != nil {
-		return nil, err
-	} else if categoryFromDB == nil {
-		return nil, fmt.Errorf("category with id %d not found", id)
+		return nil, fmt.Errorf("cannot prepare statement for supplier id %d", id)
 	}
 
-	return categoryFromDB, nil
+	rows, err := stmt.Query(id)
+	if err != nil {
+		return nil, fmt.Errorf("cannot run query for supplier id %d", id)
+	}
+
+	var categories []model.Category
+
+	for rows.Next() {
+		var category model.Category
+
+		err = rows.Scan(
+			&category.ID,
+			&category.Name,
+			&category.Image,
+			&category.Description,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("cannot scan category")
+		}
+
+		categories = append(categories, category)
+	}
+
+	return categories, nil
 }
+
+//func (cr *CategoryRepository) checkIfCategoryExistByID(id int) (*model.Category, error) {
+//	categoryFromDB, err := cr.GetCategoryByID(id)
+//	if err != nil {
+//		return nil, err
+//	} else if categoryFromDB == nil {
+//		return nil, fmt.Errorf("category with id %d not found", id)
+//	}
+//
+//	return categoryFromDB, nil
+//}

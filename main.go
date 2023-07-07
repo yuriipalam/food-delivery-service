@@ -29,7 +29,7 @@ func main() {
 	customerRepository := repository.NewCustomerRepository(db)
 	customerHandler := handler.NewCustomerHandler(customerRepository, cfg)
 	r.HandleFunc("/customer/{id}", customerHandler.GetCustomerByID).Methods(http.MethodGet)
-	r.HandleFunc("/customer/{id}", customerHandler.UpdateCustomerByID).Methods(http.MethodPut)
+	r.HandleFunc("/customer/{id}", customerHandler.UpdateCustomerNameByID).Methods(http.MethodPut)
 	r.HandleFunc("/customer/{id}", customerHandler.DeleteCustomerByID).Methods(http.MethodDelete)
 	//r.HandleFunc("/customer", customerHandler.CreateCustomer).Methods(http.MethodPost)
 
