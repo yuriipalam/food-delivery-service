@@ -37,6 +37,27 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, category)
 }
 
+func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *http.Request) {
+	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	categories, err := ch.repo.GetCategoriesBySupplierID(supplierID)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if len(categories) == 0 {
+		response.SendNotFoundError(w, err)
+		return
+	}
+
+	response.SendOK(w, categories)
+}
+
 func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := ch.repo.GetAllCategories()
 	if err != nil {

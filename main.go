@@ -50,6 +50,7 @@ func main() {
 	categoryRepository := repository.NewCategoryRepository(db)
 	categoryHandler := handler.NewCategoryHandler(categoryRepository)
 	r.HandleFunc("/category/{id}", categoryHandler.GetCategoryByID).Methods(http.MethodGet)
+	r.HandleFunc("/categories", categoryHandler.GetCategoriesBySupplierID).Queries("supplier_id", "{supplier_id}").Methods(http.MethodGet)
 	r.HandleFunc("/categories", categoryHandler.GetAllCategories).Methods(http.MethodGet)
 
 	productRepository := repository.NewProductRepository(db)
