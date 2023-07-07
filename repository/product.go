@@ -75,11 +75,11 @@ func (pr *ProductRepository) GetAllProductsBySupplierID(id int) ([]model.Product
 }
 
 func (pr *ProductRepository) GetAllProductsByCategoryID(id int) ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product WHERE $1 IN (SELECT category_id FROM supplier WHERE id = product.supplier_id)", id)
+	return pr.selectProductsQuery("SELECT * FROM product WHERE category_id = $1", id)
 }
 
 func (pr *ProductRepository) GetAllProductsBySupplierIDAndCategoryID(sID int, cID int) ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1 AND $2 IN (SELECT category_id FROM supplier WHERE id = product.supplier_id)", sID, cID)
+	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1 AND category_id = $2", sID, cID)
 }
 
 func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]model.Product, error) {
