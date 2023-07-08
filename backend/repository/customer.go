@@ -228,7 +228,7 @@ func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 }
 
 //func (cr *CustomerRepository) CheckAndGetIfCustomerExistByID(id int) (*model.Customer, error) {
-//	customerFromDB, err := cr.GetCustomerByID(id)
+//	customerFromDB, err := cr.GetCustomer(id)
 //	if err != nil {
 //		return nil, err
 //	} else if customerFromDB == nil {

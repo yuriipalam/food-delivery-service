@@ -7,7 +7,7 @@ import (
 	"food_delivery/repository"
 	"food_delivery/request"
 	"food_delivery/response"
-	"food_delivery/utils"
+	"food_delivery/service"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -46,14 +46,14 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.GetIDFromMuxVars(r)
-	if err != nil {
-		response.SendBadRequestError(w, err)
+func (ch *CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendInternalServerError(w, fmt.Errorf("failed to retrieve claims"))
 		return
 	}
 
-	customer, ok := ch.repo.TryToGetCustomerByID(id, w)
+	customer, ok := ch.repo.TryToGetCustomerByID(claims.ID, w)
 	if !ok {
 		return
 	}
@@ -61,10 +61,10 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.GetIDFromMuxVars(r)
-	if err != nil {
-		response.SendBadRequestError(w, err)
+func (ch *CustomerHandler) UpdateCustomer(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendInternalServerError(w, fmt.Errorf("failed to retrieve claims"))
 		return
 	}
 
@@ -75,7 +75,7 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	customer, ok := ch.repo.TryToGetCustomerByID(id, w) // this method responses with a proper error
+	customer, ok := ch.repo.TryToGetCustomerByID(claims.ID, w) // this method responses with an appropriate error
 	if !ok {
 		return
 	}
@@ -84,18 +84,17 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 
 	if req.FirstName != "" {
 		if req.FirstName != customer.FirstName {
-			if err := ch.repo.UpdateCustomerFirstNameByID(id, req, customer); err != nil {
+			if err := ch.repo.UpdateCustomerFirstNameByID(claims.ID, req, customer); err != nil {
 				response.SendInternalServerError(w, err)
 				return
 			}
 			anyChanges = true
-
 		}
 	}
 
 	if req.LastName != "" {
 		if req.LastName != customer.LastName {
-			if err := ch.repo.UpdateCustomerLastNameByID(id, req, customer); err != nil {
+			if err := ch.repo.UpdateCustomerLastNameByID(claims.ID, req, customer); err != nil {
 				response.SendInternalServerError(w, err)
 				return
 			}
@@ -106,20 +105,16 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 
 	if req.Phone != "" {
 		if req.Phone != customer.Phone {
-
-			fmt.Println(req.Phone)
-			fmt.Println(customer.Phone)
 			if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
 				response.SendBadRequestError(w, fmt.Errorf("invalid password"))
 				return
 			}
 
-			if err := ch.repo.UpdateCustomerPhoneByID(id, req, customer); err != nil {
+			if err := ch.repo.UpdateCustomerPhoneByID(claims.ID, req, customer); err != nil {
 				response.SendInternalServerError(w, err)
 				return
 			}
 			anyChanges = true
-
 		}
 	}
 
@@ -131,10 +126,10 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.GetIDFromMuxVars(r)
-	if err != nil {
-		response.SendBadRequestError(w, err)
+func (ch *CustomerHandler) UpdateCustomerPassword(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendInternalServerError(w, fmt.Errorf("failed to retrieve claims"))
 		return
 	}
 
@@ -145,7 +140,7 @@ func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *
 		return
 	}
 
-	customer, ok := ch.repo.TryToGetCustomerByID(id, w) // this method responses with a proper error
+	customer, ok := ch.repo.TryToGetCustomerByID(claims.ID, w) // this method responses with an appropriate error
 	if !ok {
 		return
 	}
@@ -161,7 +156,7 @@ func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *
 		return
 	}
 
-	if err := ch.repo.UpdateCustomerPasswordByID(id, req, customer); err != nil {
+	if err := ch.repo.UpdateCustomerPasswordByID(claims.ID, req, customer); err != nil {
 		response.SendInternalServerError(w ,err)
 		return
 	}
@@ -169,19 +164,19 @@ func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) DeleteCustomerByID(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.GetIDFromMuxVars(r)
-	if err != nil {
-		response.SendBadRequestError(w, err)
+func (ch *CustomerHandler) DeleteCustomer(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendInternalServerError(w, fmt.Errorf("failed to retrieve claims"))
 		return
 	}
 
-	_, ok := ch.repo.TryToGetCustomerByID(id, w)
+	_, ok = ch.repo.TryToGetCustomerByID(claims.ID, w) // this method responses with an appropriate error
 	if !ok {
 		return
 	}
 
-	if err := ch.repo.DeleteCustomerByID(id); err != nil {
+	if err := ch.repo.DeleteCustomerByID(claims.ID); err != nil {
 		response.SendInternalServerError(w, err)
 		return
 	}
