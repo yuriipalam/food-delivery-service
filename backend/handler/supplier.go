@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
 	"food_delivery/utils"
@@ -34,7 +36,13 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response.SendOK(w, supplier)
+	supplierRes, err := sh.GetSupplierResponseFromModel(supplier)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, supplierRes)
 }
 
 func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +61,13 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 		return
 	}
 
-	response.SendOK(w, suppliers)
+	supplierRes, err := sh.GetSuppliersResponseFromModel(suppliers)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, supplierRes)
 }
 
 func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {
@@ -66,5 +80,47 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response.SendOK(w, suppliers)
+	supplierRes, err := sh.GetSuppliersResponseFromModel(suppliers)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, supplierRes)
+}
+
+func (sh *SupplierHandler) GetSupplierResponseFromModel(supplier *model.Supplier) (*response.SupplierResponse, error) {
+	var supplierRes response.SupplierResponse
+
+	supplierMarshaled, err := json.Marshal(supplier)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshal supplier from db")
+	}
+
+	err = json.Unmarshal(supplierMarshaled, &supplierRes)
+	if err != nil {
+		return nil, fmt.Errorf("cannot unmarshal supplier from db into response")
+	}
+
+	supplierRes.CategoryName, err = sh.repo.GetCategoryNameByID(supplier.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &supplierRes, nil
+}
+
+func (sh *SupplierHandler) GetSuppliersResponseFromModel(suppliers []model.Supplier) ([]response.SupplierResponse, error) {
+	var suppliersRes []response.SupplierResponse
+
+	for _, supplier := range suppliers {
+		supplierRes, err := sh.GetSupplierResponseFromModel(&supplier)
+		if err != nil {
+			return nil, err
+		}
+
+		suppliersRes = append(suppliersRes, *supplierRes)
+	}
+
+	return suppliersRes, nil
 }

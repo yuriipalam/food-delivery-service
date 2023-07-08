@@ -10,6 +10,7 @@ type SupplierRepositoryI interface {
 	GetSupplierByID(int) (*model.Supplier, error)
 	GetSuppliersByCategoryID(int) ([]model.Supplier, error)
 	GetAllSuppliers() ([]model.Supplier, error)
+	GetCategoryNameByID(int) (string, error)
 }
 
 type SupplierRepository struct {
@@ -122,4 +123,24 @@ func (sr *SupplierRepository) GetAllSuppliers() ([]model.Supplier, error) {
 	}
 
 	return suppliers, nil
+}
+
+func (sr *SupplierRepository) GetCategoryNameByID(id int) (string, error) {
+	stmt, err := sr.db.Prepare("SELECT name FROM category WHERE id = $1")
+	if err != nil {
+		return "", fmt.Errorf("cannot prepare statement for category id %d", id)
+	}
+
+	row := stmt.QueryRow(id)
+	if row.Err() != nil {
+		return "", fmt.Errorf("cannot run query for category id %d", id)
+	}
+
+	var name string
+
+	if err := row.Scan(&name); err != nil {
+		return "", fmt.Errorf("cannot scan category name")
+	}
+
+	return name, nil
 }
