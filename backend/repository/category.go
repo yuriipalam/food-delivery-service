@@ -114,14 +114,3 @@ func (cr *CategoryRepository) GetCategoriesBySupplierID(id int) ([]model.Categor
 
 	return categories, nil
 }
-
-//func (cr *CategoryRepository) checkIfCategoryExistByID(id int) (*model.Category, error) {
-//	categoryFromDB, err := cr.GetCategoryByID(id)
-//	if err != nil {
-//		return nil, err
-//	} else if categoryFromDB == nil {
-//		return nil, fmt.Errorf("category with id %d not found", id)
-//	}
-//
-//	return categoryFromDB, nil
-//}

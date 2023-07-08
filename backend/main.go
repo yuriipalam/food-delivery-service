@@ -27,7 +27,6 @@ func main() {
 	r := mux.NewRouter()
 	r.Use(utils.SendCfgToMiddleware(cfg))
 
-
 	customerRepository := repository.NewCustomerRepository(db)
 	customerHandler := handler.NewCustomerHandler(customerRepository, cfg)
 	customerRouter := r.PathPrefix("/customer").Subrouter()
@@ -36,7 +35,6 @@ func main() {
 	customerRouter.HandleFunc("/{id}", customerHandler.UpdateCustomer).Methods(http.MethodPut)
 	customerRouter.HandleFunc("/{id}/change-password", customerHandler.UpdateCustomerPassword).Methods(http.MethodPut)
 	customerRouter.HandleFunc("/{id}", customerHandler.DeleteCustomer).Methods(http.MethodDelete)
-	//r.HandleFunc("/customer", customerHandler.CreateCustomer).Methods(http.MethodPost)
 
 	authHandler := handler.NewAuthHandler(customerRepository, cfg)
 	r.HandleFunc("/register", authHandler.Register).Methods(http.MethodPost)

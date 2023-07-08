@@ -227,17 +227,6 @@ func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 	return nil
 }
 
-//func (cr *CustomerRepository) CheckAndGetIfCustomerExistByID(id int) (*model.Customer, error) {
-//	customerFromDB, err := cr.GetCustomer(id)
-//	if err != nil {
-//		return nil, err
-//	} else if customerFromDB == nil {
-//		return nil, fmt.Errorf("customer with id %d not found", id)
-//	}
-//
-//	return customerFromDB, nil
-//}
-
 func (cr *CustomerRepository) CheckIfEmailOrPhoneAlreadyExist(email string, phone string) error {
 	c, err := cr.GetCustomerByEmail(email)
 	if err != nil {

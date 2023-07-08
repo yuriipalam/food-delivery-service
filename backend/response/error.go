@@ -6,12 +6,6 @@ type APIError struct {
 	Message string `json:"message"`
 }
 
-func NewAPIError(message string) *APIError {
-	return &APIError{
-		Message: message,
-	}
-}
-
 func SendNotFoundError(w http.ResponseWriter, err error) {
 	sendJSON(w, http.StatusNotFound, Basic{
 		Message: err.Error(),
