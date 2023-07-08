@@ -16,7 +16,10 @@ type CustomerRepositoryI interface {
 	GetCustomerByEmail(string) (*model.Customer, error)
 	GetCustomerByPhone(string) (*model.Customer, error)
 	CreateCustomer(registerRequest *request.RegisterRequest) (*model.Customer, error)
-	UpdateCustomerNameByID(int, *request.UpdateCustomer, *model.Customer) error
+	UpdateCustomerFirstNameByID(int, *request.UpdateCustomer, *model.Customer) error
+	UpdateCustomerLastNameByID(int, *request.UpdateCustomer, *model.Customer) error
+	UpdateCustomerPhoneByID(int, *request.UpdateCustomer, *model.Customer) error
+	UpdateCustomerPasswordByID(int, *request.UpdateCustomerPassword, *model.Customer) error
 	DeleteCustomerByID(int) error
 	//CheckAndGetIfCustomerExistByID(int) (*model.Customer, error)
 	CheckIfEmailOrPhoneAlreadyExist(string, string) error
@@ -138,6 +141,9 @@ func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*mod
 	}
 
 	p, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, fmt.Errorf("cannot generate bcrypt hash from password")
+	}
 
 	row := stmt.QueryRow(
 		req.Email,
@@ -160,27 +166,44 @@ func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*mod
 	return cr.GetCustomerByID(lastInsertedID)
 }
 
-func (cr *CustomerRepository) UpdateCustomerNameByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
-	anyChanges := false
+func (cr *CustomerRepository) UpdateCustomerFirstNameByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
+	if err := cr.updateField(id, "first_name", req.FirstName); err != nil {
+		return err
+	}
+	customer.FirstName = req.FirstName
 
-	if req.FirstName != customer.FirstName {
-		if err := cr.updateField(id, "first_name", customer.FirstName); err != nil {
-			return err
-		}
-		anyChanges = true
-		customer.FirstName = req.FirstName
+	return nil
+}
+
+func (cr *CustomerRepository) UpdateCustomerLastNameByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
+	if err := cr.updateField(id, "last_name", req.LastName); err != nil {
+		return err
 	}
-	if req.LastName != customer.LastName {
-		if err := cr.updateField(id, "last_name", customer.LastName); err != nil {
-			return err
-		}
-		anyChanges = true
-		customer.LastName = req.LastName
+	customer.LastName = req.LastName
+
+	return nil
+}
+
+func (cr *CustomerRepository) UpdateCustomerPhoneByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
+	if err := cr.updateField(id, "last_name", req.Phone); err != nil {
+		return err
+	}
+	customer.Phone = req.Phone
+
+	return nil
+}
+
+func (cr *CustomerRepository) UpdateCustomerPasswordByID(id int, req *request.UpdateCustomerPassword, customer *model.Customer) error {
+	p, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("cannot generate bcrypt hash from password")
 	}
 
-	if !anyChanges {
-		return fmt.Errorf("all the fields in provided structs are the same as in db")
+	if err := cr.updateField(id, "password", p); err != nil {
+		return err
 	}
+
+	customer.Password = string(p)
 
 	return nil
 }

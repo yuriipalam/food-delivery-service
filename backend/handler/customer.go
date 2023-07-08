@@ -8,6 +8,7 @@ import (
 	"food_delivery/request"
 	"food_delivery/response"
 	"food_delivery/utils"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -60,7 +61,7 @@ func (ch *CustomerHandler) GetCustomerByID(w http.ResponseWriter, r *http.Reques
 	response.SendOK(w, customer)
 }
 
-func (ch *CustomerHandler) UpdateCustomerNameByID(w http.ResponseWriter, r *http.Request) {
+func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
 		response.SendBadRequestError(w, err)
@@ -74,13 +75,85 @@ func (ch *CustomerHandler) UpdateCustomerNameByID(w http.ResponseWriter, r *http
 		return
 	}
 
-	customer, ok := ch.repo.TryToGetCustomerByID(id, w)
+	customer, ok := ch.repo.TryToGetCustomerByID(id, w) // this method responses with a proper error
 	if !ok {
 		return
 	}
 
-	if err := ch.repo.UpdateCustomerNameByID(id, req, customer); err != nil {
-		response.SendInternalServerError(w, err)
+	anyChanges := false
+
+	if req.FirstName != "" {
+		if req.FirstName != customer.LastName {
+			if err := ch.repo.UpdateCustomerFirstNameByID(id, req, customer); err != nil {
+				response.SendInternalServerError(w, err)
+				return
+			}
+			anyChanges = true
+		}
+	}
+
+	if req.LastName != "" {
+		if req.LastName != customer.LastName {
+			if err := ch.repo.UpdateCustomerLastNameByID(id, req, customer); err != nil {
+				response.SendInternalServerError(w, err)
+				return
+			}
+			anyChanges = true
+		}
+	}
+
+	if req.Phone != "" {
+		if req.Phone != customer.Phone {
+			if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
+				response.SendBadRequestError(w, fmt.Errorf("invalid password"))
+				return
+			}
+
+			if err := ch.repo.UpdateCustomerPhoneByID(id, req, customer); err != nil {
+				response.SendInternalServerError(w, err)
+				return
+			}
+			anyChanges = true
+		}
+	}
+
+	if !anyChanges {
+		response.SendBadRequestError(w, fmt.Errorf("no new fields provided"))
+		return
+	}
+
+	response.SendOK(w, customer)
+}
+
+func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.GetIDFromMuxVars(r)
+	if err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
+	var req *request.UpdateCustomerPassword
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
+		return
+	}
+
+	customer, ok := ch.repo.TryToGetCustomerByID(id, w) // this method responses with a proper error
+	if !ok {
+		return
+	}
+
+	if req.NewPassword != req.RepeatNewPassword {
+		response.SendBadRequestError(w, fmt.Errorf("provided two passwords are not the same"))
+		return
+	} else if req.CurrentPassword == req.NewPassword {
+		response.SendBadRequestError(w, fmt.Errorf("new password is the same as the current one"))
+		return
+	}
+
+	if err := ch.repo.UpdateCustomerPasswordByID(id, req, customer); err != nil {
+		response.SendInternalServerError(w ,err)
 		return
 	}
 
