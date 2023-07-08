@@ -83,12 +83,13 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 	anyChanges := false
 
 	if req.FirstName != "" {
-		if req.FirstName != customer.LastName {
+		if req.FirstName != customer.FirstName {
 			if err := ch.repo.UpdateCustomerFirstNameByID(id, req, customer); err != nil {
 				response.SendInternalServerError(w, err)
 				return
 			}
 			anyChanges = true
+
 		}
 	}
 
@@ -99,11 +100,15 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 				return
 			}
 			anyChanges = true
+
 		}
 	}
 
 	if req.Phone != "" {
 		if req.Phone != customer.Phone {
+
+			fmt.Println(req.Phone)
+			fmt.Println(customer.Phone)
 			if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
 				response.SendBadRequestError(w, fmt.Errorf("invalid password"))
 				return
@@ -114,6 +119,7 @@ func (ch *CustomerHandler) UpdateCustomerByID(w http.ResponseWriter, r *http.Req
 				return
 			}
 			anyChanges = true
+
 		}
 	}
 
@@ -149,6 +155,9 @@ func (ch *CustomerHandler) UpdateCustomerPasswordByID(w http.ResponseWriter, r *
 		return
 	} else if req.CurrentPassword == req.NewPassword {
 		response.SendBadRequestError(w, fmt.Errorf("new password is the same as the current one"))
+		return
+	} else if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.CurrentPassword)); err != nil {
+		response.SendBadRequestError(w, fmt.Errorf("current password is incorrect"))
 		return
 	}
 

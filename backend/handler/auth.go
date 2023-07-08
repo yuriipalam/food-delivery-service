@@ -64,6 +64,11 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := ah.repo.CheckIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
+		response.SendBadRequestError(w, err)
+		return
+	}
+
 	customer, err := ah.repo.CreateCustomer(&req)
 	if err != nil {
 		response.SendBadRequestError(w, err)

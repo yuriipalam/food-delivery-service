@@ -185,7 +185,7 @@ func (cr *CustomerRepository) UpdateCustomerLastNameByID(id int, req *request.Up
 }
 
 func (cr *CustomerRepository) UpdateCustomerPhoneByID(id int, req *request.UpdateCustomer, customer *model.Customer) error {
-	if err := cr.updateField(id, "last_name", req.Phone); err != nil {
+	if err := cr.updateField(id, "phone", req.Phone); err != nil {
 		return err
 	}
 	customer.Phone = req.Phone

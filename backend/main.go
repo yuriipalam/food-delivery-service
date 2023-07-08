@@ -25,11 +25,13 @@ func main() {
 	cfg := config.NewConfig()
 
 	r := mux.NewRouter()
+	r.Use(utils.SendCfgToMiddleware(cfg))
 
 	customerRepository := repository.NewCustomerRepository(db)
 	customerHandler := handler.NewCustomerHandler(customerRepository, cfg)
 	r.HandleFunc("/customer/{id}", customerHandler.GetCustomerByID).Methods(http.MethodGet)
-	r.HandleFunc("/customer/{id}", customerHandler.UpdateCustomerNameByID).Methods(http.MethodPut)
+	r.HandleFunc("/customer/{id}", customerHandler.UpdateCustomerByID).Methods(http.MethodPut)
+	r.HandleFunc("/customer/{id}/change-password", customerHandler.UpdateCustomerPasswordByID).Methods(http.MethodPut)
 	r.HandleFunc("/customer/{id}", customerHandler.DeleteCustomerByID).Methods(http.MethodDelete)
 	//r.HandleFunc("/customer", customerHandler.CreateCustomer).Methods(http.MethodPost)
 
@@ -38,7 +40,6 @@ func main() {
 	r.HandleFunc("/login", authHandler.Login).Methods(http.MethodPost)
 	refToken := r.PathPrefix("/refresh").Subrouter()
 	refToken.HandleFunc("", authHandler.Refresh).Methods(http.MethodGet)
-	refToken.Use(utils.SendCfgToMiddleware(cfg))
 	refToken.Use(middleware.ValidateRefreshToken)
 
 	supplierRepository := repository.NewSupplierRepository(db)
