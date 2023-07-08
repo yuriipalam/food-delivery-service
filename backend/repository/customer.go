@@ -21,7 +21,6 @@ type CustomerRepositoryI interface {
 	UpdateCustomerPhoneByID(int, *request.UpdateCustomer, *model.Customer) error
 	UpdateCustomerPasswordByID(int, *request.UpdateCustomerPassword, *model.Customer) error
 	DeleteCustomerByID(int) error
-	//CheckAndGetIfCustomerExistByID(int) (*model.Customer, error)
 	CheckIfEmailOrPhoneAlreadyExist(string, string) error
 	TryToGetCustomerByID(int, http.ResponseWriter) (*model.Customer, bool)
 }

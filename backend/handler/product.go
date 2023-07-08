@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
 	"food_delivery/utils"
@@ -34,7 +36,13 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response.SendOK(w, product)
+	productRes, err := ph.GetProductResponseFromModel(product)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, productRes)
 }
 
 func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +55,13 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	response.SendOK(w, products)
+	productsRes, err := ph.GetProductsResponseFromModel(products)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, productsRes)
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +80,13 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 		return
 	}
 
-	response.SendOK(w, products)
+	productsRes, err := ph.GetProductsResponseFromModel(products)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, productsRes)
 }
 
 func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +105,13 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 		return
 	}
 
-	response.SendOK(w, products)
+	productsRes, err := ph.GetProductsResponseFromModel(products)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, productsRes)
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.ResponseWriter, r *http.Request) {
@@ -110,5 +136,51 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 		return
 	}
 
-	response.SendOK(w, products)
+	productsRes, err := ph.GetProductsResponseFromModel(products)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, productsRes)
+}
+
+func (ph *ProductHandler) GetProductResponseFromModel(product *model.Product) (*response.ProductResponse, error) {
+	var productRes response.ProductResponse
+
+	productMarshaled, err := json.Marshal(product)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshal product from db")
+	}
+
+	err = json.Unmarshal(productMarshaled, &productRes)
+	if err != nil {
+		return nil, fmt.Errorf("cannot unmarshal product from db into response")
+	}
+
+	productRes.SupplierName, err = ph.repo.GetSupplierNameByID(product.SupplierID)
+	if err != nil {
+		return nil, err
+	}
+	productRes.CategoryName, err = ph.repo.GetCategoryNameByID(product.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &productRes, nil
+}
+
+func (ph *ProductHandler) GetProductsResponseFromModel(products []model.Product) ([]response.ProductResponse, error) {
+	var productsRes []response.ProductResponse
+
+	for _, product := range products {
+		productRes, err := ph.GetProductResponseFromModel(&product)
+		if err != nil {
+			return nil, err
+		}
+
+		productsRes = append(productsRes, *productRes)
+	}
+
+	return productsRes, nil
 }
