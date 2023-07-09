@@ -84,7 +84,7 @@ func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 }
 
 func (cr *CategoryRepository) GetCategoriesBySupplierID(id int) ([]model.Category, error) {
-	stmt, err := cr.db.Prepare("SELECT * FROM category WHERE id IN (SELECT category_id FROM supplier WHERE id = $1)")
+	stmt, err := cr.db.Prepare("SELECT * FROM category c JOIN supplier_category sc ON sc.supplier_id = $1")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare statement for supplier id %d", id)
 	}

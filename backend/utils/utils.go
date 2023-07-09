@@ -30,6 +30,23 @@ func GetIntValueByKeyFromMuxVars(key string, r *http.Request) (int, error) {
 	return value, nil
 }
 
+func GetIntSliceByKeyFromMuxVars(key string, r *http.Request) ([]int, error) {
+	categoryIDsStrSlice := r.URL.Query()[key]
+
+	var categoryIDs []int
+
+	for _, categoryIDStr := range categoryIDsStrSlice {
+		categoryID, err := strconv.Atoi(categoryIDStr)
+		if err != nil {
+			return nil, fmt.Errorf("%s must be integer", key)
+		}
+
+		categoryIDs = append(categoryIDs, categoryID)
+	}
+
+	return categoryIDs, nil
+}
+
 func IsDefaultValue(value interface{}) bool {
 	defaultValue := reflect.Zero(reflect.TypeOf(value)).Interface()
 	return reflect.DeepEqual(value, defaultValue)
