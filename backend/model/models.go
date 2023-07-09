@@ -43,3 +43,22 @@ type Product struct {
 	Ingredients []string `json:"ingredients"`
 	Price       float32  `json:"price"`
 }
+
+type Order struct {
+	ID                int       `json:"id"`
+	CustomerID        int       `json:"customer_id"`
+	RecipientFullName string    `json:"recipient_full_name"`
+	Address           string    `json:"address"`
+	Price             float32   `json:"price"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
+type OrderProduct struct {
+	OrderID   int `json:"order_id"`
+	ProductID int `json:"product_id"`
+}
+
+type OrderSupplier struct {
+	OrderID    int `json:"order_id"`
+	SupplierID int `json:"supplier_id"`
+}
