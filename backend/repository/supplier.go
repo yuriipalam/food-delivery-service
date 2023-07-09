@@ -69,13 +69,11 @@ func (sr *SupplierRepository) GetSuppliersByCategoryIDs(ids []int) ([]model.Supp
 
 	stmt, err := sr.db.Prepare(query)
 	if err != nil {
-		fmt.Printf("%+v", err)
 		return nil, fmt.Errorf("cannot prepare statement for %v category_ids", ids)
 	}
 
 	rows, err := stmt.Query(pq.Array(ids))
 	if err != nil {
-		fmt.Printf("%+v", err)
 		return nil, fmt.Errorf("cannot execute query for %v category_ids", ids)
 	}
 
@@ -93,7 +91,6 @@ func (sr *SupplierRepository) GetSuppliersByCategoryIDs(ids []int) ([]model.Supp
 			&supplier.TimeClosing,
 		)
 		if err != nil {
-			fmt.Printf("%+v", err)
 			return nil, fmt.Errorf("cannot scan supplier")
 		}
 
@@ -162,8 +159,6 @@ func (sr *SupplierRepository) GetCategoryNamesBySupplierID(id int) ([]int,[]stri
 
 	stmt, err = sr.db.Prepare("SELECT name FROM category WHERE id = ANY($1)")
 	if err != nil {
-		fmt.Printf("%+v", err)
-
 		return nil, nil, fmt.Errorf("cannot prepare statement for categories %v", categoryIDs)
 	}
 
