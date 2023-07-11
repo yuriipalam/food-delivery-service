@@ -6,6 +6,7 @@ import (
 	"food_delivery/config"
 	"food_delivery/model"
 	"food_delivery/repository"
+	"food_delivery/request"
 	"food_delivery/response"
 	"food_delivery/service"
 	"net/http"
@@ -42,6 +43,43 @@ func (oh *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := oh.getOrderResponsesFromModels(orders)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	response.SendOK(w, res)
+}
+
+func (oh *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
+	if !ok {
+		response.SendInternalServerError(w, fmt.Errorf("failed to retrieve claims"))
+		return
+	}
+
+	var req request.CreateOrder
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("cannot decode req body"))
+		return
+	}
+
+	req.CustomerID = claims.ID
+
+	order, err := oh.repo.CreateOrder(&req)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+		return
+	}
+
+	if order == nil {
+		response.SendInternalServerError(w, fmt.Errorf("could not create new order"))
+		return
+	}
+
+	res, err := oh.getOrderResponseFromModel(order)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return

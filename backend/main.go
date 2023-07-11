@@ -21,6 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 
 	cfg := config.NewConfig()
 
@@ -68,6 +69,8 @@ func main() {
 	ordersRouter := r.PathPrefix("/orders").Subrouter()
 	ordersRouter.Use(middleware.ValidateAccessToken)
 	ordersRouter.HandleFunc("", orderHandler.GetOrders).Methods(http.MethodGet)
+	ordersRouter.HandleFunc("", orderHandler.CreateOrder).Methods(http.MethodPost)
+
 	fmt.Println("Server is started...")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 }

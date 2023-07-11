@@ -27,13 +27,14 @@ type ProductResponse struct {
 }
 
 type OrderResponse struct {
-	ID                int       `json:"id"`
-	CustomerID        int       `json:"customer_id"`
-	CustomerName      string    `json:"customer_name"`
-	SupplierIDs       []int     `json:"supplier_ids"`
-	SupplierNames     []string  `json:"supplier_names"`
-	ProductIDs        []int     `json:"product_ids"`
-	ProductName       []string  `json:"product_names"`
+	ID                int      `json:"id"`
+	CustomerID        int      `json:"customer_id"`
+	CustomerName      string   `json:"customer_name"`
+	SupplierIDs       []int    `json:"supplier_ids"`
+	SupplierNames     []string `json:"supplier_names"`
+	ProductIDs        []int    `json:"product_ids"`
+	ProductName       []string `json:"product_names"`
+	Productddd        map[int]map[int]string
 	RecipientFullName string    `json:"recipient_full_name"`
 	Address           string    `json:"address"`
 	Price             float32   `json:"price"`

@@ -54,8 +54,9 @@ type Order struct {
 }
 
 type OrderProduct struct {
-	OrderID   int `json:"order_id"`
-	ProductID int `json:"product_id"`
+	OrderID         int `json:"order_id"`
+	ProductID       int `json:"product_id"`
+	ProductQuantity int `json:"product_quantity"`
 }
 
 type OrderSupplier struct {
