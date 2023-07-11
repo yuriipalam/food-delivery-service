@@ -63,6 +63,11 @@ func main() {
 	r.HandleFunc("/products", productHandler.GetAllProductsBySupplierID).Queries("supplier_id", "{supplier_id}").Methods(http.MethodGet)
 	r.HandleFunc("/products", productHandler.GetAllProducts).Methods(http.MethodGet)
 
+	orderRepository := repository.NewOrderRepository(db)
+	orderHandler := handler.NewOrderHandler(orderRepository, cfg)
+	ordersRouter := r.PathPrefix("/orders").Subrouter()
+	ordersRouter.Use(middleware.ValidateAccessToken)
+	ordersRouter.HandleFunc("", orderHandler.GetOrders).Methods(http.MethodGet)
 	fmt.Println("Server is started...")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 }
