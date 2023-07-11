@@ -1,5 +1,7 @@
 package response
 
+import "time"
+
 type SupplierResponse struct {
 	ID            int      `json:"id"`
 	CategoryIDs   []int    `json:"category_ids"`
@@ -22,4 +24,18 @@ type ProductResponse struct {
 	Description  string   `json:"description"`
 	Ingredients  []string `json:"ingredients"`
 	Price        float32  `json:"price"`
+}
+
+type OrderResponse struct {
+	ID                int       `json:"id"`
+	CustomerID        int       `json:"customer_id"`
+	CustomerName      string    `json:"customer_name"`
+	SupplierIDs       []int     `json:"supplier_ids"`
+	SupplierNames     []string  `json:"supplier_names"`
+	ProductIDs        []int     `json:"product_ids"`
+	ProductName       []string  `json:"product_names"`
+	RecipientFullName string    `json:"recipient_full_name"`
+	Address           string    `json:"address"`
+	Price             float32   `json:"price"`
+	CreatedAt         time.Time `json:"created_at"`
 }

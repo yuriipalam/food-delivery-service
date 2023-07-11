@@ -55,7 +55,7 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	productsRes, err := ph.GetProductsResponseFromModel(products)
+	productsRes, err := ph.GetProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -80,7 +80,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 		return
 	}
 
-	productsRes, err := ph.GetProductsResponseFromModel(products)
+	productsRes, err := ph.GetProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -105,7 +105,7 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 		return
 	}
 
-	productsRes, err := ph.GetProductsResponseFromModel(products)
+	productsRes, err := ph.GetProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -136,7 +136,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 		return
 	}
 
-	productsRes, err := ph.GetProductsResponseFromModel(products)
+	productsRes, err := ph.GetProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -170,7 +170,7 @@ func (ph *ProductHandler) GetProductResponseFromModel(product *model.Product) (*
 	return &productRes, nil
 }
 
-func (ph *ProductHandler) GetProductsResponseFromModel(products []model.Product) ([]response.ProductResponse, error) {
+func (ph *ProductHandler) GetProductResponsesFromModels(products []model.Product) ([]response.ProductResponse, error) {
 	var productsRes []response.ProductResponse
 
 	for _, product := range products {
