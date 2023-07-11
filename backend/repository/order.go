@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"food_delivery/model"
 	"food_delivery/request"
+	"food_delivery/response"
 	_ "github.com/lib/pq"
 	"time"
 )
@@ -12,10 +13,10 @@ import (
 type OrderRepositoryI interface {
 	GetOrderByID(int) (*model.Order, error)
 	GetOrdersByCustomerID(int) ([]model.Order, error)
-	CreateOrder(*request.CreateOrder) (*model.Order, error)
-	GetSupplierNamesByOrderID(int) ([]int, []string, error)
+	CreateOrder(*request.CreateOrderRequest) (*model.Order, error)
+	GetSupplierResponsesByOrderID(int) ([]response.OrderSupplierResponse, error)
 	GetCustomerNameByOrderID(int) (string, error)
-	GetProductNamesByOrderID(int) ([]int, []string, error)
+	GetProductResponsesByOrderID(int) ([]response.OrderProductResponse, error)
 }
 
 type OrderRepository struct {
@@ -41,7 +42,8 @@ func (or *OrderRepository) GetOrderByID(id int) (*model.Order, error) {
 
 	var order model.Order
 
-	err = row.Scan(&order.ID,
+	err = row.Scan(
+		&order.ID,
 		&order.CustomerID,
 		&order.RecipientFullName,
 		&order.Address,
@@ -89,7 +91,7 @@ func (or *OrderRepository) GetOrdersByCustomerID(id int) ([]model.Order, error) 
 	return orders, nil
 }
 
-func (or *OrderRepository) CreateOrder(req *request.CreateOrder) (*model.Order, error) {
+func (or *OrderRepository) CreateOrder(req *request.CreateOrderRequest) (*model.Order, error) {
 	query := `INSERT INTO "order" (customer_id, recipient_full_name, address, price, created_at)
 			  VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	stmt, err := or.db.Prepare(query)
@@ -122,8 +124,8 @@ func (or *OrderRepository) CreateOrder(req *request.CreateOrder) (*model.Order, 
 		}
 	}
 
-	for productID, productQuantity := range req.ProductIDQuantityPairs {
-		err := or.insertIntoOrderProduct(lastInsertedID, productID, productQuantity)
+	for _, pair := range req.Products {
+		err := or.insertIntoOrderProduct(lastInsertedID, pair.ProductID, pair.ProductQuantity)
 		if err != nil {
 			return nil, err
 		}
@@ -137,7 +139,7 @@ func (or *OrderRepository) CreateOrder(req *request.CreateOrder) (*model.Order, 
 	return order, nil
 }
 
-func (or *OrderRepository) GetSupplierNamesByOrderID(id int) ([]int, []string, error) {
+func (or *OrderRepository) GetSupplierResponsesByOrderID(id int) ([]response.OrderSupplierResponse, error) {
 	query := `SELECT s.id, s.name FROM supplier s 
     		  JOIN order_supplier os ON s.id = os.supplier_id
     		  JOIN "order" o ON o.id = os.order_id
@@ -145,34 +147,31 @@ func (or *OrderRepository) GetSupplierNamesByOrderID(id int) ([]int, []string, e
 
 	stmt, err := or.db.Prepare(query)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot prepare statement for order_id %d", id)
+		return nil, fmt.Errorf("cannot prepare statement for order_id %d", id)
 	}
 
 	rows, err := stmt.Query(id)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot run query for order_id %d", id)
+		return nil, fmt.Errorf("cannot run query for order_id %d", id)
 	}
 
-	var supplierIDs []int
-	var supplierNames []string
+	var suppliers []response.OrderSupplierResponse
 
 	for rows.Next() {
-		var supplierID int
-		var supplierName string
+		var supplier response.OrderSupplierResponse
 
 		err := rows.Scan(
-			&supplierID,
-			&supplierName,
+			&supplier.SupplierID,
+			&supplier.SupplierName,
 		)
 		if err != nil {
-			return nil, nil, fmt.Errorf("cannot scan supplier for order_id %d", id)
+			return nil, fmt.Errorf("cannot scan supplier for order_id %d", id)
 		}
 
-		supplierIDs = append(supplierIDs, supplierID)
-		supplierNames = append(supplierNames, supplierName)
+		suppliers = append(suppliers, supplier)
 	}
 
-	return supplierIDs, supplierNames, nil
+	return suppliers, nil
 }
 
 func (or *OrderRepository) GetCustomerNameByOrderID(id int) (string, error) {
@@ -198,42 +197,40 @@ func (or *OrderRepository) GetCustomerNameByOrderID(id int) (string, error) {
 	return name, nil
 }
 
-func (or *OrderRepository) GetProductNamesByOrderID(id int) ([]int, []string, error) {
-	query := `SELECT p.id, p.name FROM product p 
-    		  JOIN order_product ps ON p.id = ps.product_id
-    		  JOIN "order" o ON o.id = ps.order_id
+func (or *OrderRepository) GetProductResponsesByOrderID(id int) ([]response.OrderProductResponse, error) {
+	query := `SELECT p.id, p.name, os.product_quantity FROM product p 
+    		  JOIN order_product os ON p.id = os.product_id
+    		  JOIN "order" o ON o.id = os.order_id
     		  WHERE o.id = $1`
 
 	stmt, err := or.db.Prepare(query)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot prepare statement for order_id %d", id)
+		return nil, fmt.Errorf("cannot prepare statement for order_id %d", id)
 	}
 
 	rows, err := stmt.Query(id)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot run query for order_id %d", id)
+		return nil, fmt.Errorf("cannot run query for order_id %d", id)
 	}
 
-	var productIDs []int
-	var productNames []string
+	var products []response.OrderProductResponse
 
 	for rows.Next() {
-		var productID int
-		var productName string
+		var product response.OrderProductResponse
 
 		err := rows.Scan(
-			&productID,
-			&productName,
+			&product.ProductID,
+			&product.ProductName,
+			&product.ProductQuantity,
 		)
 		if err != nil {
-			return nil, nil, fmt.Errorf("cannot scan product for order_id %d", id)
+			return nil, fmt.Errorf("cannot scan product for order_id %d", id)
 		}
 
-		productIDs = append(productIDs, productID)
-		productNames = append(productNames, productName)
+		products = append(products, product)
 	}
 
-	return productIDs, productNames, nil
+	return products, nil
 }
 
 func (or *OrderRepository) insertIntoOrderProduct(orderID int, productID int, productQuantity int) error {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"food_delivery/model"
+	"food_delivery/response"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
@@ -12,7 +13,7 @@ type SupplierRepositoryI interface {
 	GetSupplierByID(int) (*model.Supplier, error)
 	GetSuppliersByCategoryIDs([]int) ([]model.Supplier, error)
 	GetAllSuppliers() ([]model.Supplier, error)
-	GetCategoryNamesBySupplierID(int) ([]int, []string, error)
+	GetCategoryResponsesBySupplierID(int) ([]response.SupplierCategoryResponse, error)
 }
 
 type SupplierRepository struct {
@@ -62,7 +63,7 @@ func (sr *SupplierRepository) GetSuppliersByCategoryIDs(ids []int) ([]model.Supp
 			  FROM supplier s
 			  WHERE EXISTS(SELECT *
 			  			 FROM supplier_category sc
-			  			 WHERE ARRAY[$1::integer[]] <@ (SELECT ARRAY_AGG(DISTINCT category_id)
+			  			 WHERE ARRAY[$1::INTEGER[]] <@ (SELECT ARRAY_AGG(DISTINCT category_id)
 			  									FROM supplier_category
 			  									WHERE supplier_id = sc.supplier_id)
 			  			   AND sc.supplier_id = s.id);`
@@ -134,50 +135,32 @@ func (sr *SupplierRepository) GetAllSuppliers() ([]model.Supplier, error) {
 	return suppliers, nil
 }
 
-func (sr *SupplierRepository) GetCategoryNamesBySupplierID(id int) ([]int,[]string, error) {
-	stmt, err := sr.db.Prepare("SELECT category_id FROM supplier_category WHERE supplier_id = $1")
+func (sr *SupplierRepository) GetCategoryResponsesBySupplierID(id int) ([]response.SupplierCategoryResponse, error) {
+	stmt, err := sr.db.Prepare("SELECT id, name FROM category WHERE id = ANY(SELECT category_id FROM supplier_category WHERE supplier_id = $1)")
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot prepare statement for supplier id %d", id)
+		return nil, fmt.Errorf("cannot prepare statement for supplier_id %d", id)
 	}
-
-	var categoryIDs []int
 
 	rows, err := stmt.Query(id)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot run query for supplier id %d", id)
+		return nil, fmt.Errorf("cannot run query for supplier_id %d", id)
 	}
+
+	var categories []response.SupplierCategoryResponse
 
 	for rows.Next() {
-		var categoryID int
+		var category response.SupplierCategoryResponse
 
-		if err := rows.Scan(&categoryID); err != nil {
-			return nil, nil, fmt.Errorf("cannot scan category id")
+		err := rows.Scan(
+			&category.CategoryID,
+			&category.CategoryName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("cannot scan category for supplier_id %d", id)
 		}
 
-		categoryIDs = append(categoryIDs, categoryID)
+		categories = append(categories, category)
 	}
 
-	stmt, err = sr.db.Prepare("SELECT name FROM category WHERE id = ANY($1)")
-	if err != nil {
-		return nil, nil, fmt.Errorf("cannot prepare statement for categories %v", categoryIDs)
-	}
-
-	rows, err = stmt.Query(pq.Array(categoryIDs))
-	if err != nil {
-		return nil, nil, fmt.Errorf("cannot run query for category id %d", id)
-	}
-
-	var names []string
-
-	for rows.Next() {
-		var name string
-
-		if err := rows.Scan(&name); err != nil {
-			return nil, nil, fmt.Errorf("cannot scan name")
-		}
-
-		names = append(names, name)
-	}
-
-	return categoryIDs, names, nil
+	return categories, nil
 }

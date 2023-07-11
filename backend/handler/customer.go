@@ -68,7 +68,7 @@ func (ch *CustomerHandler) UpdateCustomer(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var req *request.UpdateCustomer
+	var req *request.UpdateCustomerRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
@@ -133,7 +133,7 @@ func (ch *CustomerHandler) UpdateCustomerPassword(w http.ResponseWriter, r *http
 		return
 	}
 
-	var req *request.UpdateCustomerPassword
+	var req *request.UpdateCustomerPasswordRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.SendInternalServerError(w, fmt.Errorf("cannot decode given json"))
@@ -157,7 +157,7 @@ func (ch *CustomerHandler) UpdateCustomerPassword(w http.ResponseWriter, r *http
 	}
 
 	if err := ch.repo.UpdateCustomerPasswordByID(claims.ID, req, customer); err != nil {
-		response.SendInternalServerError(w ,err)
+		response.SendInternalServerError(w, err)
 		return
 	}
 

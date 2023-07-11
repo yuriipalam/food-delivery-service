@@ -61,7 +61,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 		return
 	}
 
-	supplierRes, err := sh.getSuppliersResponseFromModel(suppliers)
+	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -80,7 +80,7 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	supplierRes, err := sh.getSuppliersResponseFromModel(suppliers)
+	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -102,7 +102,7 @@ func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier
 		return nil, fmt.Errorf("cannot unmarshal supplier from db into response")
 	}
 
-	supplierRes.CategoryIDs, supplierRes.CategoryNames, err = sh.repo.GetCategoryNamesBySupplierID(supplier.ID)
+	supplierRes.Categories, err = sh.repo.GetCategoryResponsesBySupplierID(supplier.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier
 	return &supplierRes, nil
 }
 
-func (sh *SupplierHandler) getSuppliersResponseFromModel(suppliers []model.Supplier) ([]response.SupplierResponse, error) {
+func (sh *SupplierHandler) getSupplierResponsesFromModel(suppliers []model.Supplier) ([]response.SupplierResponse, error) {
 	var suppliersRes []response.SupplierResponse
 
 	for _, supplier := range suppliers {

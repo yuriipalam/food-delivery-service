@@ -58,7 +58,7 @@ func (oh *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req request.CreateOrder
+	var req request.CreateOrderRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -101,7 +101,7 @@ func (oh *OrderHandler) getOrderResponseFromModel(order *model.Order) (*response
 		return nil, fmt.Errorf("cannot unmarshal order from db into response")
 	}
 
-	orderRes.SupplierIDs, orderRes.SupplierNames, err = oh.repo.GetSupplierNamesByOrderID(order.ID)
+	orderRes.Suppliers, err = oh.repo.GetSupplierResponsesByOrderID(order.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (oh *OrderHandler) getOrderResponseFromModel(order *model.Order) (*response
 		return nil, err
 	}
 
-	orderRes.ProductIDs, orderRes.ProductName, err = oh.repo.GetProductNamesByOrderID(order.ID)
+	orderRes.Products, err = oh.repo.GetProductResponsesByOrderID(order.ID)
 	if err != nil {
 		return nil, err
 	}
