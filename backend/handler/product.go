@@ -36,7 +36,7 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	productRes, err := ph.GetProductResponseFromModel(product)
+	productRes, err := ph.getProductResponseFromModel(product)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -55,7 +55,7 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	productsRes, err := ph.GetProductResponsesFromModels(products)
+	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -80,7 +80,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 		return
 	}
 
-	productsRes, err := ph.GetProductResponsesFromModels(products)
+	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -105,7 +105,7 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 		return
 	}
 
-	productsRes, err := ph.GetProductResponsesFromModels(products)
+	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -136,7 +136,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 		return
 	}
 
-	productsRes, err := ph.GetProductResponsesFromModels(products)
+	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -145,7 +145,7 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 	response.SendOK(w, productsRes)
 }
 
-func (ph *ProductHandler) GetProductResponseFromModel(product *model.Product) (*response.ProductResponse, error) {
+func (ph *ProductHandler) getProductResponseFromModel(product *model.Product) (*response.ProductResponse, error) {
 	var productRes response.ProductResponse
 
 	productMarshaled, err := json.Marshal(product)
@@ -170,11 +170,11 @@ func (ph *ProductHandler) GetProductResponseFromModel(product *model.Product) (*
 	return &productRes, nil
 }
 
-func (ph *ProductHandler) GetProductResponsesFromModels(products []model.Product) ([]response.ProductResponse, error) {
+func (ph *ProductHandler) getProductResponsesFromModels(products []model.Product) ([]response.ProductResponse, error) {
 	var productsRes []response.ProductResponse
 
 	for _, product := range products {
-		productRes, err := ph.GetProductResponseFromModel(&product)
+		productRes, err := ph.getProductResponseFromModel(&product)
 		if err != nil {
 			return nil, err
 		}
