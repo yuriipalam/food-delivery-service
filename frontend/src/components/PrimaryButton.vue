@@ -1,6 +1,4 @@
 <script setup>
-import "@/assets/css/main.css"
-
 const props = defineProps({
       "type": String,
       "class": String,
