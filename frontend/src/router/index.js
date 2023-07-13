@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
 import ContactUs from "../views/ContactUs.vue";
+import Placeholder from "../components/Placeholder.vue";
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: '/contact-us',
         name: 'ContactUs',
         component: ContactUs
+    },
+    {
+        path: '/placeholder',
+        name: 'Placeholder',
+        component: Placeholder
     }
 ]
 

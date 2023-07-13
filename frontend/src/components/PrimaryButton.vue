@@ -22,7 +22,7 @@ const props = defineProps({
   }
   button:hover {
     cursor: pointer;
-    opacity: 85%;
+    opacity: 75%;
   }
 
   .header-button {
@@ -38,5 +38,6 @@ const props = defineProps({
   .transparent-button {
     background: none;
     border: 1px solid var(--orange)!important;
+    color: var(--milky)
   }
 </style>

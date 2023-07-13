@@ -22,7 +22,7 @@ const props = defineProps({
   }
 
   .light {
-    color: white!important;;
+    color: var(--milky)!important;;
   }
 
   .router-link-active {
