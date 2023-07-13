@@ -13,11 +13,11 @@ const props = defineProps({
 <style scoped>
   button {
     border: none;
-    padding: 13px 50px;
+    padding: 10px 30px;
     display: flex;
     border-radius: 19px;
     transition: opacity 0.7s ease;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
   }
   button:hover {

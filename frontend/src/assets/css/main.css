@@ -15,9 +15,5 @@
 .container {
     max-width: 1440px;
     margin: 0 auto;
-}
-
-/*temporary*/
-body {
-    background-color: #787979;
+    padding: 0 70px;
 }
