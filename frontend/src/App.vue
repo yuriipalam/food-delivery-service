@@ -13,7 +13,5 @@ function isHomeRoute() {
 
 <template>
   <Navbar :is-light="isHomeRoute()"></Navbar>
-  <div class="container" id="body-container">
-    <router-view></router-view>
-  </div>
+  <router-view></router-view>
 </template>
