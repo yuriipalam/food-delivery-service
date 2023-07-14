@@ -1,5 +1,5 @@
 import * as VueRouter from "vue-router"
-import Home from "../views/Home.vue";
+import Home from "../views/Home/Home.vue";
 import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
 import ContactUs from "../views/ContactUs.vue";

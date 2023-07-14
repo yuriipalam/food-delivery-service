@@ -1,7 +1,6 @@
 <script setup>
 import {onBeforeMount, onMounted, onUnmounted} from "vue";
-import PrimaryButton from "../components/PrimaryButton.vue";
-import Explore from "./Explore.vue";
+import PrimaryButton from "../../components/PrimaryButton.vue";
 
 onBeforeMount(() => {
   document.body.className = 'home';
@@ -12,8 +11,8 @@ onBeforeMount(() => {
 onMounted(() => {
   const header = document.querySelector('header')
   const nav = document.querySelector('nav')
-  const headerContainer = document.querySelector('header .container')
-  const space = ((((window.innerHeight - headerContainer.offsetHeight) / 2) - nav.offsetHeight))
+  const containerHeader = document.querySelector('.container header')
+  const space = ((window.innerHeight - containerHeader.offsetHeight) / 2) - nav.offsetHeight
   header.style.marginTop = space + 'px'
   header.style.marginBottom = space + nav.offsetHeight + 'px'
 })
@@ -26,17 +25,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header>
-    <div class="container">
+  <div class="container">
+    <header>
       <h1>The best food delivery in Budapest</h1>
       <p>Order now with 10% discount</p>
       <div class="buttons">
         <PrimaryButton :class="'solid-button'">Order now</PrimaryButton>
         <PrimaryButton :class="'transparent-button'">Sign up</PrimaryButton>
       </div>
-    </div>
-  </header>
-  <Explore></Explore>
+    </header>
+  </div>
 </template>
 
 <style>
@@ -53,7 +51,7 @@ body.home {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: bottom;
-  background-image: url('../assets/svg/home-background.svg');
+  background-image: url('../../assets/svg/home-background.svg');
   background-color: var(--milky);
 }
 </style>
