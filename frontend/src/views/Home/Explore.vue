@@ -1,22 +1,16 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-  <main style="padding-bottom: 300px;">
-    <div class="container">
-      <div class="explore-block">
-        <h2>Explore<br>categories & suppliers</h2>
-        <div class="search-input">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="22" viewBox="0 0 26 22" fill="none">
-            <circle cx="9.04237" cy="8.57557" r="7" transform="rotate(8.9509 9.04237 8.57557)" stroke="#272D2F"/>
-            <line x1="14.8744" y1="13.0957" x2="23.2185" y2="21.0212" stroke="#272D2F"/>
-          </svg>
-          <input type="text">
-        </div>
-      </div>
+  <div class="explore-block">
+    <h2>Explore<br>categories & suppliers</h2>
+    <div class="search-input">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="22" viewBox="0 0 26 22" fill="none">
+        <circle cx="9.04237" cy="8.57557" r="7" transform="rotate(8.9509 9.04237 8.57557)" stroke="#272D2F"/>
+        <line x1="14.8744" y1="13.0957" x2="23.2185" y2="21.0212" stroke="#272D2F"/>
+      </svg>
+      <input type="text">
     </div>
-  </main>
+  </div>
 </template>
 
 <style scoped>
@@ -29,7 +23,7 @@
   background-color: var(--pinky);
   border-radius: 40px;
   background-image: url("../../assets/img/explore-background.png");
-  background-position: right;
+  background-position: right bottom;
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -67,6 +61,7 @@ input {
   padding-bottom: 17px;
   font-size: 16px;
 }
+
 input:focus {
   background-color: #eec8be;
   outline: none;

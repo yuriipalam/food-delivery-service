@@ -25,7 +25,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="container">
+<!--  <div class="container">-->
     <header>
       <h1>The best food delivery in Budapest</h1>
       <p>Order now with 10% discount</p>
@@ -34,7 +34,7 @@ onUnmounted(() => {
         <PrimaryButton :class="'transparent-button'">Sign up</PrimaryButton>
       </div>
     </header>
-  </div>
+<!--  </div>-->
 </template>
 
 <style>
@@ -50,7 +50,7 @@ body.home {
   max-width: 100% !important;
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: bottom;
+  background-position: top;
   background-image: url('../../assets/svg/home-background.svg');
   background-color: var(--milky);
 }
