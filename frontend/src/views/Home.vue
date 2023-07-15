@@ -1,7 +1,7 @@
 <script setup>
-import Header from "./Header.vue";
-import Explore from "./Explore.vue";
-import Carousel from "../../components/Carousel.vue";
+import Header from "../components/Header.vue";
+import Explore from "../components/Explore.vue";
+import Carousel from "../components/Carousel.vue";
 </script>
 
 <template>
@@ -21,10 +21,10 @@ import Carousel from "../../components/Carousel.vue";
 }
 
 .carousel-suppliers {
-  margin-bottom: 20px;
+  margin-bottom: 55px;
 }
 
 .carousel-categories {
-  margin-bottom: 20px;
+  padding-bottom: 55px;
 }
 </style>

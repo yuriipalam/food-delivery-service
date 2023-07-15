@@ -22,7 +22,7 @@
   padding-bottom: 60px;
   background-color: var(--pinky);
   border-radius: 40px;
-  background-image: url("../../assets/img/explore-background.png");
+  background-image: url("../assets/img/explore-background.png");
   background-position: right bottom;
   background-size: contain;
   background-repeat: no-repeat;
