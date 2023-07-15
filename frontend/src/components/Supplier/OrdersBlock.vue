@@ -35,9 +35,12 @@ import Order from "./Order.vue";
   font-size: 32px;
   font-weight: 500;
   text-align: center;
+  margin-bottom: 40px;
+  margin-top: 0;
 }
 
 button {
+  margin-top: auto;
   font-size: 20px;
   display: flex;
   justify-content: space-between;
@@ -46,5 +49,11 @@ button {
   border: none;
   background-color: rgba(254, 114, 76, 0.4);
   border-radius: 24px;
+}
+button span:first-child {
+  text-align: left;
+}
+button span:last-child {
+  text-align: right;
 }
 </style>

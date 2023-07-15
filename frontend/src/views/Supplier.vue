@@ -12,10 +12,15 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
     <SupplierBar></SupplierBar>
     <div class="content">
       <CategoryList class="categories"></CategoryList>
-      <div class="products-list">
+      <div class="products">
         <SearchBar :class="'transparent'" :placeholder="'Search in McDonald\'s'"></SearchBar>
         <h2 class="category-name">McMenu</h2>
-        <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+        <div class="products-list">
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+        </div>
       </div>
       <OrdersBlock class="orders"></OrdersBlock>
     </div>
@@ -28,14 +33,23 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 }
 
 .content {
+  grid-gap: 30px;
   margin-top: 40px;
   display: flex;
   justify-content: space-between;
 }
 
-.products-list {
+.products {
   display: flex;
   flex-direction: column;
+  max-width: 685px;
+}
+
+.products-list {
+  grid-gap: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .category-name {
@@ -46,6 +60,7 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 }
 
 .orders {
-  flex-shrink: 1;
+  height: auto;
+  max-height: 600px;
 }
 </style>

@@ -22,6 +22,7 @@ const props = defineProps({
 
 <style scoped>
 .product-card {
+  width: 300px;
   display: flex;
   justify-content: space-between;
   background: rgba(243, 207, 121, 0.3);
