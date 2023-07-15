@@ -56,7 +56,6 @@ body.home {
   background-size: cover;
   background-position: bottom;
   background-image: url('../assets/svg/home-background.svg');
-  background-color: var(--milky);
 }
 </style>
 

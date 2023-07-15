@@ -1,7 +1,7 @@
 <script setup>
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
-import Carousel from "../components/Carousel.vue";
+import Carousel from "../components/Carousel/Carousel.vue";
 </script>
 
 <template>
@@ -9,8 +9,8 @@ import Carousel from "../components/Carousel.vue";
       <Header></Header>
       <main>
         <Explore class="explore"></Explore>
-        <Carousel :name="'Suppliers'" class="carousel-suppliers"></Carousel>
-        <Carousel :name="'Categories'" class="carousel-categories"></Carousel>
+        <Carousel :name="'Top Suppliers'" class="carousel-suppliers"></Carousel>
+        <Carousel :name="'Top Categories'" class="carousel-categories"></Carousel>
       </main>
     </div>
 </template>

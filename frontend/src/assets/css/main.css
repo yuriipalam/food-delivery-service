@@ -20,6 +20,6 @@
 }
 
 body {
-    background: white;
+    background-color: var(--milky);
     margin: 0 0;
 }

@@ -4,6 +4,7 @@ import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
 import ContactUs from "../views/ContactUs.vue";
 import Placeholder from "../components/Placeholder.vue";
+import Supplier from "../views/Supplier.vue";
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: '/placeholder',
         name: 'Placeholder',
         component: Placeholder
+    },
+    {
+        path: '/supplier',
+        name: 'Supplier',
+        component: Supplier
     }
 ]
 
