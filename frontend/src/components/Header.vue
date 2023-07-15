@@ -31,16 +31,14 @@ function calculateMargins(e) {
 </script>
 
 <template>
-  <div class="container">
-    <header>
-      <h1>The best food delivery in Budapest</h1>
-      <p>Order now with 10% discount</p>
-      <div class="buttons">
-        <PrimaryButton :class="'solid-button'">Order now</PrimaryButton>
-        <PrimaryButton :class="'transparent-button'">Sign up</PrimaryButton>
-      </div>
-    </header>
-  </div>
+  <header>
+    <h1>The best food delivery in Budapest</h1>
+    <p>Order now with 10% discount</p>
+    <div class="buttons">
+      <PrimaryButton :class="'solid-button'">Order now</PrimaryButton>
+      <PrimaryButton :class="'transparent-button'">Sign up</PrimaryButton>
+    </div>
+  </header>
 </template>
 
 <style>
