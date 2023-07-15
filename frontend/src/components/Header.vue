@@ -42,15 +42,12 @@ function calculateMargins(e) {
 </template>
 
 <style>
-html.home {
-  height: 100%;
-}
-
-#app.home {
-  height: inherit;
-}
+/*#app.home {
+  height: 100vh
+}*/
 
 body.home {
+  height: 100vh;
   max-width: 100% !important;
   background-repeat: no-repeat;
   background-size: cover;

@@ -35,7 +35,7 @@ import Order from "./Order.vue";
   font-size: 32px;
   font-weight: 500;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
   margin-top: 0;
 }
 

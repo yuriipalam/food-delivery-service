@@ -1,15 +1,32 @@
 <script setup>
-
 import SupplierBar from "../components/Supplier/SupplierBar.vue";
 import CategoryList from "../components/Supplier/CategoryList.vue";
 import SearchBar from "../components/SearchBar.vue";
 import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
+import {onMounted} from "vue";
+onMounted(() => {
+  changeOrdersWidth()
+  window.addEventListener('resize', changeOrdersWidth)
+})
+
+function changeOrdersWidth() {
+  const nav = document.querySelector('nav')
+  const bar = document.querySelector('.bar')
+  const csBar = window.getComputedStyle(bar);
+  const heightNav = nav.offsetHeight
+  const heightBar = parseFloat(csBar.height) + parseFloat(csBar.marginTop) + parseFloat(csBar.marginBottom);
+
+
+  const ordersBlock = document.querySelector('.orders-block.orders')
+  console.log(heightBar)
+  ordersBlock.style.height = (window.innerHeight - heightNav - heightBar) + 'px'
+}
 </script>
 
 <template>
   <div class="container">
-    <SupplierBar></SupplierBar>
+    <SupplierBar class="bar"></SupplierBar>
     <div class="content">
       <CategoryList class="categories"></CategoryList>
       <div class="products">
@@ -28,13 +45,13 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 </template>
 
 <style scoped>
-.container {
+.bar {
   margin-top: 15px;
+  margin-bottom: 40px;
 }
 
 .content {
   grid-gap: 30px;
-  margin-top: 40px;
   display: flex;
   justify-content: space-between;
 }
@@ -60,7 +77,7 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 }
 
 .orders {
-  height: auto;
-  max-height: 600px;
+  //height: auto;
+  //max-height: 600px;
 }
 </style>
