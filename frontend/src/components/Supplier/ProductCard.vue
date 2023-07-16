@@ -76,6 +76,12 @@ button {
   background-color: var(--orange);
   border-radius: 0 31px 0 10px;
   padding: 10px 10px 8px;
+  transition: opacity 0.7s ease;
+}
+
+button:hover {
+  cursor: pointer;
+  opacity: 0.75;
 }
 
 img {

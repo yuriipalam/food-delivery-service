@@ -54,6 +54,9 @@ input.pinky:focus  {
 }
 
 input.transparent {
-  background: none;
+  background-color: rgba(255, 255, 255, 0);
+}
+input.transparent:focus {
+  background-color: rgba(239, 238, 238, 0.4);
 }
 </style>

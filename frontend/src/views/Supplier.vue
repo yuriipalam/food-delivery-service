@@ -5,6 +5,7 @@ import SearchBar from "../components/SearchBar.vue";
 import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {onMounted} from "vue";
+
 onMounted(() => {
   changeOrdersWidth()
   window.addEventListener('resize', changeOrdersWidth)
@@ -13,14 +14,26 @@ onMounted(() => {
 function changeOrdersWidth() {
   const nav = document.querySelector('nav')
   const bar = document.querySelector('.bar')
-  const csBar = window.getComputedStyle(bar);
-  const heightNav = nav.offsetHeight
-  const heightBar = parseFloat(csBar.height) + parseFloat(csBar.marginTop) + parseFloat(csBar.marginBottom);
-
 
   const ordersBlock = document.querySelector('.orders-block.orders')
-  console.log(heightBar)
-  ordersBlock.style.height = (window.innerHeight - heightNav - heightBar) + 'px'
+  ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
+}
+
+function getElmHeight(node) {
+  const list = [
+    'margin-top',
+    'margin-bottom',
+    'border-top',
+    'border-bottom',
+    'padding-top',
+    'padding-bottom',
+    'height'
+  ]
+
+  const style = window.getComputedStyle(node)
+  return list
+      .map(k => parseInt(style.getPropertyValue(k), 10))
+      .reduce((prev, cur) => prev + cur)
 }
 </script>
 
@@ -33,6 +46,10 @@ function changeOrdersWidth() {
         <SearchBar :class="'transparent'" :placeholder="'Search in McDonald\'s'"></SearchBar>
         <h2 class="category-name">McMenu</h2>
         <div class="products-list">
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
@@ -74,10 +91,5 @@ function changeOrdersWidth() {
   font-size: 22px;
   font-weight: 700;
   padding-left: 15px;
-}
-
-.orders {
-  //height: auto;
-  //max-height: 600px;
 }
 </style>

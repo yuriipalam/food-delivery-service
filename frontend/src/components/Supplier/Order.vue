@@ -56,14 +56,13 @@
   display: block;
   width: 10px;
   height: 2px;
-  position: absolute;
+  position: relative;
   background-color: var(--blackish);
-  transform: translateY(-1px);
 }
 
 .rotated {
-  transform: rotate(90deg) translateX(-1px);
-  position: absolute;
+  transform: rotate(90deg) translateX(-1.5px);
+  position: relative;
 }
 
 .minus-btn, .plus-btn {
@@ -77,6 +76,12 @@
   background-color: rgba(254, 114, 76, 0.4);
   border-radius: 50%;
   padding: 10px 10px;
+  transition: opacity 0.7s ease;
+}
+
+.minus-btn:hover, .plus-btn:hover {
+  opacity: 0.75;
+  cursor: pointer;
 }
 
 .quantity {

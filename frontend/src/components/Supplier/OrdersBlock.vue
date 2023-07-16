@@ -27,8 +27,8 @@ import Order from "./Order.vue";
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 30px 20px 20px;
+  min-height: 400px;
 }
 
 .title {
@@ -37,6 +37,10 @@ import Order from "./Order.vue";
   text-align: center;
   margin-bottom: 25px;
   margin-top: 0;
+}
+
+.orders-list {
+  overflow: auto;
 }
 
 button {
@@ -49,11 +53,16 @@ button {
   border: none;
   background-color: rgba(254, 114, 76, 0.4);
   border-radius: 24px;
+  transition: opacity 0.7s ease;
 }
 button span:first-child {
   text-align: left;
 }
 button span:last-child {
   text-align: right;
+}
+button:hover {
+ opacity: 0.8;
+  cursor: pointer;
 }
 </style>
