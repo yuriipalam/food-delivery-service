@@ -11,7 +11,7 @@ const categories = [
 
 <template>
   <div class="category-list">
-    <p>Categories:</p>
+    <p class="categories-title">Categories:</p>
     <div class="list" v-for="category in categories">
       <hr>
       <Category>{{ category }}</Category>
@@ -30,6 +30,10 @@ const categories = [
   color: var(--blackish);
   opacity: 0.7;
   margin-bottom: 35px;
+}
+
+.categories-title {
+  margin-top: 0;
 }
 
 .category-list hr {

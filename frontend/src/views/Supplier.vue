@@ -54,6 +54,9 @@ function getElmHeight(node) {
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
           <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
         </div>
       </div>
       <OrdersBlock class="orders"></OrdersBlock>
@@ -91,5 +94,16 @@ function getElmHeight(node) {
   font-size: 22px;
   font-weight: 700;
   padding-left: 15px;
+}
+
+.categories {
+  height: 100%;
+  position: sticky;
+  top: 40px;
+}
+
+.orders {
+  top: 40px;
+  position: sticky;
 }
 </style>
