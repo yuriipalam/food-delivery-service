@@ -20,7 +20,8 @@ type OrderSupplierResponse struct {
 }
 
 type OrderProductResponse struct {
-	ProductID       int    `json:"product_id"`
-	ProductName     string `json:"product_name"`
-	ProductQuantity int    `json:"product_quantity"`
+	ProductID         int    `json:"product_id"`
+	ProductSupplierID int    `json:"product_supplier_id"`
+	ProductName       string `json:"product_name"`
+	ProductQuantity   int    `json:"product_quantity"`
 }

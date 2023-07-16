@@ -198,7 +198,7 @@ func (or *OrderRepository) GetCustomerNameByOrderID(id int) (string, error) {
 }
 
 func (or *OrderRepository) GetProductResponsesByOrderID(id int) ([]response.OrderProductResponse, error) {
-	query := `SELECT p.id, p.name, os.product_quantity FROM product p 
+	query := `SELECT p.id, p.name, p.supplier_id, os.product_quantity FROM product p 
     		  JOIN order_product os ON p.id = os.product_id
     		  JOIN "order" o ON o.id = os.order_id
     		  WHERE o.id = $1`
@@ -221,6 +221,7 @@ func (or *OrderRepository) GetProductResponsesByOrderID(id int) ([]response.Orde
 		err := rows.Scan(
 			&product.ProductID,
 			&product.ProductName,
+			&product.ProductSupplierID,
 			&product.ProductQuantity,
 		)
 		if err != nil {
