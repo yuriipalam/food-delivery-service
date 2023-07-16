@@ -102,6 +102,8 @@ func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier
 		return nil, fmt.Errorf("cannot unmarshal supplier from db into response")
 	}
 
+	supplierRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/suppliers/%s", supplier.Image)
+
 	supplierRes.Categories, err = sh.repo.GetCategoryResponsesBySupplierID(supplier.ID)
 	if err != nil {
 		return nil, err

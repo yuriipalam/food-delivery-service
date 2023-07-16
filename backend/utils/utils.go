@@ -6,6 +6,7 @@ import (
 	"food_delivery/config"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 	"reflect"
 	"strconv"
 )
@@ -59,4 +60,25 @@ func SendCfgToMiddleware(cfg *config.Config) func(next http.Handler) http.Handle
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+
+func Contains(slice []string, target string) bool {
+	for _, element := range slice {
+		if element == target {
+			return true
+		}
+	}
+	return false
+}
+
+func FileExists(filePath string) (bool, error) {
+	_, err := os.Stat(filePath)
+	if err == nil {
+		return true, nil // File exists
+	}
+	if os.IsNotExist(err) {
+		return false, nil // File does not exist
+	}
+	return false, err // Error occurred while checking file existence
 }

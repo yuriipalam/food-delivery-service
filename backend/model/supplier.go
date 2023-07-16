@@ -3,7 +3,7 @@ package model
 type Supplier struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
-	Image       []byte `json:"image"`
+	Image       string `json:"image"`
 	Description string `json:"description"`
 	TimeOpening string `json:"time_opening"`
 	TimeClosing string `json:"time_closing"`

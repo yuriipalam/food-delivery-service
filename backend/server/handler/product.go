@@ -167,6 +167,8 @@ func (ph *ProductHandler) getProductResponseFromModel(product *model.Product) (*
 		return nil, err
 	}
 
+	productRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/products/%s", product.Image)
+
 	return &productRes, nil
 }
 

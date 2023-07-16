@@ -6,13 +6,49 @@ import (
 	"food_delivery/config"
 	"food_delivery/middleware"
 	"food_delivery/repository"
+	"food_delivery/response"
 	"food_delivery/server/handler"
 	"food_delivery/utils"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"os"
 )
+
+func getImage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	folder, name := vars["folder"], vars["name"]
+	allowedFolders := []string{"suppliers", "categories", "products"}
+
+	if !utils.Contains(allowedFolders, folder) {
+		response.SendNotFoundError(w, fmt.Errorf("not found folder %s", folder))
+		return
+	}
+
+	imagePath := fmt.Sprintf("./images/%s/%s", folder, name)
+
+	result, err := utils.FileExists(imagePath)
+	if !result || err != nil {
+		response.SendNotFoundError(w, fmt.Errorf("not found image %s", name))
+		return
+	}
+
+	imageData, err := os.ReadFile(imagePath)
+	if err != nil {
+		response.SendNotFoundError(w, fmt.Errorf("img not found"))
+		return
+	}
+
+	contentType := http.DetectContentType(imageData)
+	w.Header().Set("Content-Type", contentType)
+
+	_, err = w.Write(imageData)
+	if err != nil {
+		response.SendInternalServerError(w, fmt.Errorf("failed to write response"))
+		return
+	}
+}
 
 func Start(cfg *config.Config) {
 	connStr := "postgres://food_delivery:password@localhost:5432/food_delivery?sslmode=disable"
@@ -67,6 +103,9 @@ func Start(cfg *config.Config) {
 	ordersRouter.Use(middleware.ValidateAccessToken)
 	ordersRouter.HandleFunc("", orderHandler.GetOrders).Methods(http.MethodGet)
 	ordersRouter.HandleFunc("", orderHandler.CreateOrder).Methods(http.MethodPost)
+
+
+	r.HandleFunc("/images/{folder}/{name}", getImage).Methods(http.MethodGet)
 
 	fmt.Println("Server is started...")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))

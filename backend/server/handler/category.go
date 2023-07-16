@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
 	"food_delivery/utils"
@@ -34,7 +36,12 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response.SendOK(w, category)
+	res, err := ch.getCategoryResponseFromModel(category)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+	}
+
+	response.SendOK(w, res)
 }
 
 func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +62,12 @@ func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *h
 		return
 	}
 
-	response.SendOK(w, categories)
+	res, err := ch.getCategoryResponsesFromModels(categories)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+	}
+
+	response.SendOK(w, res)
 }
 
 func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
@@ -70,5 +82,42 @@ func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	response.SendOK(w, categories)
+	res, err := ch.getCategoryResponsesFromModels(categories)
+	if err != nil {
+		response.SendInternalServerError(w, err)
+	}
+
+	response.SendOK(w, res)
+}
+
+func (ch *CategoryHandler) getCategoryResponseFromModel(category *model.Category) (*response.CategoryResponse, error) {
+	var categoryRes response.CategoryResponse
+
+	categoryMarshaled, err := json.Marshal(category)
+	if err != nil {
+		return nil, fmt.Errorf("cannot marshal category from db")
+	}
+
+	if err := json.Unmarshal(categoryMarshaled, &categoryRes); err != nil {
+		return nil, fmt.Errorf("cannot unmarshal category from db into response")
+	}
+
+	categoryRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/categories/%s", category.Image)
+
+	return &categoryRes, nil
+}
+
+func (ch *CategoryHandler) getCategoryResponsesFromModels(categories []model.Category) ([]response.CategoryResponse, error) {
+	var categoriesRes []response.CategoryResponse
+
+	for _, categoryRes := range categories {
+		categoryRes, err := ch.getCategoryResponseFromModel(&categoryRes)
+		if err != nil {
+			return nil, err
+		}
+
+		categoriesRes = append(categoriesRes, *categoryRes)
+	}
+
+	return categoriesRes, nil
 }
