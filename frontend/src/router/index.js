@@ -18,6 +18,11 @@ const routes = [
         component: Suppliers
     },
     {
+        path: '/suppliers/:id',
+        name: 'Supplier',
+        component: Supplier
+    },
+    {
         path: '/categories',
         name: 'Categories',
         component: Categories
@@ -31,11 +36,6 @@ const routes = [
         path: '/placeholder',
         name: 'Placeholder',
         component: Placeholder
-    },
-    {
-        path: '/supplier',
-        name: 'Supplier',
-        component: Supplier
     }
 ]
 

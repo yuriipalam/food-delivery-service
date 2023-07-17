@@ -1,8 +1,12 @@
 <script setup>
+import {useProductsFiltersStore} from "../store";
+
 const props = defineProps({
-  placeholder: String,
+  name: String,
   class: String
 })
+
+const store = useProductsFiltersStore()
 </script>
 
 <template>
@@ -11,7 +15,7 @@ const props = defineProps({
       <circle cx="9.04237" cy="8.57557" r="7" transform="rotate(8.9509 9.04237 8.57557)" stroke="#272D2F"/>
       <line x1="14.8744" y1="13.0957" x2="23.2185" y2="21.0212" stroke="#272D2F"/>
     </svg>
-    <input type="text" :class="props.class" :placeholder="props.placeholder">
+    <input type="text" v-model="store.searchFor" :class="props.class" :placeholder="'Search in ' + props.name">
   </div>
 </template>
 

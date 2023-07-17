@@ -1,11 +1,14 @@
 <script setup>
-
+const props = defineProps({
+  name: String,
+  quantity: String
+})
 </script>
 
 <template>
   <div class="bar">
-    <h1>McDonald's</h1>
-    <p>118 available products</p>
+    <h1>{{ props.name }}</h1>
+    <p>{{ props.quantity }} available products</p>
   </div>
 </template>
 

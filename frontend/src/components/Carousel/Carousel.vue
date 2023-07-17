@@ -4,9 +4,9 @@ import {Carousel, Navigation, Pagination, Slide} from "vue3-carousel";
 import 'vue3-carousel/dist/carousel.css'
 
 const props = defineProps({
-  name: String
+  name: String,
+  objects: Array
 })
-
 </script>
 
 <template>
@@ -14,10 +14,9 @@ const props = defineProps({
     <h3>{{ props.name }}</h3>
     <div style="max-width: 85%; margin: 0 auto;">
       <carousel :items-to-show="5">
-        <slide v-for="slide in 10" :key="slide">
-          <CarouselCard></CarouselCard>
+        <slide v-for="obj in objects" :key="obj">
+          <CarouselCard :obj="obj"></CarouselCard>
         </slide>
-
         <template #addons>
           <navigation/>
           <pagination/>

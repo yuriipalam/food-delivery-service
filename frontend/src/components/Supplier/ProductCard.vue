@@ -1,17 +1,15 @@
 <script setup>
 const props = defineProps({
-  name: String,
-  desc: String,
-  price: Number,
+  product: Object
 })
 </script>
 
 <template>
   <div class="product-card">
     <div class="left-side">
-      <p class="product-name">{{ props.name }}</p>
-      <p class="product-desc">{{ props.desc }}</p>
-      <p class="product-price">{{ props.price }} HUF</p>
+      <p class="product-name">{{ props.product.name }}</p>
+      <p class="product-desc">{{ props.product.description }}</p>
+      <p class="product-price">{{ props.product.price }} HUF</p>
     </div>
     <div class="right-side">
       <button type="button">+</button>

@@ -1,18 +1,22 @@
 <script setup>
-
+const props = defineProps({
+  obj: Object
+})
+console.log(props.obj.image_url)
 </script>
 
 <template>
   <div class="card">
     <div class="circle-mask">
-      <img src="../../assets/img/mcdonalds-icon.png" alt="" width="100" height="100">
+      <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
     </div>
-    <p>McDonald's</p>
+    <p>{{ props.obj.name }}</p>
   </div>
 </template>
 
 <style scoped>
 .card {
+  min-height: 100%;
   display: flex;
   align-items: center;
   width: 120px;

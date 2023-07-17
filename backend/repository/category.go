@@ -84,7 +84,7 @@ func (cr *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 }
 
 func (cr *CategoryRepository) GetCategoriesBySupplierID(id int) ([]model.Category, error) {
-	stmt, err := cr.db.Prepare("SELECT * FROM category c JOIN supplier_category sc ON sc.supplier_id = $1")
+	stmt, err := cr.db.Prepare("SELECT c.id, c.name, c.image, c.description FROM category c JOIN supplier_category sc ON sc.supplier_id = $1 WHERE c.id = sc.category_id")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare statement for supplier id %d", id)
 	}
@@ -106,6 +106,7 @@ func (cr *CategoryRepository) GetCategoriesBySupplierID(id int) ([]model.Categor
 			&category.Description,
 		)
 		if err != nil {
+			fmt.Printf("%+v", err)
 			return nil, fmt.Errorf("cannot scan category")
 		}
 

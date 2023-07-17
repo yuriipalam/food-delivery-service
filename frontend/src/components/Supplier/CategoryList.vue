@@ -1,20 +1,24 @@
 <script setup>
 import Category from "./Category.vue";
+import {useProductsFiltersStore} from "../../store";
 
-const categories = [
-  'McMenu',
-  'Desserts',
-  'Drinks',
-  'McCafe'
-]
+defineProps({
+  categories: Array
+})
+
+const store = useProductsFiltersStore()
+
+function selectCategory(id, name) {
+  store.selectCategory(id, name)
+}
 </script>
 
 <template>
   <div class="category-list">
     <p class="categories-title">Categories:</p>
-    <div class="list" v-for="category in categories">
-      <hr>
-      <Category>{{ category }}</Category>
+    <div class="list">
+      <Category @click="selectCategory(category.id, category.name)" :is-active="store.selectedCategory === category.id" v-for="category in categories" :key="category.id">{{ category.name }}</Category>
+      <Category @click="selectCategory(0, 'All products')" :is-active="store.selectedCategory === 0">All products</Category>
     </div>
   </div>
 </template>
@@ -36,9 +40,4 @@ const categories = [
   margin-top: 0;
 }
 
-.category-list hr {
-  height: 1px;
-  border: 0;
-  background-color: rgba(39, 45, 47, 0.3);
-}
 </style>

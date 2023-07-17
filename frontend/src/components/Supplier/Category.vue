@@ -5,12 +5,17 @@ const props = defineProps({
 </script>
 
 <template>
-  <p :class="{active : props.isActive}"><slot></slot></p>
+  <div>
+    <hr>
+    <p :class="{active : props.isActive}">
+      <slot></slot>
+    </p>
+  </div>
 </template>
 
 <style scoped>
 p {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 400;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -27,5 +32,11 @@ p.active {
   font-weight: 600;
   pointer-events: none;
   opacity: 1;
+}
+
+hr {
+  height: 1px;
+  border: 0;
+  background-color: rgba(39, 45, 47, 0.3);
 }
 </style>

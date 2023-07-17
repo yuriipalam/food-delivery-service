@@ -4,14 +4,58 @@ import CategoryList from "../components/Supplier/CategoryList.vue";
 import SearchBar from "../components/SearchBar.vue";
 import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
-import {onMounted} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
+import {useRoute} from 'vue-router'
+import {useProductsFiltersStore} from "../store";
 
-onMounted(() => {
-  changeOrdersWidth()
-  window.addEventListener('resize', changeOrdersWidth)
+const store = useProductsFiltersStore()
+
+const route = useRoute()
+const id = route.params.id
+
+const fetchSupplier = async () => {
+  return await fetch(`http://localhost:8080/supplier/${id}`).then(
+      (response) => response.json()
+  )
+}
+const supplier = ref(Object)
+
+const fetchSupplierCategories = async () => {
+  return await fetch(`http://localhost:8080/categories?supplier_id=${id}`).then(
+      (response) => response.json()
+  )
+}
+const categories = ref([])
+
+const fetchSupplierProducts = async () => {
+  return fetch(`http://localhost:8080/products?supplier_id=${id}`).then(
+      (response) => response.json()
+  )
+}
+
+const products = ref([])
+const filteredProducts = computed ( () => {
+  let productsArray = ref(products.value)
+
+  if (store.searchFor !== '') {
+    productsArray.value = products.value.filter((product) => product.name.toLowerCase().includes(store.searchFor.toLowerCase()))
+  }
+  if (store.selectedCategory === 0) {
+    return productsArray.value
+  }
+
+  return productsArray.value.filter((product) => product.category_id === store.selectedCategory);
 })
 
-function changeOrdersWidth() {
+onMounted(async () => {
+  changeOrdersHeight()
+  window.addEventListener('resize', changeOrdersHeight)
+  supplier.value = await fetchSupplier()
+  categories.value = await fetchSupplierCategories()
+  products.value = await fetchSupplierProducts()
+})
+
+function changeOrdersHeight() {
   const nav = document.querySelector('nav')
   const bar = document.querySelector('.bar')
 
@@ -35,28 +79,25 @@ function getElmHeight(node) {
       .map(k => parseInt(style.getPropertyValue(k), 10))
       .reduce((prev, cur) => prev + cur)
 }
+
+const productsLength = computed(() => {
+  if (typeof products.value === 'undefined') {
+    return "0"
+  }
+  return products.value.length.toString()
+})
 </script>
 
 <template>
   <div class="container">
-    <SupplierBar class="bar"></SupplierBar>
+    <SupplierBar :name="supplier.name" :quantity="productsLength" class="bar"></SupplierBar>
     <div class="content">
-      <CategoryList class="categories"></CategoryList>
+      <CategoryList :categories="categories" class="categories"></CategoryList>
       <div class="products">
-        <SearchBar :class="'transparent'" :placeholder="'Search in McDonald\'s'"></SearchBar>
-        <h2 class="category-name">McMenu</h2>
+        <SearchBar :class="'transparent'" :name="supplier.name"></SearchBar>
+        <h2 class="category-name">{{ store.selectedCategoryName }}</h2>
         <div class="products-list">
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
-          <ProductCard :name="'BigMac Bacon McMenu'" :desc="'lorem lorem lorem'" :price="5142"></ProductCard>
+          <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"></ProductCard>
         </div>
       </div>
       <OrdersBlock class="orders"></OrdersBlock>
@@ -79,7 +120,6 @@ function getElmHeight(node) {
 .products {
   display: flex;
   flex-direction: column;
-  max-width: 685px;
 }
 
 .products-list {
