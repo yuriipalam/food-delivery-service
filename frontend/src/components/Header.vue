@@ -2,13 +2,14 @@
 import {onBeforeMount, onMounted, onUnmounted} from "vue";
 import PrimaryButton from "./PrimaryButton.vue";
 
-onBeforeMount(() => {
-  document.body.className = 'home';
-  document.documentElement.className = 'home';
-  document.querySelector('#app').classList.add('home')
-})
+// onBeforeMount(() => {
+//   document.body.className = 'home';
+//   document.documentElement.className = 'home';
+// })
 
 onMounted(() => {
+  document.body.className = 'home';
+  document.documentElement.className = 'home';
   calculateMargins()
   window.addEventListener('resize', calculateMargins)
 })
@@ -17,7 +18,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', calculateMargins)
   document.body.classList.remove('home')
   document.documentElement.classList.remove('home')
-  document.querySelector('#app').classList.remove('home')
 })
 
 function calculateMargins(e) {
@@ -42,10 +42,6 @@ function calculateMargins(e) {
 </template>
 
 <style>
-/*#app.home {
-  height: 100vh
-}*/
-
 body.home {
   height: 100vh;
   max-width: 100% !important;

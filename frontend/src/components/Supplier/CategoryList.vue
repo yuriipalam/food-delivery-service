@@ -1,12 +1,12 @@
 <script setup>
 import Category from "./Category.vue";
-import {useProductsFiltersStore} from "../../store";
+import {useFiltersStore} from "../../store";
 
 defineProps({
   categories: Array
 })
 
-const store = useProductsFiltersStore()
+const store = useFiltersStore()
 
 function selectCategory(id, name) {
   store.selectCategory(id, name)

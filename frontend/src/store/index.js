@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import {ref} from "vue";
 
-export const useProductsFiltersStore = defineStore("products", () => {
+export const useFiltersStore = defineStore("productsFilter", () => {
     const selectedCategory = ref(0)
     const selectedCategoryName = ref('')
     const searchFor = ref('')
@@ -12,4 +12,10 @@ export const useProductsFiltersStore = defineStore("products", () => {
     }
 
     return { selectedCategory, searchFor, selectCategory, selectedCategoryName }
+})
+
+export const useCategoriesStore = defineStore("categoriesFiltered", () => {
+    const searchFor = ref('')
+
+    return { searchFor }
 })

@@ -5,7 +5,8 @@ import 'vue3-carousel/dist/carousel.css'
 
 const props = defineProps({
   name: String,
-  objects: Array
+  objects: Array,
+  urlPath: String,
 })
 </script>
 
@@ -15,7 +16,7 @@ const props = defineProps({
     <div style="max-width: 85%; margin: 0 auto;">
       <carousel :items-to-show="5">
         <slide v-for="obj in objects" :key="obj">
-          <CarouselCard :obj="obj"></CarouselCard>
+          <CarouselCard :obj="obj" :url-path="props.urlPath"></CarouselCard>
         </slide>
         <template #addons>
           <navigation/>

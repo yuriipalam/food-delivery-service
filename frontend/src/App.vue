@@ -6,12 +6,12 @@ import {useRoute} from "vue-router";
 
 const route = useRoute()
 
-function isHomeRoute() {
-  return route.name === 'Home'
+function isLight() {
+  return route.name === 'Home' || route.name === 'Suppliers' || route.name ===  'Categories'
 }
 </script>
 
 <template>
-  <Navbar :is-light="isHomeRoute()"></Navbar>
+  <Navbar :is-light="isLight()"></Navbar>
   <router-view></router-view>
 </template>

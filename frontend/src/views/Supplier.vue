@@ -6,9 +6,9 @@ import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {computed, onMounted, reactive, ref} from "vue";
 import {useRoute} from 'vue-router'
-import {useProductsFiltersStore} from "../store";
+import {useFiltersStore} from "../store";
 
-const store = useProductsFiltersStore()
+const store = useFiltersStore()
 
 const route = useRoute()
 const id = route.params.id
@@ -118,6 +118,7 @@ const productsLength = computed(() => {
 }
 
 .products {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 }

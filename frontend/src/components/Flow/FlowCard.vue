@@ -1,43 +1,48 @@
 <script setup>
+import {useRoute} from "vue-router";
 import {computed} from "vue";
 
+const route = useRoute()
+
 const props = defineProps({
-  obj: Object,
-  urlPath: String
+  obj: Object
 })
 
 const getPath = computed(() => {
-  return `${props.urlPath}/${props.obj.id}`
+  return `${route.fullPath}/${props.obj.id}`
 })
 </script>
 
 <template>
-  <a class="card" :href="getPath">
+  <a class="flow-card" :href="getPath">
     <div class="circle-mask">
       <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
     </div>
-    <p>{{ props.obj.name }}</p>
+    <p class="card-name">{{ props.obj.name }}</p>
+    <p class="card-working-hours" v-if="typeof props.obj.time_opening !== 'undefined'">{{ props.obj.time_opening }} - {{ props.obj.time_closing }}</p>
+    <p class="card-desc">{{ props.obj.description }}</p>
   </a>
 </template>
 
 <style scoped>
-.card {
+.flow-card {
+  text-decoration: none;
+  color: black;
   min-height: 100%;
   display: flex;
   align-items: center;
   width: 120px;
   flex-direction: column;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 20px;
   background-color: rgba(243, 207, 121, 0.4);
   border-radius: 50px 50px 2px 2px;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-  text-decoration: none;
   transition: opacity 0.7s ease;
-  color: black;
 }
 
-.card:hover {
+.flow-card:hover {
   opacity: 0.75;
 }
 
@@ -54,8 +59,24 @@ const getPath = computed(() => {
   object-fit: cover;
 }
 
-.card p {
+.flow-card > p {
+  text-align: center;
+}
+
+.card-name {
   margin: 0;
-  padding-bottom: 15px;
+  padding-bottom: 8px;
+}
+
+.card-working-hours {
+  opacity: 0.4;
+  font-weight: 300;
+  font-size: 12px ;
+  margin-top: 0;
+}
+
+.card-desc {
+  margin: 0;
+  font-size: 14px;
 }
 </style>
