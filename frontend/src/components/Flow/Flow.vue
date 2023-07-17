@@ -1,7 +1,7 @@
 <script setup>
 import Explore from "../Explore.vue";
 import ItemsFlow from "../Flow/ItemsFlow.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed} from "vue";
 import {useFiltersStore} from "../../store";
 
 const props = defineProps({
