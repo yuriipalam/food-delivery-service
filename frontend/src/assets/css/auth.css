@@ -57,6 +57,9 @@ input {
     font-size: 16px;
     background-color: rgba(255, 255, 255, 0);
 }
+input.err {
+    border: 1px solid #ff4a4a;
+}
 input:focus {
     background-color: rgba(239, 238, 238, 0.4);
     outline: none;
@@ -88,4 +91,11 @@ button:hover {
     margin-top: 0;
     padding-top: 20px;
     padding-bottom: 20px;
+}
+
+.err-span-msg {
+    color: #58151c;
+    font-size: 16px;
+    padding-left: 10px;
+    margin-bottom: 7px;
 }

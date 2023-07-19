@@ -40,7 +40,11 @@ export async function signUp(email, phone, firstName, lastName, password, repeat
                     throw Error("Something went wrong")
             }
         }
-    })
+    }).catch(
+        (error) => {
+            throw Error("Something went wrong")
+        }
+    )
 }
 
 export async function signIn(email, password) {
@@ -59,5 +63,9 @@ export async function signIn(email, password) {
                     throw Error("Something went wrong")
             }
         }
-    })
+    }).catch(
+        (error) => {
+            throw Error("Something went wrong")
+        }
+    )
 }
