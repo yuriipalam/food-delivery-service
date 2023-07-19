@@ -28,7 +28,7 @@ func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request
 	var req *request.RegisterRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("cannot decode to json provided customer"))
+		response.SendBadRequestError(w, fmt.Errorf("cannot decode to json"))
 		return
 	}
 

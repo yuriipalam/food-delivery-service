@@ -1,0 +1,91 @@
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 360px;
+}
+
+h1 {
+    margin: 0;
+    text-align: center;
+    color: var(--blackish);
+    font-size: 32px;
+    font-weight: 600;
+}
+
+form > div {
+    margin-top: 0;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+p {
+    font-size: 16px;
+    color: var(--blackish);
+    font-weight: 400;
+    opacity: 0.7;
+    margin-right: 10px;
+}
+
+a {
+    color: var(--orange);
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.7s ease;
+}
+a:hover {
+    opacity: 0.75;
+}
+
+input {
+    display: flex;
+    border-radius: 24px;
+    border: 1px solid #494d4f;
+    opacity: 1;
+    padding-left: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0);
+}
+input:focus {
+    background-color: rgba(239, 238, 238, 0.4);
+    outline: none;
+}
+
+button {
+    background: rgba(254, 114, 76, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    border-radius: 30px;
+    color: var(--blackish);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 80px;
+    margin-right: 20%;
+    margin-left: 20%;
+    transition: opacity 0.7s ease;
+}
+button:hover {
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+.err-msg {
+    border-radius: 30px;
+    color: #58151c;
+    border: 1px solid #f1aeb5;
+    background-color: #f8d7da;
+    margin-bottom: 20px;
+    margin-top: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}

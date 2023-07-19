@@ -5,6 +5,8 @@ import Categories from "../views/Categories.vue";
 import ContactUs from "../views/ContactUs.vue";
 import Placeholder from "../components/Placeholder.vue";
 import Supplier from "../views/Supplier.vue";
+import SignUp from "../views/SignUp.vue";
+import SignIn from "../views/SignIn.vue";
 
 const routes = [
     {
@@ -31,6 +33,16 @@ const routes = [
         path: '/contact-us',
         name: 'ContactUs',
         component: ContactUs
+    },
+    {
+        path: '/sign-up',
+        name: 'SignUp',
+        component: SignUp
+    },
+    {
+        path: '/sign-in',
+        name: 'SignIn',
+        component: SignIn
     },
     {
         path: '/placeholder',

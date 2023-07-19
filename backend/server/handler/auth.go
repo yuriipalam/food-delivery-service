@@ -28,18 +28,19 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req request.LoginRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, fmt.Errorf("cannot decode json"))
 		return
 	}
 
 	customer, err := ah.repo.GetCustomerByEmail(req.Email)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, fmt.Errorf("email doesn't exist"))
 		return
 	}
-
+	fmt.Println(customer)
 	if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
 		response.SendBadRequestError(w, fmt.Errorf("invalid credentials"))
+		return
 	}
 
 	accessString, refreshString, err := ah.generatePairOfTokens(customer.ID)
@@ -52,7 +53,7 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		AccessToken: accessString,
 		RefreshToken: refreshString,
 	}
-
+	fmt.Println(resp)
 	response.SendOK(w, resp)
 }
 
@@ -64,6 +65,11 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Password != req.RepeatPassword {
+		response.SendBadRequestError(w, fmt.Errorf("password mismatch"))
+		return
+	}
+
 	if err := ah.repo.CheckIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
 		response.SendBadRequestError(w, err)
 		return
@@ -71,7 +77,7 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	customer, err := ah.repo.CreateCustomer(&req)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, fmt.Errorf("email already exist"))
 		return
 	}
 

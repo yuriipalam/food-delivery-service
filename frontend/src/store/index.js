@@ -11,11 +11,11 @@ export const useFiltersStore = defineStore("productsFilter", () => {
         selectedCategoryName.value = name
     }
 
-    return { selectedCategory, searchFor, selectCategory, selectedCategoryName }
-})
+    async function reset() {
+        selectedCategory.value = 0
+        selectedCategoryName.value = ''
+        searchFor.value = ''
+    }
 
-export const useCategoriesStore = defineStore("categoriesFiltered", () => {
-    const searchFor = ref('')
-
-    return { searchFor }
+    return { selectedCategory, searchFor, selectCategory, selectedCategoryName, reset }
 })

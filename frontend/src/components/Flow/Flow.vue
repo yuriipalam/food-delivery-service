@@ -1,7 +1,7 @@
 <script setup>
 import Explore from "../Explore.vue";
 import ItemsFlow from "../Flow/ItemsFlow.vue";
-import {computed} from "vue";
+import {computed, onUnmounted} from "vue";
 import {useFiltersStore} from "../../store";
 
 const props = defineProps({
@@ -17,10 +17,13 @@ const filteredItems = computed(() => {
   }
   return props.items.filter((item) => item.name.toLowerCase().includes(store.searchFor.toLowerCase()))
 })
+
+onUnmounted(async () => {
+  await store.reset()
+})
 </script>
 
 <template>
-  <Explore class="explore"></Explore>
   <div class="items-list-container">
     <ItemsFlow :items="filteredItems" :name="props.name"></ItemsFlow>
   </div>

@@ -38,12 +38,12 @@ func NewCustomerRepository(db *sql.DB) *CustomerRepository {
 func (cr *CustomerRepository) GetCustomerByID(id int) (*model.Customer, error) {
 	stmt, err := cr.db.Prepare("SELECT * FROM customer WHERE id = $1")
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare a statement for id %d", id)
+		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
 	row := stmt.QueryRow(id)
 	if row.Err() != nil {
-		return nil, fmt.Errorf("cannot run query for id %d", id)
+		return nil, fmt.Errorf("cannot execute query")
 	}
 
 	var customer model.Customer
@@ -61,7 +61,7 @@ func (cr *CustomerRepository) GetCustomerByID(id int) (*model.Customer, error) {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("cannot scan customer with id %d", id)
+		return nil, fmt.Errorf("cannot scan customer")
 	}
 
 	return &customer, nil
@@ -70,12 +70,12 @@ func (cr *CustomerRepository) GetCustomerByID(id int) (*model.Customer, error) {
 func (cr *CustomerRepository) GetCustomerByEmail(email string) (*model.Customer, error) {
 	stmt, err := cr.db.Prepare("SELECT * FROM customer WHERE email = $1")
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare a statement for email %s", email)
+		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
 	row := stmt.QueryRow(email)
 	if row.Err() != nil {
-		return nil, fmt.Errorf("cannot run query for email %s", email)
+		return nil, fmt.Errorf("cannot execute query")
 	}
 
 	var customer model.Customer
@@ -91,9 +91,9 @@ func (cr *CustomerRepository) GetCustomerByEmail(email string) (*model.Customer,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, fmt.Errorf("customer doesn't exist")
 		}
-		return nil, fmt.Errorf("cannot scan customer with email %s", email)
+		return nil, fmt.Errorf("cannot scan customer")
 	}
 
 	return &customer, nil
@@ -102,12 +102,12 @@ func (cr *CustomerRepository) GetCustomerByEmail(email string) (*model.Customer,
 func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer, error) {
 	stmt, err := cr.db.Prepare("SELECT * FROM customer WHERE phone = $1")
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare a statement for phone %s", phone)
+		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
 	row := stmt.QueryRow(phone)
 	if row.Err() != nil {
-		return nil, fmt.Errorf("cannot run query for phone %s", phone)
+		return nil, fmt.Errorf("cannot execute query")
 	}
 
 	var customer model.Customer
@@ -125,7 +125,7 @@ func (cr *CustomerRepository) GetCustomerByPhone(phone string) (*model.Customer,
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("cannot scan customer with phone %s", phone)
+		return nil, fmt.Errorf("cannot scan customer")
 	}
 
 	return &customer, nil
@@ -136,7 +136,7 @@ func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*mod
 									  VALUES ($1, $2, $3, $4, $5, $6)
 									  RETURNING id`)
 	if err != nil {
-		return nil, fmt.Errorf("cannot prepare statement for the given customer model")
+		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
 	p, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -153,7 +153,7 @@ func (cr *CustomerRepository) CreateCustomer(req *request.RegisterRequest) (*mod
 		time.Now(),
 	)
 	if row.Err() != nil {
-		return nil, fmt.Errorf("cannot execute query for the given customer")
+		return nil, fmt.Errorf("cannot execute query")
 	}
 
 	var lastInsertedID int
@@ -210,12 +210,12 @@ func (cr *CustomerRepository) UpdateCustomerPasswordByID(id int, req *request.Up
 func (cr *CustomerRepository) DeleteCustomerByID(id int) error {
 	stmt, err := cr.db.Prepare("DELETE FROM customer WHERE id = $1")
 	if err != nil {
-		return fmt.Errorf("cannot prepare statement for id %d", id)
+		return fmt.Errorf("cannot prepare statement")
 	}
 
 	result, err := stmt.Exec(id)
 	if err != nil {
-		return fmt.Errorf("cannot exec query for id %d", id)
+		return fmt.Errorf("cannot execute query")
 	}
 
 	_, err = result.RowsAffected()
@@ -231,14 +231,14 @@ func (cr *CustomerRepository) CheckIfEmailOrPhoneAlreadyExist(email string, phon
 	if err != nil {
 		return err
 	} else if c != nil {
-		return fmt.Errorf("email %s already exist", email)
+		return fmt.Errorf("email already exist")
 	}
 
 	c, err = cr.GetCustomerByPhone(phone)
 	if err != nil {
 		return err
 	} else if c != nil {
-		return fmt.Errorf("phone %s already exist", phone)
+		return fmt.Errorf("phone already exist")
 	}
 
 	return nil
@@ -250,7 +250,7 @@ func (cr *CustomerRepository) TryToGetCustomerByID(id int, w http.ResponseWriter
 		response.SendInternalServerError(w, err)
 		return nil, false
 	} else if customer == nil {
-		response.SendNotFoundError(w, fmt.Errorf("customer with id %d not found", id))
+		response.SendNotFoundError(w, fmt.Errorf("customer not found"))
 		return nil, false
 	}
 
@@ -261,12 +261,12 @@ func (cr *CustomerRepository) updateField(id int, fieldName string, fieldVal any
 	stmtStr := fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", fieldName)
 	stmt, err := cr.db.Prepare(stmtStr)
 	if err != nil {
-		return fmt.Errorf("cannot prepare statement for id %d, fieldname %s", id, fieldName)
+		return fmt.Errorf("cannot prepare statement")
 	}
 
 	_, err = stmt.Exec(fieldVal, id)
 	if err != nil {
-		return fmt.Errorf("cannot execute query for id %d, fieldname %s", id, fieldName)
+		return fmt.Errorf("cannot execute query")
 	}
 
 	return nil

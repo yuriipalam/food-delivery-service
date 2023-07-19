@@ -1,6 +1,9 @@
 <script setup>
 import NavLink from "./NavLink.vue";
 import PrimaryButton from "../PrimaryButton.vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 const props = defineProps({
   isLight: Boolean,
@@ -44,7 +47,7 @@ function getFill() {
             />
           </svg>
         </NavLink>
-        <PrimaryButton :class="'header-button'">Sign up</PrimaryButton>
+        <PrimaryButton @click="router.push({name: 'SignUp'})" :class="'header-button'">Sign up</PrimaryButton>
       </div>
     </div>
   </nav>
