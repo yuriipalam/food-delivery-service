@@ -2,6 +2,7 @@ package response
 
 type ProductResponse struct {
 	ID           int      `json:"id"`
+	URL          string   `json:"url"`
 	SupplierID   int      `json:"supplier_id"`
 	SupplierName string   `json:"supplier_name"`
 	CategoryID   int      `json:"category_id"`

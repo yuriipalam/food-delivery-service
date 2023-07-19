@@ -23,22 +23,22 @@ func NewSupplierHandler(repo repository.SupplierRepositoryI) *SupplierHandler {
 func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "id must be integer"
 		return
 	}
 
 	supplier, err := sh.repo.GetSupplierByID(id)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch supplier"))
 		return
 	} else if supplier == nil {
-		response.SendNotFoundError(w, fmt.Errorf("cannot find supplier with id %d", id))
+		response.SendNotFoundError(w, fmt.Errorf("supplier not found"))
 		return
 	}
 
 	supplierRes, err := sh.getSupplierResponseFromModel(supplier)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create response"))
 		return
 	}
 
@@ -48,22 +48,22 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *http.Request) {
 	categoryIDs, err := utils.GetIntSliceByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "ids must be integers"
 		return
 	}
 
 	suppliers, err := sh.repo.GetSuppliersByCategoryIDs(categoryIDs)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch suppliers"))
 		return
 	} else if len(suppliers) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no suppliers found with category_ids %d", categoryIDs))
+		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
 		return
 	}
 
 	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -73,7 +73,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {
 	suppliers, err := sh.repo.GetAllSuppliers()
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch suppliers"))
 		return
 	} else if len(suppliers) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
@@ -82,7 +82,7 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 
 	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -102,6 +102,7 @@ func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier
 		return nil, fmt.Errorf("cannot unmarshal supplier from db into response")
 	}
 
+	supplierRes.URL = fmt.Sprintf("/suppliers/%d", supplier.ID)
 	supplierRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/suppliers/%s", supplier.Image)
 
 	supplierRes.Categories, err = sh.repo.GetCategoryResponsesBySupplierID(supplier.ID)

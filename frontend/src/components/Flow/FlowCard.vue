@@ -8,13 +8,11 @@ const props = defineProps({
   obj: Object
 })
 
-const getPath = computed(() => {
-  return `${route.fullPath}/${props.obj.id}`
-})
+console.log(props.obj)
 </script>
 
 <template>
-  <a class="flow-card" :href="getPath">
+  <a class="flow-card" :href="props.obj.url">
     <div class="circle-mask">
       <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
     </div>

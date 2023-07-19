@@ -2,6 +2,10 @@ import {SignInError, SignUpError} from "./errors";
 
 const root = "http://localhost:8080"
 
+const errors = {
+    somethingWentWrong: "Something went wrong"
+}
+
 async function apiFetch(url, init) {
     return await fetch(root + url, init)
 }
@@ -16,6 +20,72 @@ async function POST(url, isProtected, data) {
     return await apiFetch(url, {
         method: 'POST',
         body: JSON.stringify(data)
+    })
+}
+
+export async function getSuppliers() {
+    return GET("/suppliers", false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
+    })
+}
+
+export async function getSupplierByID(id) {
+    return GET("/supplier/" + id, false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
+    })
+}
+
+export async function getSupplierCategoriesByID(id) {
+    return GET("/categories?supplier_id=" + id, false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
+    })
+}
+
+export async function getSupplierProductsByID(id) {
+    return GET("/products?supplier_id=" + id, false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
+    })
+}
+
+export async function getSuppliersByCategoryID(id) {
+    return GET("/suppliers?category_id=" + id, false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
+    })
+}
+
+export async function getCategories() {
+    return GET("/categories", false).then(async (response) => {
+        if (!response.ok) {
+            throw Error(errors.somethingWentWrong)
+        }
+        return response.json()
+    }).catch((error) => {
+        throw Error(errors.somethingWentWrong)
     })
 }
 
@@ -37,12 +107,12 @@ export async function signUp(email, phone, firstName, lastName, password, repeat
                 case SignUpError.passwordMismatch:
                     throw Error("Passwords don't match!")
                 default:
-                    throw Error("Something went wrong")
+                    throw Error(errors.somethingWentWrong)
             }
         }
     }).catch(
         (error) => {
-            throw Error("Something went wrong")
+            throw Error(errors.somethingWentWrong)
         }
     )
 }
@@ -60,12 +130,12 @@ export async function signIn(email, password) {
                 case SignInError.invalidCredentials:
                     throw Error("Invalid credentials!")
                 default:
-                    throw Error("Something went wrong")
+                    throw Error(errors.somethingWentWrong)
             }
         }
     }).catch(
         (error) => {
-            throw Error("Something went wrong")
+            throw Error(errors.somethingWentWrong)
         }
     )
 }

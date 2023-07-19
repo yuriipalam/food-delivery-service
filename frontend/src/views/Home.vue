@@ -25,6 +25,7 @@ const fetchCategories = async () => {
 
 onMounted(async () => {
   suppliers.value = await fetchSuppliers()
+
   categories.value = await fetchCategories()
 
   await nextTick()

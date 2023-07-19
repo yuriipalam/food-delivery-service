@@ -7,7 +7,7 @@ import {useRoute} from "vue-router";
 const route = useRoute()
 
 function isLight() {
-  return route.name === 'Home' || route.name === 'Suppliers' || route.name ===  'Categories'
+  return route.name === 'Home' || route.name === 'Suppliers' || route.name === 'Categories' || route.name === 'Category'
 }
 </script>
 

@@ -2,6 +2,7 @@ package response
 
 type SupplierResponse struct {
 	ID          int                        `json:"id"`
+	URL         string                     `json:"url"`
 	Categories  []SupplierCategoryResponse `json:"categories"`
 	Name        string                     `json:"name"`
 	ImageURL    string                     `json:"image_url"`

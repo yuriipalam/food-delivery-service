@@ -2,6 +2,7 @@ import * as VueRouter from "vue-router"
 import Home from "../views/Home.vue";
 import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
+import Category from "../views/Category.vue"
 import ContactUs from "../views/ContactUs.vue";
 import Placeholder from "../components/Placeholder.vue";
 import Supplier from "../views/Supplier.vue";
@@ -28,6 +29,11 @@ const routes = [
         path: '/categories',
         name: 'Categories',
         component: Categories
+    },
+    {
+        path: '/categories/:id',
+        name: 'Category',
+        component: Category
     },
     {
         path: '/contact-us',

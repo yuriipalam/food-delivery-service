@@ -23,22 +23,22 @@ func NewProductHandler(repo repository.ProductRepositoryI) *ProductHandler {
 func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetIDFromMuxVars(r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "id must be integer"
 		return
 	}
 
 	product, err := ph.repo.GetProductByID(id)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, fmt.Errorf("cannot fetch product"))
 		return
 	} else if product == nil {
-		response.SendNotFoundError(w, fmt.Errorf("no products found with given id %d", id))
+		response.SendNotFoundError(w, fmt.Errorf("product not found"))
 		return
 	}
 
 	productRes, err := ph.getProductResponseFromModel(product)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create response"))
 		return
 	}
 
@@ -48,7 +48,7 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	products, err := ph.repo.GetAllProducts()
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch products"))
 		return
 	} else if len(products) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
@@ -57,7 +57,7 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 
 	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -67,22 +67,22 @@ func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request)
 func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *http.Request) {
 	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "key must be integer"
 		return
 	}
 
 	products, err := ph.repo.GetAllProductsBySupplierID(supplierID)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch products"))
 		return
 	} else if len(products) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d found", supplierID))
+		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
 	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -92,22 +92,22 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *http.Request) {
 	categoryID, err := utils.GetIntValueByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "key must be integer"
 		return
 	}
 
 	products, err := ph.repo.GetAllProductsByCategoryID(categoryID)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch products"))
 		return
 	} else if len(products) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no products with category_id %d found", categoryID))
+		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
 	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -117,28 +117,28 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.ResponseWriter, r *http.Request) {
 	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "key must be integer"
 		return
 	}
 
 	categoryID, err := utils.GetIntValueByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err)
+		response.SendBadRequestError(w, err) // "key must be integer"
 		return
 	}
 
 	products, err := ph.repo.GetAllProductsBySupplierIDAndCategoryID(supplierID, categoryID)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot fetch products"))
 		return
 	} else if len(products) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no products with supplier_id %d and category_id %d found", supplierID, categoryID))
+		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
 	productsRes, err := ph.getProductResponsesFromModels(products)
 	if err != nil {
-		response.SendInternalServerError(w, err)
+		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
 		return
 	}
 
@@ -167,6 +167,7 @@ func (ph *ProductHandler) getProductResponseFromModel(product *model.Product) (*
 		return nil, err
 	}
 
+	productRes.URL = fmt.Sprintf("/products/%d", product.ID)
 	productRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/products/%s", product.Image)
 
 	return &productRes, nil

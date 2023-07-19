@@ -25,7 +25,7 @@ func GetIntValueByKeyFromMuxVars(key string, r *http.Request) (int, error) {
 	vars := mux.Vars(r)
 	value, err := strconv.Atoi(vars[key])
 	if err != nil {
-		return 0, fmt.Errorf("%s must be integer", key)
+		return 0, fmt.Errorf("key must be integer")
 	}
 
 	return value, nil
@@ -39,7 +39,7 @@ func GetIntSliceByKeyFromMuxVars(key string, r *http.Request) ([]int, error) {
 	for _, categoryIDStr := range categoryIDsStrSlice {
 		categoryID, err := strconv.Atoi(categoryIDStr)
 		if err != nil {
-			return nil, fmt.Errorf("%s must be integer", key)
+			return nil, fmt.Errorf("ids must be integers")
 		}
 
 		categoryIDs = append(categoryIDs, categoryID)

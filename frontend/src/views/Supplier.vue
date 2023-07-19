@@ -7,33 +7,17 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {computed, onMounted, reactive, ref} from "vue";
 import {useRoute} from 'vue-router'
 import {useFiltersStore} from "../store";
+import {getSupplierByID, getSupplierCategoriesByID, getSupplierProductsByID} from "../api/api";
 
 const store = useFiltersStore()
 
 const route = useRoute()
 const id = route.params.id
 
-const fetchSupplier = async () => {
-  return await fetch(`http://localhost:8080/supplier/${id}`).then(
-      (response) => response.json()
-  )
-}
 const supplier = ref(Object)
-
-const fetchSupplierCategories = async () => {
-  return await fetch(`http://localhost:8080/categories?supplier_id=${id}`).then(
-      (response) => response.json()
-  )
-}
 const categories = ref([])
-
-const fetchSupplierProducts = async () => {
-  return fetch(`http://localhost:8080/products?supplier_id=${id}`).then(
-      (response) => response.json()
-  )
-}
-
 const products = ref([])
+
 const filteredProducts = computed ( () => {
   let productsArray = ref(products.value)
 
@@ -50,9 +34,9 @@ const filteredProducts = computed ( () => {
 onMounted(async () => {
   changeOrdersHeight()
   window.addEventListener('resize', changeOrdersHeight)
-  supplier.value = await fetchSupplier()
-  categories.value = await fetchSupplierCategories()
-  products.value = await fetchSupplierProducts()
+  supplier.value = await getSupplierByID(id)
+  categories.value = await getSupplierCategoriesByID()
+  products.value = await getSupplierProductsByID()
 })
 
 function changeOrdersHeight() {
