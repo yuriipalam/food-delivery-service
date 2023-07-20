@@ -1,17 +1,23 @@
 <script setup>
+import {useCartStore} from "../../store";
 
+const props = defineProps({
+  product: Object
+})
+
+const useCart = useCartStore()
 </script>
 
 <template>
 <div class="order">
   <div class="order-info">
-    <p class="order-name">Maestro Honey McMenu</p>
-    <p class="order-price">3880 huf</p>
+    <p class="order-name">{{ props.product.name }}</p>
+    <p class="order-price">{{ props.product.price * useCart.getQuantity(props.product) }} huf</p>
   </div>
   <div class="order-controls">
-    <button class="minus-btn"><span class="minus-sign"></span></button>
-    <span class="quantity">2</span>
-    <button class="plus-btn"><span class="minus-sign"></span><span class="minus-sign rotated"></span></button>
+    <button class="minus-btn" @click="useCart.reduceQuantity(props.product)"><span class="minus-sign"></span></button>
+    <span class="quantity">{{ useCart.getQuantity(props.product) }}</span>
+    <button class="plus-btn" @click="useCart.increaseQuantity(props.product)"><span class="minus-sign"></span><span class="minus-sign rotated"></span></button>
   </div>
 </div>
 </template>

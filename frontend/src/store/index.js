@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 
 export const useFiltersStore = defineStore("filter", () => {
     const selectedCategory = ref(0)
@@ -48,6 +48,45 @@ export const useAuthStore = defineStore("auth", () => {
     return {
         setTokens, setUser, signOut, accessTokenRef, refreshTokenRef, idRef, emailRef, firstNameRef, lastNameRef,
     }
+}, {
+    persist: true
+})
+
+export const useCartStore = defineStore('cart', () => {
+    const products = ref([])
+
+    function addProduct(product) {
+        let index = products.value.findIndex(prod => prod.prod === product)
+        if (index !== -1) {
+            products.value[index].quantity++
+        } else {
+            products.value.push({
+                prod: product, quantity: 1,
+            })
+        }
+    }
+
+    function reduceQuantity(product) {
+        let index = products.value.findIndex(prod => prod.prod === product)
+        products.value[index].quantity--
+        if (products.value[index].quantity < 1) {
+            products.value.splice(index, 1)
+        }
+    }
+
+    function increaseQuantity(product) {
+        let index = products.value.findIndex(prod => prod.prod === product)
+        if (products.value[index].quantity >= 5) {
+            return
+        }
+        products.value[index].quantity++
+    }
+
+    function getQuantity(product) {
+        return products.value[products.value.findIndex(prod => prod.prod === product)].quantity
+    }
+
+    return {addProduct, reduceQuantity, increaseQuantity, getQuantity, products}
 }, {
     persist: true
 })

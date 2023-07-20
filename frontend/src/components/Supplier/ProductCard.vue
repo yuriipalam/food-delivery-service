@@ -1,7 +1,11 @@
 <script setup>
+import {useCartStore} from "../../store";
+
 const props = defineProps({
   product: Object
 })
+
+const useCart = useCartStore()
 </script>
 
 <template>
@@ -12,7 +16,7 @@ const props = defineProps({
       <p class="product-price">{{ props.product.price }} HUF</p>
     </div>
     <div class="right-side">
-      <button type="button">+</button>
+      <button type="button" @click="useCart.addProduct(props.product)">+</button>
       <img src="../../assets/img/bacon-menu.png" alt="">
     </div>
   </div>

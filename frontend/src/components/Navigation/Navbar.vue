@@ -30,12 +30,12 @@ function getFill() {
         <li>
           <NavLink :route-name="'Categories'" :is-light="props.isLight">Categories</NavLink>
         </li>
-        <li>
-          <NavLink :route-name="'ContactUs'" :is-light="props.isLight">Contact us</NavLink>
-        </li>
+<!--        <li>-->
+<!--          <NavLink :route-name="'ContactUs'" :is-light="props.isLight">Contact us</NavLink>-->
+<!--        </li>-->
       </ul>
       <div class="navbar-content">
-        <NavLink :route-name="'Placeholder'">
+        <NavLink :route-name="'Cart'">
           <!-- default height for svg is 33 !-->
           <svg xmlns="http://www.w3.org/2000/svg" width="26" viewBox="0 0 29 33" :fill="getFill()">
             <path

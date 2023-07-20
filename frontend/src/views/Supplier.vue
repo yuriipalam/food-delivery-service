@@ -6,10 +6,11 @@ import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from 'vue-router'
-import {useFiltersStore} from "../store";
+import {useCartStore, useFiltersStore} from "../store";
 import {getSupplierByID, getSupplierCategoriesByID, getSupplierProductsByID} from "../api/api";
 
-const store = useFiltersStore()
+const useFilters = useFiltersStore()
+const useCart = useCartStore()
 
 const route = useRoute()
 const id = route.params.id
@@ -21,14 +22,14 @@ const products = ref([])
 const filteredProducts = computed ( () => {
   let productsArray = ref(products.value)
 
-  if (store.searchFor !== '') {
-    productsArray.value = products.value.filter((product) => product.name.toLowerCase().includes(store.searchFor.toLowerCase()))
+  if (useFilters.searchFor !== '') {
+    productsArray.value = products.value.filter((product) => product.name.toLowerCase().includes(useFilters.searchFor.toLowerCase()))
   }
-  if (store.selectedCategory === 0) {
+  if (useFilters.selectedCategory === 0) {
     return productsArray.value
   }
 
-  return productsArray.value.filter((product) => product.category_id === store.selectedCategory);
+  return productsArray.value.filter((product) => product.category_id === useFilters.selectedCategory);
 })
 
 onMounted(async () => {
@@ -79,7 +80,7 @@ const productsLength = computed(() => {
       <CategoryList :categories="categories" class="categories"></CategoryList>
       <div class="products">
         <SearchBar :class="'transparent'" :name="supplier.name"></SearchBar>
-        <h2 class="category-name">{{ store.selectedCategoryName }}</h2>
+        <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
         <div class="products-list">
           <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"></ProductCard>
         </div>

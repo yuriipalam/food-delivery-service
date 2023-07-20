@@ -69,14 +69,15 @@ const routes = [
     //     component: Profile
     // },
     {
-        path: '/placeholder',
-        name: 'Placeholder',
-        component: Placeholder
+        path: '/cart',
+        name: 'Cart',
+        component: Cart
     }
 ]
 
 import {useAuthStore} from "../store";
 import OrderField from "../components/Supplier/OrderField.vue";
+import Cart from "../views/Cart.vue";
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),

@@ -1,28 +1,28 @@
 <script setup>
 
 import OrderField from "./OrderField.vue";
+import GoButton from "../GoButton.vue";
+import {useCartStore} from "../../store";
+
+const useCart = useCartStore()
 </script>
 
 <template>
   <div class="orders-block">
     <p class="title">Your order</p>
     <div class="orders-list">
-      <OrderField></OrderField>
-      <OrderField></OrderField>
-      <OrderField></OrderField>
-      <OrderField></OrderField>
-      <OrderField></OrderField>
+      <OrderField :product="product.prod" v-for="product in useCart.products"/>
     </div>
-    <button type="button">
+    <GoButton>
       <span>Go to checkout</span>
-      <span>3880 HUF</span>
-    </button>
+      <span>{{ useCart.products.map(prod => prod.prod.price * prod.quantity).reduce((total, current) => total + current, 0) }} HUF</span>
+    </GoButton>
   </div>
 </template>
 
 <style scoped>
 .orders-block {
-  border-radius: 31px;
+  border-radius: 30px;
   background: rgba(232, 230, 230, 0.4);
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
   display: flex;
@@ -45,15 +45,8 @@ import OrderField from "./OrderField.vue";
 
 button {
   margin-top: auto;
-  font-size: 20px;
   display: flex;
   justify-content: space-between;
-  font-weight: 400;
-  padding: 13px 25px;
-  border: none;
-  background-color: rgba(254, 114, 76, 0.4);
-  border-radius: 24px;
-  transition: opacity 0.7s ease;
 }
 button span:first-child {
   text-align: left;
@@ -61,8 +54,5 @@ button span:first-child {
 button span:last-child {
   text-align: right;
 }
-button:hover {
- opacity: 0.8;
-  cursor: pointer;
-}
+
 </style>
