@@ -1,4 +1,6 @@
-import {SignInError, SignUpError} from "./errors";
+import {ACCESS_TOKEN_EXPIRED, REFRESH_TOKEN_EXPIRED, SignInError, SignUpError} from "./errors";
+import {useAuthStore} from "../store";
+import router from "../router";
 
 const root = "http://localhost:8080"
 
@@ -7,19 +9,61 @@ const errors = {
 }
 
 async function apiFetch(url, init) {
-    return await fetch(root + url, init)
+    return await fetch(root + url, init).catch((err) => {
+        console.log(err.message)
+    })
 }
 
-async function GET(url) {
+async function GET(url, isProtected) {
     return await apiFetch(url, {
-        method: 'GET',
+        method: 'GET', headers: isProtected ? {
+            Authorization: 'Bearer ' + useAuthStore().accessTokenRef,
+        } : {},
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                let err = await response.json()
+                switch (err.message) {
+                    case ACCESS_TOKEN_EXPIRED:
+                        return GET_REFRESH().then(async (response) => {
+                            if (response.ok) {
+                                const data = await response.json()
+                                await useAuthStore().setTokens(data.access_token, data.refresh_token)
+                                return await GET(url, isProtected)
+                            }
+                        })
+                }
+                throw Error(errors.somethingWentWrong)
+            }
+
+            return response
+        })
+}
+
+async function GET_REFRESH() {
+    return await apiFetch('/refresh', {
+        method: 'GET', headers: {
+            Authorization: 'Bearer ' + useAuthStore().refreshTokenRef
+        }
+    }).then(async (response) => {
+        if (!response.ok) {
+            let err = await response.json()
+            switch (err.message) {
+                case REFRESH_TOKEN_EXPIRED:
+                    await useAuthStore().signOut()
+                    await router.push({name: 'SignIn'})
+                    break
+                default:
+                    throw Error('Something went wrong')
+            }
+        }
+        return response
     })
 }
 
 async function POST(url, isProtected, data) {
     return await apiFetch(url, {
-        method: 'POST',
-        body: JSON.stringify(data)
+        method: 'POST', body: JSON.stringify(data)
     })
 }
 
@@ -29,8 +73,6 @@ export async function getSuppliers() {
             throw Error(errors.somethingWentWrong)
         }
         return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
     })
 }
 
@@ -39,9 +81,9 @@ export async function getSupplierByID(id) {
         if (!response.ok) {
             throw Error(errors.somethingWentWrong)
         }
-        return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
+        const data = response.json()
+        console.log(data)
+        return data
     })
 }
 
@@ -51,8 +93,6 @@ export async function getSupplierCategoriesByID(id) {
             throw Error(errors.somethingWentWrong)
         }
         return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
     })
 }
 
@@ -62,8 +102,6 @@ export async function getSupplierProductsByID(id) {
             throw Error(errors.somethingWentWrong)
         }
         return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
     })
 }
 
@@ -73,8 +111,6 @@ export async function getSuppliersByCategoryID(id) {
             throw Error(errors.somethingWentWrong)
         }
         return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
     })
 }
 
@@ -84,18 +120,12 @@ export async function getCategories() {
             throw Error(errors.somethingWentWrong)
         }
         return response.json()
-    }).catch((error) => {
-        throw Error(errors.somethingWentWrong)
     })
 }
 
 export async function signUp(email, phone, firstName, lastName, password, repeatPassword) {
     return POST("/register", false, {
-        'email': email,
-        'phone': phone,
-        'last_name': lastName,
-        'password': password,
-        'repeat_password': repeatPassword,
+        'email': email, 'phone': phone, 'first_name': firstName, 'last_name': lastName, 'password': password, 'repeat_password': repeatPassword,
     }).then(async (response) => {
         if (!response.ok) {
             let err = await response.json()
@@ -110,17 +140,12 @@ export async function signUp(email, phone, firstName, lastName, password, repeat
                     throw Error(errors.somethingWentWrong)
             }
         }
-    }).catch(
-        (error) => {
-            throw Error(errors.somethingWentWrong)
-        }
-    )
+    })
 }
 
 export async function signIn(email, password) {
     return POST("/login", false, {
-        'email': email,
-        'password': password
+        'email': email, 'password': password
     }).then(async (response) => {
         if (!response.ok) {
             let err = await response.json()
@@ -133,9 +158,16 @@ export async function signIn(email, password) {
                     throw Error(errors.somethingWentWrong)
             }
         }
-    }).catch(
-        (error) => {
-            throw Error(errors.somethingWentWrong)
+        return response.json()
+    })
+}
+
+export async function getCustomer() {
+    return await GET("/customer", true).then(response => {
+        return response.json()
+    }).catch(err => {
+        if (err === REFRESH_TOKEN_EXPIRED) {
+
         }
-    )
+    })
 }

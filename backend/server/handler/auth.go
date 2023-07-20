@@ -53,7 +53,6 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		AccessToken: accessString,
 		RefreshToken: refreshString,
 	}
-	fmt.Println(resp)
 	response.SendOK(w, resp)
 }
 

@@ -91,7 +91,7 @@ func (cr *CustomerRepository) GetCustomerByEmail(email string) (*model.Customer,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("customer doesn't exist")
+			return nil, nil
 		}
 		return nil, fmt.Errorf("cannot scan customer")
 	}

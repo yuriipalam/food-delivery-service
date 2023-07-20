@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"food_delivery/config"
 	"food_delivery/response"
 	"food_delivery/service"
@@ -20,7 +21,7 @@ func ValidateAccessToken(next http.Handler) http.Handler {
 
 		claims, err := tokenService.ValidateAccessToken(accessTokenString)
 		if err != nil {
-			response.SendStatusUnauthorizedError(w, err)
+			response.SendStatusUnauthorizedError(w, fmt.Errorf("access token expired"))
 			return
 		}
 
@@ -43,7 +44,7 @@ func ValidateRefreshToken(next http.Handler) http.Handler {
 
 		claims, err := tokenService.ValidateRefreshToken(refreshTokenString)
 		if err != nil {
-			response.SendStatusUnauthorizedError(w, err)
+			response.SendStatusUnauthorizedError(w, fmt.Errorf("refresh token expired"))
 			return
 		}
 

@@ -1,3 +1,6 @@
+export const ACCESS_TOKEN_EXPIRED = "access token expired"
+export const REFRESH_TOKEN_EXPIRED = "refresh token expired"
+
 const EMAIL_EXISTS = "email already exist"
 const INVALID_CREDENTIALS = "invalid credentials"
 const ID_MUST_BE_INT = "id must be integer"

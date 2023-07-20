@@ -24,28 +24,6 @@ func NewCustomerHandler(repo repository.CustomerRepositoryI, cfg *config.Config)
 	}
 }
 
-func (ch *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request) {
-	var req *request.RegisterRequest
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("cannot decode to json"))
-		return
-	}
-
-	if err := ch.repo.CheckIfEmailOrPhoneAlreadyExist(req.Email, req.Phone); err != nil {
-		response.SendBadRequestError(w, err)
-		return
-	}
-
-	customer, err := ch.repo.CreateCustomer(req)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, customer)
-}
-
 func (ch *CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value("claims").(*service.JwtCustomClaims)
 	if !ok {

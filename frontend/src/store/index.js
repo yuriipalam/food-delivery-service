@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import {ref} from "vue";
 
-export const useFiltersStore = defineStore("productsFilter", () => {
+export const useFiltersStore = defineStore("filter", () => {
     const selectedCategory = ref(0)
     const selectedCategoryName = ref('')
     const searchFor = ref('')
@@ -17,5 +17,37 @@ export const useFiltersStore = defineStore("productsFilter", () => {
         searchFor.value = ''
     }
 
-    return { selectedCategory, searchFor, selectCategory, selectedCategoryName, reset }
+    return {selectedCategory, searchFor, selectCategory, selectedCategoryName, reset}
+})
+
+export const useAuthStore = defineStore("auth", () => {
+    const accessTokenRef = ref('')
+    const refreshTokenRef = ref('')
+
+    const idRef = ref(-1)
+    const emailRef = ref('')
+    const firstNameRef = ref('')
+    const lastNameRef = ref('')
+
+    async function setTokens(accessToken, refreshToken) {
+        accessTokenRef.value = accessToken
+        refreshTokenRef.value = refreshToken
+    }
+
+    async function setUser(id, email, firstName, lastName) {
+        idRef.value = id
+        emailRef.value = email
+        firstNameRef.value = firstName
+        lastNameRef.value = lastName
+    }
+
+    async function signOut() {
+        await setUser(-1, "", "", "")
+    }
+
+    return {
+        setTokens, setUser, signOut, accessTokenRef, refreshTokenRef, idRef, emailRef, firstNameRef, lastNameRef,
+    }
+}, {
+    persist: true
 })

@@ -2,8 +2,10 @@
 import NavLink from "./NavLink.vue";
 import PrimaryButton from "../PrimaryButton.vue";
 import {useRouter} from "vue-router";
+import {useAuthStore} from "../../store";
 
 const router = useRouter()
+const useAuth = useAuthStore()
 
 const props = defineProps({
   isLight: Boolean,
@@ -47,7 +49,8 @@ function getFill() {
             />
           </svg>
         </NavLink>
-        <PrimaryButton @click="router.push({name: 'SignUp'})" :class="'header-button'">Sign up</PrimaryButton>
+        <PrimaryButton v-if="useAuth.idRef === -1" @click="router.push({name: 'SignUp'})" :class="'header-button'">Sign up</PrimaryButton>
+        <PrimaryButton v-if="useAuth.idRef !== -1" @click="router.push({name: 'Profile'})" :class="'header-button'">Profile</PrimaryButton>
       </div>
     </div>
   </nav>

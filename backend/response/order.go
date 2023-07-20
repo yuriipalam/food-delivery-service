@@ -5,7 +5,6 @@ import "time"
 type OrderResponse struct {
 	ID                int                     `json:"id"`
 	CustomerID        int                     `json:"customer_id"`
-	CustomerName      string                  `json:"customer_name"`
 	Suppliers         []OrderSupplierResponse `json:"suppliers"`
 	Products          []OrderProductResponse  `json:"products"`
 	RecipientFullName string                  `json:"recipient_full_name"`

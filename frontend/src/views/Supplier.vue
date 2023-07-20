@@ -4,7 +4,7 @@ import CategoryList from "../components/Supplier/CategoryList.vue";
 import SearchBar from "../components/SearchBar.vue";
 import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useRoute} from 'vue-router'
 import {useFiltersStore} from "../store";
 import {getSupplierByID, getSupplierCategoriesByID, getSupplierProductsByID} from "../api/api";
@@ -35,8 +35,8 @@ onMounted(async () => {
   changeOrdersHeight()
   window.addEventListener('resize', changeOrdersHeight)
   supplier.value = await getSupplierByID(id)
-  categories.value = await getSupplierCategoriesByID()
-  products.value = await getSupplierProductsByID()
+  categories.value = await getSupplierCategoriesByID(id)
+  products.value = await getSupplierProductsByID(id)
 })
 
 function changeOrdersHeight() {

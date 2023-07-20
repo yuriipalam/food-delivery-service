@@ -1,11 +1,13 @@
 <script setup>
 import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {signUp} from "../api/api";
+import {getCustomer, signIn, signUp} from "../api/api";
 import useVuelidate from "@vuelidate/core";
 import {email, maxLength, minLength, required} from "@vuelidate/validators";
+import {useAuthStore} from "../store";
 
 const router = useRouter()
+const useAuth = useAuthStore()
 
 onMounted(async () => {
   await mainHeightSetter()
@@ -43,12 +45,30 @@ const errMsg = ref('')
 
 const v$ = useVuelidate(rules, formData)
 
+function signInCustomer(email, password) {
+  signIn(email, password).then((response) => {
+    useAuth.setTokens(response.access_token, response.refresh_token)
+    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
+    router.push('/')
+  }).catch(err => {
+    errMsg.value = err.message
+  })
+}
+
 const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
     await signUp(formData.email, formData.phone, formData.firstName, formData.lastName, formData.password, formData.repeatPassword)
         .then((response) => router.push('/'))
         .catch((error) => errMsg.value = error.message)
+
+    signIn(formData.email, formData.password).then((response) => {
+      useAuth.setTokens(response.access_token, response.refresh_token)
+      getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
+      router.push('/')
+    }).catch(err => {
+      errMsg.value = err.message
+    })
   }
 }
 </script>
@@ -65,22 +85,30 @@ const submitForm = async () => {
         {{ errMsg }}
       </div>
       <span v-for="error in v$.email.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Email'" name="email" :required="true" :type="'email'" :class="{'err': v$.email.$error}" v-model="formData.email"/>
+      <input :placeholder="'Email'" name="email" :required="true" :type="'email'" :class="{'err': v$.email.$error}"
+             v-model="formData.email"/>
 
       <span v-for="error in v$.phone.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Phone'" name="phone" :required="true" :class="{'err': v$.phone.$error}" v-model="formData.phone"/>
+      <input :placeholder="'Phone'" name="phone" :required="true" :class="{'err': v$.phone.$error}"
+             v-model="formData.phone"/>
 
       <span v-for="error in v$.firstName.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'First name'" name="firstName" :required="true" :class="{'err': v$.firstName.$error}" v-model="formData.firstName"/>
+      <input :placeholder="'First name'" name="firstName" :required="true" :class="{'err': v$.firstName.$error}"
+             v-model="formData.firstName"/>
 
       <span v-for="error in v$.lastName.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Last name'" name="lastName" :required="true" :class="{'err': v$.lastName.$error}" v-model="formData.lastName"/>
+      <input :placeholder="'Last name'" name="lastName" :required="true" :class="{'err': v$.lastName.$error}"
+             v-model="formData.lastName"/>
 
       <span v-for="error in v$.password.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Password'" name="password" :required="true" type="password" :class="{'err': v$.password.$error}" v-model="formData.password"/>
+      <input :placeholder="'Password'" name="password" :required="true" type="password"
+             :class="{'err': v$.password.$error}" v-model="formData.password"/>
 
-      <span v-for="error in v$.repeatPassword.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Repeat password'" name="repeatPassword" :class="{'err': v$.repeatPassword.$error}" :required="true" type="password"
+      <span v-for="error in v$.repeatPassword.$errors" :key="error.$uid" class="err-span-msg">{{
+          error.$message
+        }}</span>
+      <input :placeholder="'Repeat password'" name="repeatPassword" :class="{'err': v$.repeatPassword.$error}"
+             :required="true" type="password"
              v-model="formData.repeatPassword"/>
 
       <button type="submit">Next</button>

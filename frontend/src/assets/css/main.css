@@ -19,6 +19,12 @@
     padding: 0 40px;
 }
 
+.container-small {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
 body {
     background-color: var(--milky);
     margin: 0 0;

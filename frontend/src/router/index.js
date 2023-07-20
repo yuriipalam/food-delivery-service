@@ -8,7 +8,7 @@ import Placeholder from "../components/Placeholder.vue";
 import Supplier from "../views/Supplier.vue";
 import SignUp from "../views/SignUp.vue";
 import SignIn from "../views/SignIn.vue";
-
+import Profile from "../views/Profile.vue";
 const routes = [
     {
         path: '/',
@@ -51,13 +51,44 @@ const routes = [
         component: SignIn
     },
     {
+        path: '/profile',
+        name: 'Profile',
+        meta: {requiresAuth: true},
+        component: Profile
+    },
+    {
+        path: '/profile/orders',
+        name: 'ProfileOrders',
+        meta: {requiresAuth: true},
+        component: Profile
+    },
+    // {
+    //     path: '/profile/settings',
+    //     name: 'ProfileSettings',
+    //     meta: {requiresAuth: true},
+    //     component: Profile
+    // },
+    {
         path: '/placeholder',
         name: 'Placeholder',
         component: Placeholder
     }
 ]
 
-export default VueRouter.createRouter({
+import {useAuthStore} from "../store";
+import OrderField from "../components/Supplier/OrderField.vue";
+
+const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
     routes
+})
+
+export default router
+
+router.beforeEach((to, from, next) => {
+    if (to.meta.requiresAuth && useAuthStore().idRef === -1) {
+        next({name: 'SignIn'})
+    } else {
+        next()
+    }
 })

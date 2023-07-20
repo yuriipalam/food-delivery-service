@@ -2,11 +2,6 @@
 import {onBeforeMount, onMounted, onUnmounted} from "vue";
 import PrimaryButton from "./PrimaryButton.vue";
 
-// onBeforeMount(() => {
-//   document.body.className = 'home';
-//   document.documentElement.className = 'home';
-// })
-
 onMounted(() => {
   document.body.className = 'home';
   document.documentElement.className = 'home';

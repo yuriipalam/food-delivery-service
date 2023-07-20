@@ -108,5 +108,9 @@ func Start(cfg *config.Config) {
 	r.HandleFunc("/images/{folder}/{name}", getImage).Methods(http.MethodGet)
 
 	fmt.Println("Server is started...")
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
 }

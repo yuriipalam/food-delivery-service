@@ -1,9 +1,12 @@
 <script setup>
 import {computed, onMounted, reactive, ref} from "vue";
-import {signIn} from "../api/api";
+import {getCustomer, signIn} from "../api/api";
 import {useRouter} from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import {email, minLength, required} from "@vuelidate/validators";
+import {useAuthStore} from "../store";
+
+const useAuth = useAuthStore()
 
 const formData = reactive({
   email: "",
@@ -24,9 +27,7 @@ const v$ = useVuelidate(rules, formData)
 const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
-    await signIn(formData.email, formData.password)
-        .then((response) => router.push('/'))
-        .catch((error) => errMsg.value = error.message)
+    signInCustomer(formData.email, formData.password)
   }
 }
 const router = useRouter()
@@ -41,6 +42,16 @@ async function mainHeightSetter() {
   const main = document.querySelector('main')
   main.style.height = window.innerHeight - navHeight + 'px'
   main.style.marginTop = -navHeight / 2 + 'px'
+}
+
+function signInCustomer(email, password) {
+  signIn(email, password).then((response) => {
+    useAuth.setTokens(response.access_token, response.refresh_token)
+    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
+    router.push('/')
+  }).catch(err => {
+    errMsg.value = err.message
+  })
 }
 </script>
 
@@ -60,7 +71,8 @@ async function mainHeightSetter() {
              v-model="formData.email"/>
 
       <span v-for="error in v$.password.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
-      <input :placeholder="'Password'" name="password" :required="true" type="password" :class="{'err': v$.password.$error}"
+      <input :placeholder="'Password'" name="password" :required="true" type="password"
+             :class="{'err': v$.password.$error}"
              v-model="formData.password"/>
 
       <button type="submit">Next</button>

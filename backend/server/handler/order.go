@@ -66,6 +66,11 @@ func (oh *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.SupplierIDs) > 2 {
+		response.SendBadRequestError(w, fmt.Errorf("at most two suppliers in one order"))
+		return
+	}
+
 	req.CustomerID = claims.ID
 
 	order, err := oh.repo.CreateOrder(&req)
@@ -102,11 +107,6 @@ func (oh *OrderHandler) getOrderResponseFromModel(order *model.Order) (*response
 	}
 
 	orderRes.Suppliers, err = oh.repo.GetSupplierResponsesByOrderID(order.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	orderRes.CustomerName, err = oh.repo.GetCustomerNameByOrderID(order.ID)
 	if err != nil {
 		return nil, err
 	}

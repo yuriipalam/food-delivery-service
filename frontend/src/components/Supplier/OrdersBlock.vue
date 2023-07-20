@@ -1,17 +1,17 @@
 <script setup>
 
-import Order from "./Order.vue";
+import OrderField from "./OrderField.vue";
 </script>
 
 <template>
   <div class="orders-block">
     <p class="title">Your order</p>
     <div class="orders-list">
-      <Order></Order>
-      <Order></Order>
-      <Order></Order>
-      <Order></Order>
-      <Order></Order>
+      <OrderField></OrderField>
+      <OrderField></OrderField>
+      <OrderField></OrderField>
+      <OrderField></OrderField>
+      <OrderField></OrderField>
     </div>
     <button type="button">
       <span>Go to checkout</span>
