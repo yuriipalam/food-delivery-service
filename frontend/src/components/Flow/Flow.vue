@@ -1,6 +1,6 @@
 <script setup>
 import Explore from "../Explore.vue";
-import {computed, onUnmounted} from "vue";
+import {computed, nextTick, onBeforeMount, onBeforeUpdate, onMounted, onUnmounted, watch} from "vue";
 import {useFiltersStore} from "../../store";
 import FlowCard from "./FlowCard.vue";
 
@@ -21,6 +21,14 @@ const filteredItems = computed(() => {
 onUnmounted(async () => {
   await store.reset()
 })
+
+// onBeforeUpdate(() => {
+//   const neededHeight =  window.getComputedStyle(document.querySelector('.flow-card')).getPropertyValue('height')
+//   const allFlowCards = document.querySelectorAll('.flow-card')
+//   allFlowCards.forEach(flowCard => {
+//     flowCard.style.height = neededHeight + 'px'
+//   })
+// })
 </script>
 
 <template>
@@ -28,6 +36,7 @@ onUnmounted(async () => {
     <h3>{{ props.name }}</h3>
     <div class="items-flow">
       <FlowCard v-for="item in filteredItems" :obj="item" class="flow-card"></FlowCard>
+      <span v-if="filteredItems.length === 0" class="not-found">Not found</span>
     </div>
   </div>
 </template>
@@ -52,6 +61,11 @@ h3 {
   grid-gap: 60px;
   align-self: center;
   justify-content: center;
+}
+
+.not-found {
+  font-size: 28px;
+  margin-top: 25px;
 }
 
 .flow-card {

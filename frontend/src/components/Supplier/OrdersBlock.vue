@@ -3,6 +3,9 @@
 import OrderField from "./OrderField.vue";
 import GoButton from "../GoButton.vue";
 import {useCartStore} from "../../store";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 const useCart = useCartStore()
 </script>
@@ -11,11 +14,11 @@ const useCart = useCartStore()
   <div class="orders-block">
     <p class="title">Your order</p>
     <div class="orders-list">
-      <OrderField :product="product.prod" v-for="product in useCart.products"/>
+      <OrderField :product="product.product" v-for="product in useCart.products"/>
     </div>
-    <GoButton>
+    <GoButton @click="router.push({'name': 'Cart'})">
       <span>Go to checkout</span>
-      <span>{{ useCart.products.map(prod => prod.prod.price * prod.quantity).reduce((total, current) => total + current, 0) }} HUF</span>
+      <span>{{ useCart.getTotalPrice() }} HUF</span>
     </GoButton>
   </div>
 </template>
@@ -45,14 +48,5 @@ const useCart = useCartStore()
 
 button {
   margin-top: auto;
-  display: flex;
-  justify-content: space-between;
 }
-button span:first-child {
-  text-align: left;
-}
-button span:last-child {
-  text-align: right;
-}
-
 </style>

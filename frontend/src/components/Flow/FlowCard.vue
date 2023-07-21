@@ -1,14 +1,10 @@
 <script setup>
-import {useRoute} from "vue-router";
-import {computed} from "vue";
-
-const route = useRoute()
+import {truncate} from "../../utils";
+import {onMounted} from "vue";
 
 const props = defineProps({
   obj: Object
 })
-
-console.log(props.obj)
 </script>
 
 <template>
@@ -18,7 +14,7 @@ console.log(props.obj)
     </div>
     <p class="card-name">{{ props.obj.name }}</p>
     <p class="card-working-hours" v-if="typeof props.obj.time_opening !== 'undefined'">{{ props.obj.time_opening }} - {{ props.obj.time_closing }}</p>
-    <p class="card-desc">{{ props.obj.description }}</p>
+    <p class="card-desc">{{ truncate(props.obj.description, 50) }}</p>
   </a>
 </template>
 

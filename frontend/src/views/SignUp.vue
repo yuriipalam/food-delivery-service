@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {getCustomer, signIn, signUp} from "../api/api";
 import useVuelidate from "@vuelidate/core";
@@ -9,12 +9,16 @@ import {useAuthStore} from "../store";
 const router = useRouter()
 const useAuth = useAuthStore()
 
-onMounted(async () => {
-  await mainHeightSetter()
-  window.addEventListener('resize', await mainHeightSetter)
+onMounted( () => {
+  mainHeightSetter()
+  window.addEventListener('resize', mainHeightSetter)
 })
 
-async function mainHeightSetter() {
+onUnmounted(() => {
+  window.removeEventListener('resize', mainHeightSetter)
+})
+
+function mainHeightSetter() {
   const navHeight = document.querySelector('nav').offsetHeight
   const main = document.querySelector('main')
   main.style.height = window.innerHeight - navHeight + 'px'
@@ -45,16 +49,6 @@ const errMsg = ref('')
 
 const v$ = useVuelidate(rules, formData)
 
-function signInCustomer(email, password) {
-  signIn(email, password).then((response) => {
-    useAuth.setTokens(response.access_token, response.refresh_token)
-    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
-    router.push('/')
-  }).catch(err => {
-    errMsg.value = err.message
-  })
-}
-
 const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
@@ -64,7 +58,7 @@ const submitForm = async () => {
 
     signIn(formData.email, formData.password).then((response) => {
       useAuth.setTokens(response.access_token, response.refresh_token)
-      getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
+      getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.phone, response.first_name, response.last_name))
       router.push('/')
     }).catch(err => {
       errMsg.value = err.message

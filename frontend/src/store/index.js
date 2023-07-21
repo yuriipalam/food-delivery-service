@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 
 export const useFiltersStore = defineStore("filter", () => {
     const selectedCategory = ref(0)
@@ -26,6 +26,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     const idRef = ref(-1)
     const emailRef = ref('')
+    const phoneRef = ref('')
     const firstNameRef = ref('')
     const lastNameRef = ref('')
 
@@ -34,59 +35,96 @@ export const useAuthStore = defineStore("auth", () => {
         refreshTokenRef.value = refreshToken
     }
 
-    async function setUser(id, email, firstName, lastName) {
+    async function setUser(id, email, phone, firstName, lastName) {
         idRef.value = id
         emailRef.value = email
+        phoneRef.value = phone
         firstNameRef.value = firstName
         lastNameRef.value = lastName
     }
 
     async function signOut() {
-        await setUser(-1, "", "", "")
+        await setUser(-1, "", "", "", "")
+        await setTokens('', '')
     }
 
     return {
-        setTokens, setUser, signOut, accessTokenRef, refreshTokenRef, idRef, emailRef, firstNameRef, lastNameRef,
+        setTokens,
+        setUser,
+        signOut,
+        accessTokenRef,
+        refreshTokenRef,
+        idRef,
+        emailRef,
+        phoneRef,
+        firstNameRef,
+        lastNameRef,
     }
 }, {
     persist: true
 })
 
 export const useCartStore = defineStore('cart', () => {
-    const products = ref([])
+    const products = ref({})
+    const supplierIDs = ref([])
 
     function addProduct(product) {
-        let index = products.value.findIndex(prod => prod.prod === product)
-        if (index !== -1) {
-            products.value[index].quantity++
+        const id = product.id
+
+        if (products.value[id]) {
+            if (products.value[id].quantity < 5) {
+                products.value[id].quantity++
+            }
+            return
+        } else if (!supplierIDs.value.includes(product.supplier_id)) {
+            if (supplierIDs.value.length >= 1) {
+                throw Error('You can order from at most two suppliers')
+            }
+            supplierIDs.value.push(product.supplier_id)
+        }
+
+        products.value[id] = {
+            product: product, quantity: 1
+        }
+    }
+
+    function reduceQuantity(id) {
+        if (products.value[id].quantity <= 1) {
+            delete products.value[id]
         } else {
-            products.value.push({
-                prod: product, quantity: 1,
-            })
+            products.value[id].quantity--
         }
     }
 
-    function reduceQuantity(product) {
-        let index = products.value.findIndex(prod => prod.prod === product)
-        products.value[index].quantity--
-        if (products.value[index].quantity < 1) {
-            products.value.splice(index, 1)
-        }
-    }
-
-    function increaseQuantity(product) {
-        let index = products.value.findIndex(prod => prod.prod === product)
-        if (products.value[index].quantity >= 5) {
+    function increaseQuantity(id) {
+        if (products.value[id].quantity >= 5) {
             return
         }
-        products.value[index].quantity++
+        products.value[id].quantity++
     }
 
-    function getQuantity(product) {
-        return products.value[products.value.findIndex(prod => prod.prod === product)].quantity
+    function getQuantity(id) {
+        return products.value[id].quantity
     }
 
-    return {addProduct, reduceQuantity, increaseQuantity, getQuantity, products}
+    function getProductTotalPrice(id) {
+        return parseFloat((products.value[id].quantity * products.value[id].product.price).toFixed(2))
+    }
+
+    function getTotalPrice() {
+        return Object.keys(products.value).map(key => getProductTotalPrice(parseInt(key))).reduce((total, current) => total + current, 0)
+    }
+
+    return {
+        addProduct,
+        reduceQuantity,
+        increaseQuantity,
+        getQuantity,
+        getProductTotalPrice,
+        supplierIDs,
+        getTotalPrice,
+        products
+    }
 }, {
     persist: true
 })

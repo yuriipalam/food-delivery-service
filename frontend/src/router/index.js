@@ -71,6 +71,7 @@ const routes = [
     {
         path: '/cart',
         name: 'Cart',
+        // meta: {requiresAuth: true},
         component: Cart
     }
 ]

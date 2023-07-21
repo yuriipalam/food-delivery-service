@@ -1,6 +1,11 @@
 <script setup>
+
+
+import {truncate} from "../../utils";
+
 const props = defineProps({
   name: String,
+  desc: String,
   quantity: String
 })
 </script>
@@ -8,7 +13,8 @@ const props = defineProps({
 <template>
   <div class="bar">
     <h1>{{ props.name }}</h1>
-    <p>{{ props.quantity }} available products</p>
+    <p class="desc" v-if="props.desc">{{ truncate(props.desc, 100) }}</p>
+    <p class="quantity">{{ props.quantity }} available products</p>
   </div>
 </template>
 
@@ -24,19 +30,25 @@ const props = defineProps({
   flex-direction: column;
 }
 
-p, h1 {
-  margin: 0 0;
-}
-
 h1 {
   font-size: 48px;
   font-weight: 500;
-  color: var(--blackish)
+  color: var(--blackish);
+  margin: 0 0;
 }
 
-p {
+.desc {
   color: black;
   font-weight: 500;
   font-size: 16px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  max-width: 500px;
+}
+
+.quantity {
+  margin: 0 0;
+  font-size: 14px;
+  font-weight: 400;
 }
 </style>

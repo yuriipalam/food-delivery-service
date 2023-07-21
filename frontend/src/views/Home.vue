@@ -33,7 +33,6 @@ onMounted(async () => {
   const main = document.querySelector('main')
   main.style.minHeight = main.offsetHeight + 'px'
 })
-
 </script>
 
 <template>

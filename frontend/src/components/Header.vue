@@ -1,6 +1,9 @@
 <script setup>
 import {onBeforeMount, onMounted, onUnmounted} from "vue";
 import PrimaryButton from "./PrimaryButton.vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 onMounted(() => {
   document.body.className = 'home';
@@ -23,6 +26,15 @@ function calculateMargins(e) {
   header.style.marginTop = space + 'px'
   header.style.marginBottom = space + nav.offsetHeight + 'px'
 }
+
+function orderClick() {
+  const scrollTo = document.querySelector('.explore').offsetTop - 40
+
+  window.scrollTo({
+    top: scrollTo,
+    behavior: 'smooth'
+  })
+}
 </script>
 
 <template>
@@ -30,8 +42,8 @@ function calculateMargins(e) {
     <h1>The best food delivery in Budapest</h1>
     <p>Order now with 10% discount</p>
     <div class="buttons">
-      <PrimaryButton :class="'solid-button'">Order now</PrimaryButton>
-      <PrimaryButton :class="'transparent-button'">Sign up</PrimaryButton>
+      <PrimaryButton @click="orderClick()" :class="'solid-button'">Order now</PrimaryButton>
+      <PrimaryButton @click="router.push({'name': 'SignUp'})" :class="'transparent-button'">Sign up</PrimaryButton>
     </div>
   </header>
 </template>

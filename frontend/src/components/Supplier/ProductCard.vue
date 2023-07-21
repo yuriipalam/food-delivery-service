@@ -17,7 +17,7 @@ const useCart = useCartStore()
     </div>
     <div class="right-side">
       <button type="button" @click="useCart.addProduct(props.product)">+</button>
-      <img src="../../assets/img/bacon-menu.png" alt="">
+      <img :src="props.product.image_url" alt="">
     </div>
   </div>
 </template>

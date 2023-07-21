@@ -81,21 +81,3 @@ button:hover {
     opacity: 0.75;
     cursor: pointer;
 }
-
-.err-msg {
-    border-radius: 30px;
-    color: #58151c;
-    border: 1px solid #f1aeb5;
-    background-color: #f8d7da;
-    margin-bottom: 20px;
-    margin-top: 0;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-
-.err-span-msg {
-    color: #58151c;
-    font-size: 16px;
-    padding-left: 10px;
-    margin-bottom: 7px;
-}

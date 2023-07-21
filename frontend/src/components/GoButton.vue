@@ -3,7 +3,9 @@
 </script>
 
 <template>
-<button type="button"><slot></slot></button>
+  <button type="button">
+    <slot></slot>
+  </button>
 </template>
 
 <style scoped>
@@ -15,7 +17,18 @@ button {
   background-color: rgba(254, 114, 76, 0.4);
   border-radius: 24px;
   transition: opacity 0.7s ease;
+  display: flex;
+  justify-content: space-between;
 }
+
+button span:first-child {
+  text-align: left;
+}
+
+button span:last-child {
+  text-align: right;
+}
+
 button:hover {
   opacity: 0.8;
   cursor: pointer;

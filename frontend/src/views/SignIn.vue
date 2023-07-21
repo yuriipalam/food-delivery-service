@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {getCustomer, signIn} from "../api/api";
 import {useRouter} from "vue-router";
 import useVuelidate from "@vuelidate/core";
@@ -32,9 +32,13 @@ const submitForm = async () => {
 }
 const router = useRouter()
 
-onMounted(async () => {
-  await mainHeightSetter()
-  window.addEventListener('resize', await mainHeightSetter)
+onMounted(() => {
+  mainHeightSetter()
+  window.addEventListener('resize', mainHeightSetter)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', mainHeightSetter)
 })
 
 async function mainHeightSetter() {
@@ -47,7 +51,7 @@ async function mainHeightSetter() {
 function signInCustomer(email, password) {
   signIn(email, password).then((response) => {
     useAuth.setTokens(response.access_token, response.refresh_token)
-    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.first_name, response.last_name))
+    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.phone, response.first_name, response.last_name))
     router.push('/')
   }).catch(err => {
     errMsg.value = err.message

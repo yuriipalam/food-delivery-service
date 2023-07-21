@@ -9,17 +9,22 @@ const useCart = useCartStore()
 </script>
 
 <template>
-<div class="order">
-  <div class="order-info">
-    <p class="order-name">{{ props.product.name }}</p>
-    <p class="order-price">{{ props.product.price * useCart.getQuantity(props.product) }} huf</p>
+  <div class="order">
+    <div class="order-info">
+      <img :src="props.product.image_url" alt="">
+      <div class="order-detail">
+        <p class="order-name">{{ props.product.name }}</p>
+        <p class="order-price">{{ useCart.getProductTotalPrice(props.product.id) }} huf</p>
+      </div>
+    </div>
+    <div class="order-controls">
+      <button class="minus-btn" @click="useCart.reduceQuantity(props.product.id)"><span class="minus-sign"></span>
+      </button>
+      <span class="quantity">{{ useCart.getQuantity(props.product.id) }}</span>
+      <button class="plus-btn" @click="useCart.increaseQuantity(props.product.id)"><span class="minus-sign"></span><span
+          class="minus-sign rotated"></span></button>
+    </div>
   </div>
-  <div class="order-controls">
-    <button class="minus-btn" @click="useCart.reduceQuantity(props.product)"><span class="minus-sign"></span></button>
-    <span class="quantity">{{ useCart.getQuantity(props.product) }}</span>
-    <button class="plus-btn" @click="useCart.increaseQuantity(props.product)"><span class="minus-sign"></span><span class="minus-sign rotated"></span></button>
-  </div>
-</div>
 </template>
 
 <style scoped>
@@ -33,7 +38,12 @@ const useCart = useCartStore()
 
 .order-info {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+}
+
+.order-info img {
+  height: 60px;
+  margin-right: 15px;
 }
 
 .order-name {

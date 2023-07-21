@@ -75,7 +75,7 @@ const productsLength = computed(() => {
 
 <template>
   <div class="container">
-    <SupplierBar :name="supplier.name" :quantity="productsLength" class="bar"></SupplierBar>
+    <SupplierBar :name="supplier.name" :desc="supplier.description" :quantity="productsLength" class="bar"></SupplierBar>
     <div class="content">
       <CategoryList :categories="categories" class="categories"></CategoryList>
       <div class="products">
@@ -83,6 +83,7 @@ const productsLength = computed(() => {
         <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
         <div class="products-list">
           <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"></ProductCard>
+          <span class="no-products-found" v-if="filteredProducts.length === 0">No products found</span>
         </div>
       </div>
       <OrdersBlock class="orders"></OrdersBlock>
@@ -103,7 +104,7 @@ const productsLength = computed(() => {
 }
 
 .products {
-  flex-grow: 1;
+  width: 685px;
   display: flex;
   flex-direction: column;
 }
@@ -113,6 +114,12 @@ const productsLength = computed(() => {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  justify-content: center;
+}
+
+.no-products-found {
+  font-size: 28px;
+  margin-top: 25px;
 }
 
 .category-name {
@@ -123,12 +130,14 @@ const productsLength = computed(() => {
 }
 
 .categories {
+  width: 170px;
   height: 100%;
   position: sticky;
   top: 40px;
 }
 
 .orders {
+  flex-grow: 1;
   top: 40px;
   position: sticky;
 }
