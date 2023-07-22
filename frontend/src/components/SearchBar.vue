@@ -6,7 +6,7 @@ const props = defineProps({
   class: String
 })
 
-const store = useFiltersStore()
+const useFilters = useFiltersStore()
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const store = useFiltersStore()
       <circle cx="9.04237" cy="8.57557" r="7" transform="rotate(8.9509 9.04237 8.57557)" stroke="#272D2F"/>
       <line x1="14.8744" y1="13.0957" x2="23.2185" y2="21.0212" stroke="#272D2F"/>
     </svg>
-    <input type="text" v-model="store.searchFor" :class="props.class" :placeholder="typeof props.name === 'undefined' ? '': 'Search in ' + props.name">
+    <input type="text" v-model="useFilters.searchFor" :class="props.class" :placeholder="typeof props.name === 'undefined' ? '': 'Search in ' + props.name">
   </div>
 </template>
 

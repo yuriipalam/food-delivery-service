@@ -4,11 +4,13 @@ import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
 import Category from "../views/Category.vue"
 import ContactUs from "../views/ContactUs.vue";
-import Placeholder from "../components/Placeholder.vue";
 import Supplier from "../views/Supplier.vue";
 import SignUp from "../views/SignUp.vue";
 import SignIn from "../views/SignIn.vue";
 import Profile from "../views/Profile.vue";
+import {useAuthStore} from "../store";
+import Cart from "../views/Cart.vue";
+
 const routes = [
     {
         path: '/',
@@ -76,10 +78,6 @@ const routes = [
     }
 ]
 
-import {useAuthStore} from "../store";
-import OrderField from "../components/Supplier/OrderField.vue";
-import Cart from "../views/Cart.vue";
-
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
     routes
@@ -87,6 +85,7 @@ const router = VueRouter.createRouter({
 
 export default router
 
+// check if user is authenticated only when want to know this
 router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth && useAuthStore().idRef === -1) {
         next({name: 'SignIn'})

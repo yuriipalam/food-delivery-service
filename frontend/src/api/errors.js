@@ -1,3 +1,5 @@
+export const SOMETHING_WENT_WRONG = "Something went wrong"
+
 export const ACCESS_TOKEN_EXPIRED = "access token expired"
 export const REFRESH_TOKEN_EXPIRED = "refresh token expired"
 

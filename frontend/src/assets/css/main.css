@@ -30,7 +30,50 @@ body {
     margin: 0 0;
 }
 
+/* customer selection color */
+
+::selection {
+    background: var(--orange);
+    color: white;
+}
+
+/* Mozilla-based browsers need a separate rule */
+::-moz-selection {
+    background: var(--orange);
+    color: white;
+}
+
+/* change focus style on elements selection (usually by tab) */
+
+:focus {
+    outline: none;
+}
+
+/* custom scrollbar */
+
+::-webkit-scrollbar-track
+{
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+    border-radius: 10px;
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    background-color: #cccccc;
+}
+
 /* other common classes */
+.explore {
+    margin-bottom: 55px;
+}
 
 .err-msg {
     border-radius: 30px;

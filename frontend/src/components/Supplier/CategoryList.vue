@@ -6,10 +6,10 @@ defineProps({
   categories: Array
 })
 
-const store = useFiltersStore()
+const useFilters = useFiltersStore()
 
 function selectCategory(id, name) {
-  store.selectCategory(id, name)
+  useFilters.selectCategory(id, name)
 }
 </script>
 
@@ -17,8 +17,8 @@ function selectCategory(id, name) {
   <div class="category-list">
     <p class="categories-title">Categories:</p>
     <div class="list">
-      <Category @click="selectCategory(category.id, category.name)" :is-active="store.selectedCategory === category.id" v-for="category in categories" :key="category.id">{{ category.name }}</Category>
-      <Category @click="selectCategory(0, 'All products')" :is-active="store.selectedCategory === 0">All products</Category>
+      <Category @click="selectCategory(category.id, category.name)" :is-active="useFilters.selectedCategory === category.id" v-for="category in categories" :key="category.id">{{ category.name }}</Category>
+      <Category @click="selectCategory(0, 'All products')" :is-active="useFilters.selectedCategory === 0">All products</Category>
     </div>
   </div>
 </template>
@@ -39,5 +39,4 @@ function selectCategory(id, name) {
 .categories-title {
   margin-top: 0;
 }
-
 </style>

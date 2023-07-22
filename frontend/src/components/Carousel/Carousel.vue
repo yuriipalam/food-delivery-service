@@ -6,17 +6,16 @@ import 'vue3-carousel/dist/carousel.css'
 const props = defineProps({
   name: String,
   objects: Array,
-  urlPath: String,
 })
 </script>
 
 <template>
   <div>
     <h3>{{ props.name }}</h3>
-    <div style="max-width: 85%; margin: 0 auto;">
+    <div class="container-carousel">
       <carousel :items-to-show="5">
         <slide v-for="obj in objects" :key="obj">
-          <CarouselCard :obj="obj" :url-path="props.urlPath"></CarouselCard>
+          <CarouselCard :obj="obj"/>
         </slide>
         <template #addons>
           <navigation/>
@@ -41,14 +40,19 @@ button.carousel__next {
 }
 
 .carousel__pagination-button::after {
-  height: 10px!important;
-  width: 10px!important;
-  border-radius: 50%!important;
+  height: 10px !important;
+  width: 10px !important;
+  border-radius: 50% !important;
   opacity: 0.5;
 }
 </style>
 
 <style scoped>
+.container-carousel {
+  max-width: 85%;
+  margin: 0 auto;
+}
+
 ol {
   padding-left: 0;
 }

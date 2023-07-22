@@ -33,11 +33,11 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	customer, err := ah.repo.GetCustomerByEmail(req.Email)
-	if err != nil {
+	if err != nil || customer == nil {
 		response.SendBadRequestError(w, fmt.Errorf("email doesn't exist"))
 		return
 	}
-	fmt.Println(customer)
+
 	if err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(req.Password)); err != nil {
 		response.SendBadRequestError(w, fmt.Errorf("invalid credentials"))
 		return

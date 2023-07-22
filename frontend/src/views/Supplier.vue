@@ -6,11 +6,11 @@ import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from 'vue-router'
-import {useCartStore, useFiltersStore} from "../store";
+import {useFiltersStore} from "../store";
 import {getSupplierByID, getSupplierCategoriesByID, getSupplierProductsByID} from "../api/api";
+import {getElmHeight} from "../utils";
 
 const useFilters = useFiltersStore()
-const useCart = useCartStore()
 
 const route = useRoute()
 const id = route.params.id
@@ -19,7 +19,8 @@ const supplier = ref(Object)
 const categories = ref([])
 const products = ref([])
 
-const filteredProducts = computed ( () => {
+// filtering our products
+const filteredProducts = computed(() => {
   let productsArray = ref(products.value)
 
   if (useFilters.searchFor !== '') {
@@ -40,29 +41,13 @@ onMounted(async () => {
   products.value = await getSupplierProductsByID(id)
 })
 
+// setting ideal height for orders-block
 function changeOrdersHeight() {
   const nav = document.querySelector('nav')
   const bar = document.querySelector('.bar')
 
   const ordersBlock = document.querySelector('.orders-block.orders')
   ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
-}
-
-function getElmHeight(node) {
-  const list = [
-    'margin-top',
-    'margin-bottom',
-    'border-top',
-    'border-bottom',
-    'padding-top',
-    'padding-bottom',
-    'height'
-  ]
-
-  const style = window.getComputedStyle(node)
-  return list
-      .map(k => parseInt(style.getPropertyValue(k), 10))
-      .reduce((prev, cur) => prev + cur)
 }
 
 const productsLength = computed(() => {
@@ -75,19 +60,22 @@ const productsLength = computed(() => {
 
 <template>
   <div class="container">
-    <SupplierBar :name="supplier.name" :desc="supplier.description" :quantity="productsLength" class="bar"></SupplierBar>
-    <div class="content">
-      <CategoryList :categories="categories" class="categories"></CategoryList>
-      <div class="products">
-        <SearchBar :class="'transparent'" :name="supplier.name"></SearchBar>
-        <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
-        <div class="products-list">
-          <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"></ProductCard>
-          <span class="no-products-found" v-if="filteredProducts.length === 0">No products found</span>
+    <main>
+      <SupplierBar :name="supplier.name" :desc="supplier.description" :quantity="productsLength"
+                   class="bar"></SupplierBar>
+      <div class="content">
+        <CategoryList :categories="categories" class="categories"/>
+        <div class="products">
+          <SearchBar :class="'transparent'" :name="supplier.name"/>
+          <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
+          <div class="products-list">
+            <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"/>
+            <span class="no-products-found" v-if="filteredProducts.length === 0">No products found</span>
+          </div>
         </div>
+        <OrdersBlock class="orders"/>
       </div>
-      <OrdersBlock class="orders"></OrdersBlock>
-    </div>
+    </main>
   </div>
 </template>
 

@@ -77,7 +77,7 @@ export const useCartStore = defineStore('cart', () => {
             }
             return
         } else if (!supplierIDs.value.includes(product.supplier_id)) {
-            if (supplierIDs.value.length >= 1) {
+            if (supplierIDs.value.length >= 2) {
                 throw Error('You can order from at most two suppliers')
             }
             supplierIDs.value.push(product.supplier_id)
@@ -91,6 +91,9 @@ export const useCartStore = defineStore('cart', () => {
     function reduceQuantity(id) {
         if (products.value[id].quantity <= 1) {
             delete products.value[id]
+            if (products.value.length === 0) {
+                supplierIDs.value = []
+            }
         } else {
             products.value[id].quantity--
         }
@@ -115,14 +118,20 @@ export const useCartStore = defineStore('cart', () => {
         return Object.keys(products.value).map(key => getProductTotalPrice(parseInt(key))).reduce((total, current) => total + current, 0)
     }
 
+    function clearCart() {
+        products.value = {}
+        supplierIDs.value = []
+    }
+
     return {
         addProduct,
         reduceQuantity,
         increaseQuantity,
         getQuantity,
         getProductTotalPrice,
-        supplierIDs,
+        clearCart,
         getTotalPrice,
+        supplierIDs,
         products
     }
 }, {

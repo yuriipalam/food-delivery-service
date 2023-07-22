@@ -10,14 +10,14 @@ const useCart = useCartStore()
 
 <template>
   <div class="product-card">
-    <div class="left-side">
+    <div class="product-left-side">
       <p class="product-name">{{ props.product.name }}</p>
       <p class="product-desc">{{ props.product.description }}</p>
       <p class="product-price">{{ props.product.price }} HUF</p>
     </div>
-    <div class="right-side">
+    <div class="product-right-side">
       <button type="button" @click="useCart.addProduct(props.product)">+</button>
-      <img :src="props.product.image_url" alt="">
+      <img :src="props.product.image_url" :alt="props.product.name">
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ const useCart = useCartStore()
   opacity: 0.5;
 }
 
-.left-side {
+.product-left-side {
   display: flex;
   flex-direction: column;
 }
@@ -59,7 +59,7 @@ const useCart = useCartStore()
   margin-bottom: 0;
 }
 
-.right-side {
+.product-right-side {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

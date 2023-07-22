@@ -140,7 +140,7 @@ func (or *OrderRepository) CreateOrder(req *request.CreateOrderRequest) (*model.
 }
 
 func (or *OrderRepository) GetSupplierResponsesByOrderID(id int) ([]response.OrderSupplierResponse, error) {
-	query := `SELECT s.id, s.name FROM supplier s 
+	query := `SELECT s.id, s.name, s.image FROM supplier s 
     		  JOIN order_supplier os ON s.id = os.supplier_id
     		  JOIN "order" o ON o.id = os.order_id
     		  WHERE o.id = $1`
@@ -160,13 +160,17 @@ func (or *OrderRepository) GetSupplierResponsesByOrderID(id int) ([]response.Ord
 	for rows.Next() {
 		var supplier response.OrderSupplierResponse
 
+		var imageName string
 		err := rows.Scan(
 			&supplier.SupplierID,
 			&supplier.SupplierName,
+			&imageName,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("cannot scan supplier for order_id %d", id)
 		}
+
+		supplier.SupplierImageURL = fmt.Sprintf("http://localhost:8080/images/suppliers/%s", imageName)
 
 		suppliers = append(suppliers, supplier)
 	}

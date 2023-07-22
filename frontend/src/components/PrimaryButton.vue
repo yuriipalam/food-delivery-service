@@ -1,13 +1,12 @@
 <script setup>
 const props = defineProps({
-      "type": String,
-      "class": String,
+      class: String,
     }
 )
 </script>
 
 <template>
-  <button :type="props.type" :class="props.class"><slot></slot></button>
+  <button :class="props.class"><slot></slot></button>
 </template>
 
 <style scoped>

@@ -14,8 +14,9 @@ type OrderResponse struct {
 }
 
 type OrderSupplierResponse struct {
-	SupplierID   int    `json:"supplier_id"`
-	SupplierName string `json:"supplier_name"`
+	SupplierID       int    `json:"supplier_id"`
+	SupplierName     string `json:"supplier_name"`
+	SupplierImageURL string `json:"supplier_image_url"`
 }
 
 type OrderProductResponse struct {

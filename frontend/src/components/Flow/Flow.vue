@@ -1,6 +1,5 @@
 <script setup>
-import Explore from "../Explore.vue";
-import {computed, nextTick, onBeforeMount, onBeforeUpdate, onMounted, onUnmounted, watch} from "vue";
+import {computed, nextTick, onUnmounted, watchEffect} from "vue";
 import {useFiltersStore} from "../../store";
 import FlowCard from "./FlowCard.vue";
 
@@ -9,33 +8,36 @@ const props = defineProps({
   name: String,
 })
 
-const store = useFiltersStore()
+const useFilters = useFiltersStore()
 
 const filteredItems = computed(() => {
-  if (store.searchFor === '') {
+  if (useFilters.searchFor === '') {
     return props.items
   }
-  return props.items.filter((item) => item.name.toLowerCase().includes(store.searchFor.toLowerCase()))
+  return props.items.filter((item) => item.name.toLowerCase().includes(useFilters.searchFor.toLowerCase()))
+})
+
+watchEffect(async () => {
+  if (props.items.length !== 0) {
+    await nextTick()
+    const neededHeight = window.getComputedStyle(document.querySelector('.flow-card')).getPropertyValue('height')
+    const allFlowCards = document.querySelectorAll('.flow-card')
+    allFlowCards.forEach(flowCard => {
+      flowCard.style.height = neededHeight
+    })
+  }
 })
 
 onUnmounted(async () => {
-  await store.reset()
+  await useFilters.reset()
 })
-
-// onBeforeUpdate(() => {
-//   const neededHeight =  window.getComputedStyle(document.querySelector('.flow-card')).getPropertyValue('height')
-//   const allFlowCards = document.querySelectorAll('.flow-card')
-//   allFlowCards.forEach(flowCard => {
-//     flowCard.style.height = neededHeight + 'px'
-//   })
-// })
 </script>
 
 <template>
   <div class="items-list-container">
     <h3>{{ props.name }}</h3>
     <div class="items-flow">
-      <FlowCard v-for="item in filteredItems" :obj="item" class="flow-card"></FlowCard>
+      <FlowCard v-for="item in filteredItems" :obj="item" class="flow-card"/>
       <span v-if="filteredItems.length === 0" class="not-found">Not found</span>
     </div>
   </div>

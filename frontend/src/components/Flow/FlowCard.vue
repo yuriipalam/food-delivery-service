@@ -1,6 +1,5 @@
 <script setup>
 import {truncate} from "../../utils";
-import {onMounted} from "vue";
 
 const props = defineProps({
   obj: Object
@@ -13,7 +12,8 @@ const props = defineProps({
       <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
     </div>
     <p class="card-name">{{ props.obj.name }}</p>
-    <p class="card-working-hours" v-if="typeof props.obj.time_opening !== 'undefined'">{{ props.obj.time_opening }} - {{ props.obj.time_closing }}</p>
+    <p class="card-working-hours" v-if="typeof props.obj.time_opening !== 'undefined'">{{ props.obj.time_opening }} -
+      {{ props.obj.time_closing }}</p>
     <p class="card-desc">{{ truncate(props.obj.description, 50) }}</p>
   </a>
 </template>
@@ -65,7 +65,7 @@ const props = defineProps({
 .card-working-hours {
   opacity: 0.4;
   font-weight: 300;
-  font-size: 12px ;
+  font-size: 12px;
   margin-top: 0;
 }
 

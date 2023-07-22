@@ -3,6 +3,7 @@ import "@/assets/css/main.css"
 import "vue-router";
 import Navbar from "./components/Navigation/Navbar.vue";
 import {useRoute} from "vue-router";
+import Footer from "./components/Footer.vue";
 
 const route = useRoute()
 
@@ -14,4 +15,5 @@ function isLight() {
 <template>
   <Navbar :is-light="isLight()"></Navbar>
   <router-view></router-view>
+  <Footer></Footer>
 </template>

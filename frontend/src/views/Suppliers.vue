@@ -26,16 +26,14 @@ onMounted(async () => {
 
 <template>
   <div class="container">
-    <Header></Header>
+    <Header/>
     <main>
-      <Explore class="explore"></Explore>
-      <Flow :items="suppliers" :name="'Suppliers'"></Flow>
+      <Explore class="explore"/>
+      <Flow :items="suppliers" :name="'Suppliers'"/>
     </main>
   </div>
 </template>
 
 <style scoped>
-.explore {
-  margin-bottom: 55px;
-}
+
 </style>

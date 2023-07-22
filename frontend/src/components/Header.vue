@@ -1,5 +1,5 @@
 <script setup>
-import {onBeforeMount, onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted} from "vue";
 import PrimaryButton from "./PrimaryButton.vue";
 import {useRouter} from "vue-router";
 

@@ -1,7 +1,7 @@
 <script setup>
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {getCustomer, signIn, signUp} from "../api/api";
+import {signIn, signUp} from "../api/api";
 import useVuelidate from "@vuelidate/core";
 import {email, maxLength, minLength, required} from "@vuelidate/validators";
 import {useAuthStore} from "../store";
@@ -9,7 +9,7 @@ import {useAuthStore} from "../store";
 const router = useRouter()
 const useAuth = useAuthStore()
 
-onMounted( () => {
+onMounted(() => {
   mainHeightSetter()
   window.addEventListener('resize', mainHeightSetter)
 })
@@ -56,10 +56,8 @@ const submitForm = async () => {
         .then((response) => router.push('/'))
         .catch((error) => errMsg.value = error.message)
 
-    signIn(formData.email, formData.password).then((response) => {
-      useAuth.setTokens(response.access_token, response.refresh_token)
-      getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.phone, response.first_name, response.last_name))
-      router.push('/')
+    await signIn(formData.email, formData.password).then(data => {
+      router.push({name: 'Home'})
     }).catch(err => {
       errMsg.value = err.message
     })

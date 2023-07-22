@@ -1,15 +1,13 @@
 <script setup>
 import Flow from "../components/Flow/Flow.vue";
-import {nextTick, onMounted, onUnmounted, ref} from "vue";
+import {nextTick, onMounted, ref} from "vue";
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getCategories} from "../api/api";
-import {useFiltersStore} from "../store";
-
-const store = useFiltersStore()
 
 const categories = ref([])
 
+// saving scroll position to session storage
 function saveScrollPosition() {
   sessionStorage.setItem('scrollPosition', window.scrollY.toString())
 }
@@ -29,28 +27,24 @@ onMounted(async () => {
     behavior: 'smooth'
   })
 
+  // when user clicks we save scroll position that on the next page his scroll position
+  // will remain the same by fetching it from session storage
   document.querySelectorAll('.flow-card').forEach(card => {
     card.addEventListener('click', saveScrollPosition)
   })
-})
-
-onUnmounted(() => {
-  store.reset()
 })
 </script>
 
 <template>
   <div class="container">
-    <Header></Header>
+    <Header/>
     <main>
-      <Explore class="explore"></Explore>
-      <Flow :items="categories" :name="'Categories'"></Flow>
+      <Explore class="explore"/>
+      <Flow :items="categories" :name="'Categories'"/>
     </main>
   </div>
 </template>
 
 <style scoped>
-.explore {
-  margin-bottom: 55px;
-}
+
 </style>

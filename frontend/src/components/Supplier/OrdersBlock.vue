@@ -1,18 +1,17 @@
 <script setup>
-
 import OrderField from "./OrderField.vue";
 import GoButton from "../GoButton.vue";
 import {useCartStore} from "../../store";
 import {useRouter} from "vue-router";
 
-const router = useRouter()
-
 const useCart = useCartStore()
+
+const router = useRouter()
 </script>
 
 <template>
   <div class="orders-block">
-    <p class="title">Your order</p>
+    <p class="orders-title">Your order</p>
     <div class="orders-list">
       <OrderField :product="product.product" v-for="product in useCart.products"/>
     </div>
@@ -34,7 +33,7 @@ const useCart = useCartStore()
   min-height: 400px;
 }
 
-.title {
+.orders-title {
   font-size: 32px;
   font-weight: 500;
   text-align: center;

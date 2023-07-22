@@ -1,12 +1,11 @@
 <script setup>
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {getCustomer, signIn} from "../api/api";
+import {signIn} from "../api/api";
 import {useRouter} from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import {email, minLength, required} from "@vuelidate/validators";
-import {useAuthStore} from "../store";
 
-const useAuth = useAuthStore()
+const router = useRouter()
 
 const formData = reactive({
   email: "",
@@ -27,10 +26,13 @@ const v$ = useVuelidate(rules, formData)
 const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
-    signInCustomer(formData.email, formData.password)
+    await signIn(formData.email, formData.password).then(data => {
+      router.push({name: 'Home'})
+    }).catch(err => {
+      errMsg.value = err.message
+    })
   }
 }
-const router = useRouter()
 
 onMounted(() => {
   mainHeightSetter()
@@ -46,16 +48,6 @@ async function mainHeightSetter() {
   const main = document.querySelector('main')
   main.style.height = window.innerHeight - navHeight + 'px'
   main.style.marginTop = -navHeight / 2 + 'px'
-}
-
-function signInCustomer(email, password) {
-  signIn(email, password).then((response) => {
-    useAuth.setTokens(response.access_token, response.refresh_token)
-    getCustomer().then((response) => useAuth.setUser(response.id, response.email, response.phone, response.first_name, response.last_name))
-    router.push('/')
-  }).catch(err => {
-    errMsg.value = err.message
-  })
 }
 </script>
 

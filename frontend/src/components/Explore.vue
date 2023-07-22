@@ -5,7 +5,7 @@ import SearchBar from "./SearchBar.vue";
 <template>
   <div class="explore-block">
     <h2>Explore<br>categories & suppliers</h2>
-    <SearchBar :class="'pinky'"></SearchBar>
+    <SearchBar class="search-bar" :class="'pinky'"/>
   </div>
 </template>
 

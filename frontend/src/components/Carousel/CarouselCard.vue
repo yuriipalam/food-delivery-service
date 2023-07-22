@@ -1,18 +1,12 @@
 <script setup>
-import {computed} from "vue";
 
 const props = defineProps({
-  obj: Object,
-  urlPath: String
-})
-
-const getPath = computed(() => {
-  return `${props.urlPath}/${props.obj.id}`
+  obj: Object
 })
 </script>
 
 <template>
-  <a class="card" :href="getPath">
+  <a class="card" :href="obj.url">
     <div class="circle-mask">
       <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
     </div>
