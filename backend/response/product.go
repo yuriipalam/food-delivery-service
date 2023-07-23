@@ -10,6 +10,5 @@ type ProductResponse struct {
 	Name         string   `json:"name"`
 	ImageURL     string   `json:"image_url"`
 	Description  string   `json:"description"`
-	Ingredients  []string `json:"ingredients"`
 	Price        float32  `json:"price"`
 }

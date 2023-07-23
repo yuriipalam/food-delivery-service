@@ -1,9 +1,12 @@
 <script setup>
 import Flow from "../components/Flow/Flow.vue";
-import {nextTick, onMounted, ref} from "vue";
+import {nextTick, onMounted, onUnmounted, ref} from "vue";
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getCategories} from "../api/api";
+import {scrollToExploreBlock, setMainHeight} from "../utils";
+import {ResponseError} from "../api/errors";
+import router from "../router";
 
 const categories = ref([])
 
@@ -13,24 +16,34 @@ function saveScrollPosition() {
 }
 
 onMounted(async () => {
-  categories.value = await getCategories()
+  try {
+    categories.value = await getCategories()
+  } catch (err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
+    }
+  }
 
   await nextTick()
 
-  const main = document.querySelector('main')
-  main.style.minHeight = main.offsetHeight + 'px'
-
-  const scrollTo = document.querySelector('.explore').offsetTop - 40
-
-  window.scrollTo({
-    top: scrollTo,
-    behavior: 'smooth'
-  })
+  setMainHeight()
+  scrollToExploreBlock()
 
   // when user clicks we save scroll position that on the next page his scroll position
   // will remain the same by fetching it from session storage
   document.querySelectorAll('.flow-card').forEach(card => {
     card.addEventListener('click', saveScrollPosition)
+  })
+})
+
+onUnmounted(() => {
+  document.querySelectorAll('.flow-card').forEach(card => {
+    card.removeEventListener('click', saveScrollPosition)
   })
 })
 </script>

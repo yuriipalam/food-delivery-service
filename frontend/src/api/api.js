@@ -1,4 +1,15 @@
-import {ACCESS_TOKEN_EXPIRED, REFRESH_TOKEN_EXPIRED, SignInError, SignUpError, SOMETHING_WENT_WRONG} from "./errors";
+import {
+    ACCESS_TOKEN_EXPIRED,
+    CategoryError,
+    CustomerError,
+    OrderError,
+    ProductError,
+    REFRESH_TOKEN_EXPIRED,
+    ResponseError,
+    SignInError,
+    SignUpError,
+    SupplierError
+} from "./errors";
 import {useAuthStore} from "../store";
 
 const root = "http://localhost:8080"
@@ -7,7 +18,8 @@ async function apiFetch(url, init) {
     return await fetch(root + url, init)
 }
 
-// helper functions to check auth (tokens expiration)
+// helper functions to check auth (tokens expiration) //
+
 async function handleResponse(response, url, isProtected, callback) {
     if (!response.ok) {
         let err = await response.json();
@@ -42,6 +54,8 @@ async function GET_REFRESH() {
     })
 }
 
+// GET, POST functions for requests //
+
 async function GET(url, isProtected) {
     return await apiFetch(url, {
         method: 'GET', headers: isProtected ? {
@@ -58,42 +72,90 @@ async function POST(url, isProtected, data) {
     }).then(async response => await handleResponse(response, url, isProtected, GET))
 }
 
+// ACCESSING ENDPOINTS //
+
+// SUPPLIER //
+
 export async function getSuppliers() {
-    return GET("/suppliers", false).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
-    })
+    return GET("/suppliers", false)
+        .catch(err => {
+            switch (err.message) {
+                case SupplierError.suppliersNotFound:
+                    throw Error(ResponseError.notFound)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
 }
 
 export async function getSupplierByID(id) {
     return GET("/supplier/" + id, false)
         .catch(err => {
-            throw Error(SOMETHING_WENT_WRONG)
+            switch (err.message) {
+                case SupplierError.idMustBeInt:
+                case SupplierError.supplierNotFound:
+                    throw Error(ResponseError.notFound)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
         })
 }
 
-export async function getSupplierCategoriesByID(id) {
-    return GET("/categories?supplier_id=" + id, false).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
-    })
-}
-
-export async function getSupplierProductsByID(id) {
-    return GET("/products?supplier_id=" + id, false).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
-    })
-}
-
 export async function getSuppliersByCategoryID(id) {
-    return GET("/suppliers?category_id=" + id, false).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
+    return GET("/suppliers?category_id=" + id, false)
+        .catch(err => {
+            switch (err.message) {
+                case SupplierError.idMustBeInt:
+                case SupplierError.suppliersNotFound:
+                    throw Error(ResponseError.notFound)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
+}
+
+// CATEGORY //
+
+export async function getCategoriesBySupplierID(id) {
+    return GET("/categories?supplier_id=" + id, false).catch(err => {
+        switch (err.message) {
+            case CategoryError.idMustBeInt:
+            case CategoryError.categoriesNotFound:
+                throw Error(ResponseError.notFound)
+            default:
+                throw Error(ResponseError.somethingWentWrong)
+        }
     })
 }
 
 export async function getCategories() {
-    return GET("/categories", false).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
-    })
+    return GET("/categories", false)
+        .catch(err => {
+            switch (err.message) {
+                case CategoryError.categoriesNotFound:
+                    throw Error(ResponseError.notFound)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
 }
+
+// PRODUCT //
+
+export async function getProductsBySupplierID(id) {
+    return GET("/products?supplier_id=" + id, false)
+        .catch(err => {
+            switch (err.message) {
+                case ProductError.idMustBeInt:
+                case ProductError.productsNotFound:
+                    throw Error(ResponseError.notFound)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
+}
+
+// AUTH //
 
 export async function signUp(email, phone, firstName, lastName, password, repeatPassword) {
     return POST("/register", false, {
@@ -112,7 +174,7 @@ export async function signUp(email, phone, firstName, lastName, password, repeat
             case SignUpError.passwordMismatch:
                 throw Error("Passwords don't match!")
             default:
-                throw Error(SOMETHING_WENT_WRONG)
+                throw Error(ResponseError.somethingWentWrong)
         }
     })
 }
@@ -128,23 +190,31 @@ export async function signIn(email, password) {
     }).catch(err => {
         switch (err.message) {
             case SignInError.emailDoesntExist:
-                throw Error("Invalid credentials!")
             case SignInError.invalidCredentials:
                 throw Error("Invalid credentials!")
             default:
-                throw Error(SOMETHING_WENT_WRONG)
+                throw Error(ResponseError.somethingWentWrong)
         }
     })
 }
 
+// CUSTOMER //
+
 export async function getCustomer() {
-    return await GET("/customer", true).catch(err => {
-        if (err.message === REFRESH_TOKEN_EXPIRED) {
-            throw Error(REFRESH_TOKEN_EXPIRED)
-        }
-        throw Error(SOMETHING_WENT_WRONG)
-    })
+    return await GET("/customer", true)
+        .catch(err => {
+            switch (err.message) {
+                case CustomerError.customerNotFound:
+                    throw Error(ResponseError.notFound)
+                case REFRESH_TOKEN_EXPIRED:
+                    throw Error(ResponseError.sessionExpired)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
 }
+
+// ORDER //
 
 export async function createOrder(customerID, recipientFullName, address, price, supplierIDs, products) {
     return await POST("/orders", true, {
@@ -155,12 +225,27 @@ export async function createOrder(customerID, recipientFullName, address, price,
         'supplier_ids': supplierIDs,
         'products': products
     }).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
+        switch (err.message) {
+            case OrderError.atMostTwoSuppliers:
+                throw Error("At most two suppliers can be chosen!")
+            case REFRESH_TOKEN_EXPIRED:
+                throw Error(ResponseError.sessionExpired)
+            default:
+                throw Error(ResponseError.somethingWentWrong)
+        }
     })
 }
 
 export async function getOrders() {
-    return await GET("/orders", true).catch(err => {
-        throw Error(SOMETHING_WENT_WRONG)
-    })
+    return await GET("/orders", true)
+        .catch(err => {
+            switch (err.message) {
+                case OrderError.ordersNotFound:
+                    throw Error(ResponseError.notFound)
+                case REFRESH_TOKEN_EXPIRED:
+                    throw Error(ResponseError.sessionExpired)
+                default:
+                    throw Error(ResponseError.somethingWentWrong)
+            }
+        })
 }

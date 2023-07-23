@@ -2,10 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"database/sql/driver"
 	"fmt"
 	"food_delivery/model"
-	"strings"
 )
 
 type ProductRepositoryI interface {
@@ -40,7 +38,6 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	}
 
 	var product model.Product
-	var driverValue driver.Value
 
 	err = row.Scan(
 		&product.ID,
@@ -49,7 +46,6 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 		&product.Name,
 		&product.Image,
 		&product.Description,
-		&driverValue,
 		&product.Price,
 	)
 	if err != nil {
@@ -58,13 +54,6 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 		}
 		return nil, fmt.Errorf("cannot scan product")
 	}
-
-	strSlice, err := convertDriverValueToStrSlice(driverValue)
-	if err != nil {
-		return nil, err
-	}
-
-	product.Ingredients = strSlice
 
 	return &product, nil
 }
@@ -140,7 +129,6 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 
 	for rows.Next() {
 		var product model.Product
-		var driverValue driver.Value
 
 		err := rows.Scan(
 			&product.ID,
@@ -149,18 +137,11 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 			&product.Name,
 			&product.Image,
 			&product.Description,
-			&driverValue,
 			&product.Price,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("cannot scan product")
 		}
-
-		strSlice, err := convertDriverValueToStrSlice(driverValue)
-		if err != nil {
-			return nil, err
-		}
-		product.Ingredients = strSlice
 
 		products = append(products, product)
 	}
@@ -168,19 +149,4 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 	return products, nil
 }
 
-func convertStrSliceToSqlArr(strSlice []string) string {
-	for i, str := range strSlice {
-		strSlice[i] = "'" + str + "'"
-	}
 
-	return "{" + strings.Join(strSlice, ",") + "}"
-}
-
-func convertDriverValueToStrSlice(value driver.Value) ([]string, error) {
-	bytesValue, ok := value.([]byte)
-	if !ok {
-		return nil, fmt.Errorf("error converting driver.Value to []bytes")
-	}
-
-	return strings.Split(strings.Trim(strings.ReplaceAll(string(bytesValue), "\"", ""), "{}"), ","), nil
-}

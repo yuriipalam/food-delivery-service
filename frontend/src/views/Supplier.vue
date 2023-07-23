@@ -4,13 +4,16 @@ import CategoryList from "../components/Supplier/CategoryList.vue";
 import SearchBar from "../components/SearchBar.vue";
 import ProductCard from "../components/Supplier/ProductCard.vue";
 import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
-import {computed, onMounted, ref} from "vue";
-import {useRoute} from 'vue-router'
+import {computed, onMounted, onUnmounted, ref} from "vue";
+import {useRoute, useRouter} from 'vue-router'
 import {useFiltersStore} from "../store";
-import {getSupplierByID, getSupplierCategoriesByID, getSupplierProductsByID} from "../api/api";
+import {getCategoriesBySupplierID, getProductsBySupplierID, getSupplierByID} from "../api/api";
 import {getElmHeight} from "../utils";
+import {ResponseError} from "../api/errors";
 
 const useFilters = useFiltersStore()
+
+const router = useRouter()
 
 const route = useRoute()
 const id = route.params.id
@@ -33,28 +36,46 @@ const filteredProducts = computed(() => {
   return productsArray.value.filter((product) => product.category_id === useFilters.selectedCategory);
 })
 
-onMounted(async () => {
-  changeOrdersHeight()
-  window.addEventListener('resize', changeOrdersHeight)
-  supplier.value = await getSupplierByID(id)
-  categories.value = await getSupplierCategoriesByID(id)
-  products.value = await getSupplierProductsByID(id)
-})
-
-// setting ideal height for orders-block
-function changeOrdersHeight() {
-  const nav = document.querySelector('nav')
-  const bar = document.querySelector('.bar')
-
-  const ordersBlock = document.querySelector('.orders-block.orders')
-  ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
-}
 
 const productsLength = computed(() => {
   if (typeof products.value === 'undefined') {
     return "0"
   }
   return products.value.length.toString()
+})
+
+// setting ideal height for orders-block
+function changeOrdersHeight() {
+  const nav = document.querySelector('nav')
+
+  const bar = document.querySelector('.bar')
+  const ordersBlock = document.querySelector('.orders-block.orders')
+  ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
+}
+
+onMounted(async () => {
+  changeOrdersHeight()
+  window.addEventListener('resize', changeOrdersHeight)
+
+  try {
+    supplier.value = await getSupplierByID(id)
+    categories.value = await getCategoriesBySupplierID(id)
+    products.value = await getProductsBySupplierID(id)
+  } catch (err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
+    }
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', changeOrdersHeight)
+  useFilters.reset()
 })
 </script>
 

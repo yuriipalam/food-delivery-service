@@ -55,7 +55,7 @@ input {
     padding-bottom: 15px;
     margin-bottom: 20px;
     font-size: 16px;
-    background-color: rgba(255, 255, 255, 0);
+    background: none;
 }
 input.err {
     border: 1px solid #ff4a4a;

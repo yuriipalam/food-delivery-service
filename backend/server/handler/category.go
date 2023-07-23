@@ -29,7 +29,7 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 
 	category, err := ch.repo.GetCategoryByID(id)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("cannot fetch category"))
+		response.SendBadRequestError(w, err)
 		return
 	} else if category == nil {
 		response.SendNotFoundError(w, fmt.Errorf("category not found"))
@@ -38,7 +38,7 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 
 	res, err := ch.getCategoryResponseFromModel(category)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create response"))
+		response.SendInternalServerError(w, err)
 	}
 
 	response.SendOK(w, res)
@@ -47,13 +47,13 @@ func (ch *CategoryHandler) GetCategoryByID(w http.ResponseWriter, r *http.Reques
 func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *http.Request) {
 	supplierID, err := utils.GetIntValueByKeyFromMuxVars("supplier_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err) // key must be integer
+		response.SendBadRequestError(w, err) // "id must be int"
 		return
 	}
 
 	categories, err := ch.repo.GetCategoriesBySupplierID(supplierID)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch categories"))
+		response.SendInternalServerError(w, err)
 		return
 	}
 
@@ -64,7 +64,7 @@ func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *h
 
 	res, err := ch.getCategoryResponsesFromModels(categories)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
+		response.SendInternalServerError(w, err)
 	}
 
 	response.SendOK(w, res)
@@ -73,7 +73,7 @@ func (ch *CategoryHandler) GetCategoriesBySupplierID(w http.ResponseWriter, r *h
 func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := ch.repo.GetAllCategories()
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch categories"))
+		response.SendInternalServerError(w, err)
 		return
 	}
 
@@ -84,7 +84,7 @@ func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Reque
 
 	res, err := ch.getCategoryResponsesFromModels(categories)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
+		response.SendInternalServerError(w, err)
 	}
 
 	response.SendOK(w, res)
@@ -95,7 +95,7 @@ func (ch *CategoryHandler) getCategoryResponseFromModel(category *model.Category
 
 	categoryMarshaled, err := json.Marshal(category)
 	if err != nil {
-		return nil, fmt.Errorf("cannot marshal category from db")
+		return nil, err
 	}
 
 	if err := json.Unmarshal(categoryMarshaled, &categoryRes); err != nil {

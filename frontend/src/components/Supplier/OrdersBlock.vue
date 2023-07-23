@@ -26,7 +26,7 @@ const router = useRouter()
 .orders-block {
   border-radius: 30px;
   background: rgba(232, 230, 230, 0.4);
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: var(--container-shadow);
   display: flex;
   flex-direction: column;
   padding: 30px 20px 20px;

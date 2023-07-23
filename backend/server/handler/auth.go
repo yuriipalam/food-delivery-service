@@ -76,7 +76,7 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	customer, err := ah.repo.CreateCustomer(&req)
 	if err != nil {
-		response.SendBadRequestError(w, fmt.Errorf("email already exist"))
+		response.SendBadRequestError(w, err)
 		return
 	}
 

@@ -37,6 +37,6 @@ const props = defineProps({
   .transparent-button {
     background: none;
     border: 1px solid var(--orange)!important;
-    color: var(--milky)
+    color: var(--milky);
   }
 </style>

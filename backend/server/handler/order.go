@@ -38,7 +38,7 @@ func (oh *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(orders) == 0 {
-		response.SendNotFoundError(w, fmt.Errorf("no orders found for customer id %d", claims.ID))
+		response.SendNotFoundError(w, fmt.Errorf("no orders found"))
 		return
 	}
 

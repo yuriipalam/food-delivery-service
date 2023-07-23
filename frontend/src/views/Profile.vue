@@ -6,14 +6,14 @@ import {useRoute, useRouter} from "vue-router";
 import PrimaryButton from "../components/PrimaryButton.vue";
 import OrderCard from "../components/OrderCard.vue";
 import CustomerInfo from "../components/CustomerInfo.vue";
-import {REFRESH_TOKEN_EXPIRED} from "../api/errors";
+import {ResponseError} from "../api/errors";
 
 const useAuth = useAuthStore()
 
 const router = useRouter()
 const route = useRoute()
 
-const customer = ref(Object)
+const customer = ref({})
 const orders = ref([])
 
 const isProfileRoute = computed(() => {
@@ -29,12 +29,22 @@ const isProfileOrdersRoute = computed(() => {
 // })
 
 onMounted(async () => {
-  customer.value = await getCustomer().catch(err => {
-    if (err.message === REFRESH_TOKEN_EXPIRED) {
-      router.push({name: 'SignIn'})
+  try {
+    customer.value = await getCustomer()
+    orders.value = await getOrders()
+  } catch (err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      case ResponseError.sessionExpired:
+        await router.push({name: 'SignIn'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
     }
-  })
-  orders.value = await getOrders()
+  }
 })
 </script>
 
@@ -50,7 +60,7 @@ onMounted(async () => {
           <PrimaryButton @click="router.push({name: 'ProfileOrders'})" :class="{'active': isProfileOrdersRoute}"
                          class="header-button">Orders
           </PrimaryButton>
-          <PrimaryButton @click="useAuth.signOut(); router.push({name: 'Home'})" class="header-button">Sign out
+          <PrimaryButton @click="useAuth.signOut(); router.push({name: 'Home'})" class="sign-out-button">Sign out
           </PrimaryButton>
         </div>
         <div v-if="isProfileRoute" class="info-section">
@@ -71,8 +81,8 @@ onMounted(async () => {
 .profile {
   margin-top: 20px;
   border-radius: 30px;
-  background: rgba(232, 230, 230, 0.4);
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  background: var(--trans-milky);
+  box-shadow: var(--container-shadow);
   display: flex;
   flex-direction: column;
   justify-self: center;
@@ -101,23 +111,10 @@ h1 {
   overflow: auto;
 }
 
-.active {
+button.active {
   color: var(--orange);
   background: none;
-  border: 1px solid var(--orange)
-}
-
-ul {
-  text-align: center;
-  margin-top: 40px;
-  list-style: none;
-  font-size: 20px;
-  padding-left: 0;
-
-}
-
-li {
-  margin-bottom: 10px;
+  border: 1px solid var(--orange);
 }
 
 .order {
@@ -128,5 +125,10 @@ li {
   font-size: 28px;
   margin-top: 25px;
   text-align: center;
+}
+
+.sign-out-button {
+  background: #ffc5b4;
+  color: #444444;
 }
 </style>

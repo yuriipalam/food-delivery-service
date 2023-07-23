@@ -23,9 +23,9 @@ const props = defineProps({
   flex-direction: column;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: rgba(243, 207, 121, 0.4);
+  background-color: var(--trans-yellowish);
   border-radius: 50px 50px 2px 2px;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: var(--card-shadow);
   text-decoration: none;
   transition: opacity 0.7s ease;
   color: black;

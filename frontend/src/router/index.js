@@ -10,6 +10,8 @@ import SignIn from "../views/SignIn.vue";
 import Profile from "../views/Profile.vue";
 import {useAuthStore} from "../store";
 import Cart from "../views/Cart.vue";
+import NotFound404 from "../views/NotFound404.vue";
+import SomethingWentWrong from "../views/SomethingWentWrong500.vue";
 
 const routes = [
     {
@@ -75,6 +77,21 @@ const routes = [
         name: 'Cart',
         // meta: {requiresAuth: true},
         component: Cart
+    },
+    {
+        path: '/not-found',
+        name: '404',
+        component: NotFound404
+    },
+    {
+        path: '/something-went-wrong',
+        name: '500',
+        component: SomethingWentWrong
+    },
+    // default redirect for vue router
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFound404
     }
 ]
 

@@ -8,6 +8,7 @@ import useVuelidate from "@vuelidate/core";
 import ModalWindow from "../components/ModalWindow.vue";
 import {useRouter} from "vue-router";
 import {createOrder} from "../api/api";
+import {ResponseError} from "../api/errors";
 
 const router = useRouter()
 
@@ -39,13 +40,29 @@ const submitForm = async () => {
   const result = await v$.value.$validate()
 
   if (result) {
+    // create proper requests array for our api
     let productRequests = Object.entries(useCart.products).map(([id, data]) => {
       return {
         'product_id': parseInt(id),
         'product_quantity': data.quantity
       }
     });
-    await createOrder(useAuth.idRef, formData.recipient, formData.address, useCart.getTotalPrice(), useCart.supplierIDs, productRequests)
+
+    try {
+      await createOrder(useAuth.idRef, formData.recipient, formData.address, useCart.getTotalPrice(), useCart.supplierIDs, productRequests)
+    } catch (err) {
+      switch (err.message) {
+        case ResponseError.sessionExpired:
+          await useAuth.signOut()
+          await router.push({name: 'SignIn'})
+          return
+        default:
+          errMsg.value = err.message
+          return
+      }
+    }
+
+    // invoke modal window
     document.querySelector('.modal').classList.add('active')
     document.querySelector('#overlay').classList.add('active')
   }
@@ -203,8 +220,8 @@ h1 {
 .cart {
   margin-top: 20px;
   border-radius: 30px;
-  background: rgba(232, 230, 230, 0.4);
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  background: var(--trans-milky);
+  box-shadow: var(--container-shadow);
   display: flex;
   flex-direction: column;
   justify-self: center;
@@ -230,7 +247,7 @@ form {
   justify-content: center;
   align-items: center;
   display: flex;
-  color: #8f1515;
+  color: var(--danger);
   grid-gap: 10px;
   margin-bottom: 5px;
 }
@@ -251,7 +268,7 @@ input:focus {
 }
 
 input.err {
-  border-bottom: 2px solid #ff4a4a;
+  border-bottom: 2px solid var(--light-danger);
 }
 
 input, span {

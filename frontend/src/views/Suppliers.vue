@@ -4,23 +4,30 @@ import {nextTick, onMounted, ref} from "vue";
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getSuppliers} from "../api/api";
+import {scrollToExploreBlock, setMainHeight} from "../utils";
+import {ResponseError} from "../api/errors";
+import router from "../router";
 
 const suppliers = ref([])
 
 onMounted(async () => {
-  suppliers.value = await getSuppliers()
+  try {
+    suppliers.value = await getSuppliers()
+  } catch (err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
+    }
+  }
 
   await nextTick()
 
-  const main = document.querySelector('main')
-  main.style.minHeight = main.offsetHeight + 'px'
-
-  const scrollTo = document.querySelector('.explore').offsetTop - 40
-
-  window.scrollTo({
-    top: scrollTo,
-    behavior: 'smooth'
-  })
+  setMainHeight()
+  scrollToExploreBlock()
 })
 </script>
 

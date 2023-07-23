@@ -47,7 +47,7 @@ function formattedProducts(products, supplierID) {
   padding: 10px 40px;
   margin-left: 20%;
   margin-right: 20%;
-  background-color: rgba(254, 114, 76, 0.15);
+  background-color: var(--very-trans-orange);
 }
 
 .order-id {

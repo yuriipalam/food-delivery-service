@@ -3,7 +3,7 @@ import {formatDate} from "../utils";
 
 const props = defineProps({
   customer: Object,
-  orders: []
+  orders: Array
 })
 
 function moneySpent() {
@@ -54,7 +54,7 @@ function moneySpent() {
   padding: 10px 40px;
   margin-left: 20%;
   margin-right: 20%;
-  background-color: rgba(254, 114, 76, 0.15);
+  background-color: var(--very-trans-orange);
 }
 
 .customer-full-name {
@@ -85,10 +85,6 @@ function moneySpent() {
   margin: 2px;
 }
 
-.customer-created-at {
-  margin: 0;
-}
-
 .customer-icon {
   color: var(--orange);
 }
@@ -108,10 +104,5 @@ function moneySpent() {
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 600;
-}
-
-.customer-amount-of-orders {
-  margin-top: 0;
-  margin-bottom: 0;
 }
 </style>

@@ -4,10 +4,8 @@ import {useRouter} from "vue-router";
 import {signIn, signUp} from "../api/api";
 import useVuelidate from "@vuelidate/core";
 import {email, maxLength, minLength, required} from "@vuelidate/validators";
-import {useAuthStore} from "../store";
 
 const router = useRouter()
-const useAuth = useAuthStore()
 
 onMounted(() => {
   mainHeightSetter()
@@ -53,8 +51,7 @@ const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
     await signUp(formData.email, formData.phone, formData.firstName, formData.lastName, formData.password, formData.repeatPassword)
-        .then((response) => router.push('/'))
-        .catch((error) => errMsg.value = error.message)
+        .catch(err => errMsg.value = err.message)
 
     await signIn(formData.email, formData.password).then(data => {
       router.push({name: 'Home'})

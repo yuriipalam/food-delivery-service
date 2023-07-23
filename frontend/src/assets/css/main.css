@@ -4,9 +4,17 @@
     --blackish: #272D2F;
     --milky: #D7D7D7;
     --orange: #FE724C;
+    --trans-orange: rgba(254, 114, 76, 0.4);
+    --very-trans-orange: rgba(254, 114, 76, 0.15);
     --pinky: #EAA491;
     --yellowish: #F3CF79;
+    --trans-yellowish: rgba(243, 207, 121, 0.4);
     --brownish: #83412C;
+    --danger: #8f1515;
+    --light-danger: #ff4a4a;
+    --container-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+    --card-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+    --trans-milky: rgba(232, 230, 230, 0.4);
 }
 
 * {

@@ -6,6 +6,9 @@ import {useFiltersStore} from "../store";
 import {computed, nextTick, onMounted, ref} from "vue";
 import Flow from "../components/Flow/Flow.vue";
 import {getCategories, getSuppliers} from "../api/api";
+import {setMainHeight} from "../utils";
+import {ResponseError} from "../api/errors";
+import router from "../router";
 
 const store = useFiltersStore()
 
@@ -20,13 +23,23 @@ const categoriesAndSuppliersFiltered = computed(() => {
 
 
 onMounted(async () => {
-  suppliers.value = await getSuppliers()
-  categories.value = await getCategories()
+  try {
+    suppliers.value = await getSuppliers()
+    categories.value = await getCategories()
+  } catch(err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
+    }
+  }
 
   await nextTick()
 
-  const main = document.querySelector('main')
-  main.style.minHeight = main.offsetHeight + 'px'
+  setMainHeight()
 })
 </script>
 
@@ -48,9 +61,5 @@ onMounted(async () => {
 <style scoped>
 .carousel-suppliers {
   margin-bottom: 55px;
-}
-
-.carousel-categories {
-  padding-bottom: 55px;
 }
 </style>

@@ -29,7 +29,7 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 
 	supplier, err := sh.repo.GetSupplierByID(id)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch supplier"))
+		response.SendInternalServerError(w, err)
 		return
 	} else if supplier == nil {
 		response.SendNotFoundError(w, fmt.Errorf("supplier not found"))
@@ -38,7 +38,7 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 
 	supplierRes, err := sh.getSupplierResponseFromModel(supplier)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create response"))
+		response.SendInternalServerError(w, err)
 		return
 	}
 
@@ -48,13 +48,13 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *http.Request) {
 	categoryIDs, err := utils.GetIntSliceByKeyFromMuxVars("category_id", r)
 	if err != nil {
-		response.SendBadRequestError(w, err) // "ids must be integers"
+		response.SendBadRequestError(w, err) // "id must be integers"
 		return
 	}
 
 	suppliers, err := sh.repo.GetSuppliersByCategoryIDs(categoryIDs)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch suppliers"))
+		response.SendInternalServerError(w, err)
 		return
 	} else if len(suppliers) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
@@ -63,7 +63,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 
 	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
+		response.SendInternalServerError(w, err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {
 	suppliers, err := sh.repo.GetAllSuppliers()
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot fetch suppliers"))
+		response.SendInternalServerError(w, err)
 		return
 	} else if len(suppliers) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no suppliers found"))
@@ -82,7 +82,7 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 
 	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
 	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("cannot create responses"))
+		response.SendInternalServerError(w, err)
 		return
 	}
 

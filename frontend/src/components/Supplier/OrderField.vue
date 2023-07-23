@@ -89,7 +89,7 @@ const useCart = useCartStore()
   font-weight: 400;
   line-height: 11px;
   border: none;
-  background-color: rgba(254, 114, 76, 0.4);
+  background-color: var(--trans-orange);
   border-radius: 50%;
   padding: 10px 10px;
   transition: opacity 0.7s ease;
@@ -102,7 +102,7 @@ const useCart = useCartStore()
 
 .quantity {
   margin: 0 8px;
-  background-color: rgba(254, 114, 76, 0.4);
+  background-color: var(--trans-orange);
   padding: 8px 12px;
   border-radius: 12px;
 }

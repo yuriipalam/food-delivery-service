@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"food_delivery/config"
 	"github.com/gorilla/mux"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 func GetIDFromMuxVars(r *http.Request) (int, error) {
@@ -25,7 +27,7 @@ func GetIntValueByKeyFromMuxVars(key string, r *http.Request) (int, error) {
 	vars := mux.Vars(r)
 	value, err := strconv.Atoi(vars[key])
 	if err != nil {
-		return 0, fmt.Errorf("key must be integer")
+		return 0, fmt.Errorf("id must be integer")
 	}
 
 	return value, nil
@@ -39,7 +41,7 @@ func GetIntSliceByKeyFromMuxVars(key string, r *http.Request) ([]int, error) {
 	for _, categoryIDStr := range categoryIDsStrSlice {
 		categoryID, err := strconv.Atoi(categoryIDStr)
 		if err != nil {
-			return nil, fmt.Errorf("ids must be integers")
+			return nil, fmt.Errorf("id must be integers")
 		}
 
 		categoryIDs = append(categoryIDs, categoryID)
@@ -81,4 +83,21 @@ func FileExists(filePath string) (bool, error) {
 		return false, nil // File does not exist
 	}
 	return false, err // Error occurred while checking file existence
+}
+
+func СonvertStrSliceToSqlArr(strSlice []string) string {
+	for i, str := range strSlice {
+		strSlice[i] = "'" + str + "'"
+	}
+
+	return "{" + strings.Join(strSlice, ",") + "}"
+}
+
+func СonvertDriverValueToStrSlice(value driver.Value) ([]string, error) {
+	bytesValue, ok := value.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("error converting driver.Value to []bytes")
+	}
+
+	return strings.Split(strings.Trim(strings.ReplaceAll(string(bytesValue), "\"", ""), "{}"), ","), nil
 }

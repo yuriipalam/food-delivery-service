@@ -20,3 +20,21 @@ export function getElmHeight(node) {
 export function formatDate(dateStr) {
     return new Date(dateStr).toLocaleString('en-GB');
 }
+
+// scroll to the .explore block when opening a page
+export function scrollToExploreBlock() {
+    const scrollTo = document.querySelector('.explore').offsetTop - 40
+
+    window.scrollTo({
+        top: scrollTo,
+        behavior: 'smooth'
+    })
+}
+
+// setting height of main block
+// it's needed when we use search and less/no results found
+// that our page won't change its height
+export function setMainHeight() {
+    const main = document.querySelector('main')
+    main.style.minHeight = main.offsetHeight + 'px'
+}

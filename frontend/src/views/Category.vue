@@ -5,6 +5,8 @@ import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getSuppliersByCategoryID} from "../api/api";
 import {useRoute} from "vue-router";
+import {ResponseError} from "../api/errors";
+import router from "../router";
 
 const route = useRoute()
 const id = route.params.id
@@ -13,7 +15,19 @@ const suppliers = ref([])
 const categoryName = ref('')
 
 onMounted(async () => {
-  suppliers.value = await getSuppliersByCategoryID(id)
+  try {
+    suppliers.value = await getSuppliersByCategoryID(id)
+  } catch (err) {
+    switch (err.message) {
+      case ResponseError.notFound:
+        await router.push({name: '404'})
+        return
+      default:
+        await router.push({name: '500'})
+        return
+    }
+  }
+
   categoryName.value = suppliers.value[0].categories.find(category => category.category_id === parseInt(id)).category_name
 
   await nextTick()
@@ -40,7 +54,5 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.explore {
-  margin-bottom: 55px;
-}
+
 </style>
