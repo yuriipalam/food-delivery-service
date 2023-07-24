@@ -55,7 +55,7 @@ func IsDefaultValue(value interface{}) bool {
 	return reflect.DeepEqual(value, defaultValue)
 }
 
-func SendCfgToMiddleware(cfg *config.Config) func(next http.Handler) http.Handler {
+func SendCfgToNextMiddleware(cfg *config.Config) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := context.WithValue(r.Context(), "cfg", cfg)

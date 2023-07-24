@@ -15,6 +15,8 @@ type Config struct {
 	RefreshLifetimeMinutes int
 }
 
+var Root string
+
 func NewConfig() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("error loading .env file")
@@ -28,6 +30,8 @@ func NewConfig() *Config {
 	if err != nil {
 		log.Fatal("error importing .env file")
 	}
+
+	Root = os.Getenv("ROOT")
 
 	return &Config{
 		Port:                   os.Getenv("PORT"),

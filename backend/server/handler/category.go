@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"food_delivery/config"
 	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
@@ -103,7 +104,7 @@ func (ch *CategoryHandler) getCategoryResponseFromModel(category *model.Category
 	}
 
 	categoryRes.URL = fmt.Sprintf("/categories/%d", category.ID)
-	categoryRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/categories/%s", category.Image)
+	categoryRes.ImageURL = fmt.Sprintf("%s/images/categories/%d/%s", config.Root, category.ID, category.Image)
 
 	return &categoryRes, nil
 }

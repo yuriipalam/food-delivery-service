@@ -18,19 +18,20 @@ import (
 
 func getImage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	folder, name := vars["folder"], vars["name"]
+	folder, idStr, name := vars["folder"], vars["id"], vars["name"]
+
 	allowedFolders := []string{"suppliers", "categories", "products"}
 
 	if !utils.Contains(allowedFolders, folder) {
-		response.SendNotFoundError(w, fmt.Errorf("not found folder %s", folder))
+		response.SendNotFoundError(w, fmt.Errorf("img not found"))
 		return
 	}
 
-	imagePath := fmt.Sprintf("./images/%s/%s", folder, name)
+	imagePath := fmt.Sprintf("./images/%s/%s/%s", folder, idStr, name)
 
 	result, err := utils.FileExists(imagePath)
 	if !result || err != nil {
-		response.SendNotFoundError(w, fmt.Errorf("not found image %s", name))
+		response.SendNotFoundError(w, fmt.Errorf("img not found"))
 		return
 	}
 
@@ -59,7 +60,7 @@ func Start(cfg *config.Config) {
 	defer db.Close()
 
 	r := mux.NewRouter()
-	r.Use(utils.SendCfgToMiddleware(cfg))
+	r.Use(utils.SendCfgToNextMiddleware(cfg))
 
 	customerRepository := repository.NewCustomerRepository(db)
 	customerHandler := handler.NewCustomerHandler(customerRepository, cfg)
@@ -105,7 +106,7 @@ func Start(cfg *config.Config) {
 	ordersRouter.HandleFunc("", orderHandler.CreateOrder).Methods(http.MethodPost)
 
 
-	r.HandleFunc("/images/{folder}/{name}", getImage).Methods(http.MethodGet)
+	r.HandleFunc("/images/{folder}/{id}/{name}", getImage).Methods(http.MethodGet)
 
 	fmt.Println("Server is started...")
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})

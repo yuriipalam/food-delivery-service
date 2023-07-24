@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"food_delivery/config"
 	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
@@ -103,7 +104,7 @@ func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier
 	}
 
 	supplierRes.URL = fmt.Sprintf("/suppliers/%d", supplier.ID)
-	supplierRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/suppliers/%s", supplier.Image)
+	supplierRes.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
 
 	supplierRes.Categories, err = sh.repo.GetCategoryResponsesBySupplierID(supplier.ID)
 	if err != nil {

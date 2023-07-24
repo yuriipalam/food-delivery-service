@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"food_delivery/config"
 	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
@@ -168,7 +169,7 @@ func (ph *ProductHandler) getProductResponseFromModel(product *model.Product) (*
 	}
 
 	productRes.URL = fmt.Sprintf("/products/%d", product.ID)
-	productRes.ImageURL = fmt.Sprintf("http://localhost:8080/images/products/%s", product.Image)
+	productRes.ImageURL = fmt.Sprintf("%s/images/products/%d/%s", config.Root, product.SupplierID, product.Image)
 
 	return &productRes, nil
 }
