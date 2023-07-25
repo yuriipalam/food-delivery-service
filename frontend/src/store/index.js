@@ -118,11 +118,11 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     function getProductTotalPrice(id) {
-        return parseFloat((products.value[id].quantity * products.value[id].product.price).toFixed(2))
+        return Math.round(getQuantity(id) * products.value[id].product.price * 100) / 100
     }
 
     function getTotalPrice() {
-        return Object.keys(products.value).map(key => getProductTotalPrice(parseInt(key))).reduce((total, current) => total + current, 0)
+        return Object.keys(products.value).map(key => getProductTotalPrice(parseInt(key))).reduce((total, current) => total + current, 0).toFixed(2)
     }
 
     function clearCart() {

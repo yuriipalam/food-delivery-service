@@ -67,4 +67,19 @@ h1 {
   font-size: 14px;
   font-weight: 400;
 }
+
+@media screen and (max-width: 780px) {
+  .bar {
+    justify-content: center;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .bar {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
 </style>

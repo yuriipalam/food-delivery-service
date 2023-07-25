@@ -28,15 +28,12 @@ function selectCategory(id, name) {
   display: inline-block;
 }
 
-.category-list > p {
+.categories-title {
   font-weight: 700;
   font-size: 20px;
   color: var(--blackish);
   opacity: 0.7;
   margin-bottom: 35px;
-}
-
-.categories-title {
   margin-top: 0;
 }
 </style>

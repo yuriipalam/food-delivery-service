@@ -10,6 +10,7 @@ import {useFiltersStore} from "../store";
 import {getCategoriesBySupplierID, getProductsBySupplierID, getSupplierByID} from "../api/api";
 import {getElmHeight} from "../utils";
 import {ResponseError} from "../api/errors";
+import CategoryListHorizontal from "../components/Supplier/CategoryListHorizontal.vue";
 
 const useFilters = useFiltersStore()
 
@@ -86,16 +87,22 @@ onUnmounted(() => {
                    :imageURL="supplier.image_url"
                    class="bar"></SupplierBar>
       <div class="content">
-        <CategoryList :categories="categories" class="categories"/>
-        <div class="products">
-          <SearchBar :class="'transparent'" :name="supplier.name"/>
-          <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
-          <div class="products-list">
-            <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"/>
-            <span class="no-products-found" v-if="filteredProducts.length === 0">No products found</span>
-          </div>
+        <div class="content-categories">
+          <CategoryListHorizontal :categories="categories" class="categories-horizontal"/>
+          <CategoryList :categories="categories" class="categories"/>
         </div>
-        <OrdersBlock class="orders"/>
+        <div class="content-products-and-orders">
+          <div class="products">
+            <SearchBar :class="'transparent'" :name="supplier.name"/>
+            <h2 class="category-name">{{ useFilters.selectedCategoryName }}</h2>
+            <div class="products-list">
+              <ProductCard v-for="product in filteredProducts" :product="product" :key="product.id"/>
+              <span class="no-products-found" v-if="filteredProducts.length === 0">No products found</span>
+            </div>
+          </div>
+          <OrdersBlock class="orders"/>
+        </div>
+
       </div>
     </main>
   </div>
@@ -111,6 +118,7 @@ onUnmounted(() => {
   grid-gap: 30px;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
 }
 
 .products {
@@ -148,9 +156,94 @@ onUnmounted(() => {
   top: 40px;
 }
 
+.categories-horizontal {
+  flex-basis: 100%;
+  flex-grow: 1;
+}
+
+.content-products-and-orders {
+  display: flex;
+  flex-direction: row;
+  grid-gap: 30px;
+}
+
 .orders {
   flex-grow: 1;
   top: 40px;
   position: sticky;
+
+}
+
+@media screen and (min-width: 1421px) {
+  .content {
+    flex-direction: row;
+  }
+
+  .categories {
+    display: block;
+  }
+
+  .categories-horizontal {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 1420px) {
+.content {
+  flex-direction: column;
+}
+
+  .categories {
+    display: none;
+  }
+
+  .categories-horizontal {
+    display: flex;
+  }
+
+}
+
+@media screen and (max-width: 1230px) {
+  .products {
+    width: 380px;
+    min-width: 380px;
+  }
+  .product-card {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 940px) {
+  .content-products-and-orders {
+    flex-direction: column-reverse;
+  }
+
+  .orders {
+    position: initial;
+  }
+
+  .products {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .product-card {
+    width: 43%;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .products-list {
+    grid-gap: 20px;
+  }
+}
+
+@media screen and (max-width: 635px) {
+  .product-card {
+    width: 100%
+  }
+  .products-list {
+    grid-gap: 30px;
+  }
 }
 </style>

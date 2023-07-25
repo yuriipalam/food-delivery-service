@@ -28,8 +28,8 @@ const router = useRouter()
       {{ useCart.err }}
     </span>
     <GoButton @click="router.push({'name': 'Cart'})">
-      <span>Go to checkout</span>
-      <span>{{ useCart.getTotalPrice() }} HUF</span>
+      <span class="go-button-span-left">Go to checkout</span>
+      <span class="go-button-span-right">{{ useCart.getTotalPrice() }} HUF</span>
     </GoButton>
   </div>
 </template>
@@ -59,6 +59,14 @@ const router = useRouter()
 
 button {
   margin-top: auto;
+}
+
+.go-button-span-left {
+  text-align: left;
+}
+
+.go-button-span-right {
+  text-align: right;
 }
 
 .err-msg {

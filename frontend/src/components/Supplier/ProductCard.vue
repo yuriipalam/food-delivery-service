@@ -91,4 +91,8 @@ img {
   height: 100px;
   margin-bottom: -5px;
 }
+
+@media screen and (max-width: 1230px) {
+
+}
 </style>

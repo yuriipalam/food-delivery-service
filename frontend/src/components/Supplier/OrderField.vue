@@ -66,6 +66,7 @@ const useCart = useCartStore()
   display: flex;
   align-items: center;
   margin-left: 20px;
+  margin-right: 10px;
 }
 
 .minus-sign {
@@ -107,24 +108,25 @@ const useCart = useCartStore()
   border-radius: 12px;
 }
 
-@media screen and (max-width: 768px) {
-  .order-controls {
-    margin-right: 20px;
-  }
-}
-
 @media screen and (max-width: 480px) {
   .order-name {
-    font-size: 18px;
+    font-size: 16px;
+  }
+
+  .order-price {
+    font-size: 14px;
   }
 
   .order-controls {
-    margin-right: 5px;
     margin-left: 10px;
   }
 
   .order-img {
     margin-right: 5px;
+  }
+
+  .quantity {
+    font-size: 15px;
   }
 }
 </style>

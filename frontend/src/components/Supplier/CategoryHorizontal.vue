@@ -6,7 +6,6 @@ const props = defineProps({
 
 <template>
   <div>
-    <hr>
     <p :class="{active : props.isActive}">
       <slot></slot>
     </p>
@@ -18,11 +17,12 @@ p {
   font-size: 20px;
   font-weight: 400;
   text-transform: uppercase;
-  margin-bottom: 12px;
-  margin-top: 12px;
+  margin-bottom: 0;
+  margin-top: 0;
   transition: opacity 0.7s ease;
   margin-right: 0;
   color: black;
+  opacity: 1;
 }
 
 p:hover {
@@ -35,11 +35,5 @@ p.active {
   pointer-events: none;
   opacity: 1;
   margin-right: 0;
-}
-
-hr {
-  height: 1px;
-  border: 0;
-  background-color: rgba(39, 45, 47, 0.3);
 }
 </style>
