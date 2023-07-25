@@ -38,3 +38,15 @@ export function setMainHeight() {
     const main = document.querySelector('main')
     main.style.minHeight = main.offsetHeight + 'px'
 }
+
+// hide footer
+export function hideFooter() {
+    const footer = document.querySelector('footer')
+    footer.style.display = 'none'
+}
+
+// show footer
+export function showFooter() {
+    const footer = document.querySelector('footer')
+    footer.style.display = 'block'
+}

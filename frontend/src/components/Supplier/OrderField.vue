@@ -11,7 +11,7 @@ const useCart = useCartStore()
 <template>
   <div class="order">
     <div class="order-info">
-      <img :src="props.product.image_url" alt="">
+      <img class="order-img" :src="props.product.image_url" :alt="props.product.name">
       <div class="order-detail">
         <p class="order-name">{{ props.product.name }}</p>
         <p class="order-price">{{ useCart.getProductTotalPrice(props.product.id) }} huf</p>
@@ -41,7 +41,7 @@ const useCart = useCartStore()
   align-items: center;
 }
 
-.order-info img {
+.order-img {
   height: 60px;
   margin-right: 15px;
 }
@@ -105,5 +105,26 @@ const useCart = useCartStore()
   background-color: var(--trans-orange);
   padding: 8px 12px;
   border-radius: 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .order-controls {
+    margin-right: 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .order-name {
+    font-size: 18px;
+  }
+
+  .order-controls {
+    margin-right: 5px;
+    margin-left: 10px;
+  }
+
+  .order-img {
+    margin-right: 5px;
+  }
 }
 </style>

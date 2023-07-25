@@ -25,7 +25,8 @@ const props = defineProps({
   min-height: 100%;
   display: flex;
   align-items: center;
-  width: 120px;
+  width: 170px;
+  min-width: 170px;
   flex-direction: column;
   padding-left: 10px;
   padding-right: 10px;

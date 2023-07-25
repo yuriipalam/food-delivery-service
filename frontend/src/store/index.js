@@ -67,18 +67,20 @@ export const useAuthStore = defineStore("auth", () => {
 export const useCartStore = defineStore('cart', () => {
     const products = ref({})
     const supplierIDs = ref([])
+    const err = ref('')
 
     function addProduct(product) {
         const id = product.id
 
         if (products.value[id]) {
-            if (products.value[id].quantity < 5) {
+            if (products.value[id].quantity < 8) {
                 products.value[id].quantity++
             }
             return
         } else if (!supplierIDs.value.includes(product.supplier_id)) {
             if (supplierIDs.value.length >= 2) {
-                throw Error('You can order from at most two suppliers')
+                err.value = 'You can order from at most two suppliers'
+                return
             }
             supplierIDs.value.push(product.supplier_id)
         }
@@ -90,17 +92,22 @@ export const useCartStore = defineStore('cart', () => {
 
     function reduceQuantity(id) {
         if (products.value[id].quantity <= 1) {
-            delete products.value[id]
-            if (products.value.length === 0) {
-                supplierIDs.value = []
+            const currProduct = products.value[id].product
+            // clearing supplier list
+            if (Object.keys(products.value).filter(iterID => products.value[iterID].product.supplier_id === currProduct.supplier_id).length !== 0) {
+                supplierIDs.value = supplierIDs.value.filter(iterID => iterID !== currProduct.supplier_id)
             }
+            delete products.value[id]
+            // if (products.value.length === 0) {
+            //     supplierIDs.value = []
+            // }
         } else {
             products.value[id].quantity--
         }
     }
 
     function increaseQuantity(id) {
-        if (products.value[id].quantity >= 5) {
+        if (products.value[id].quantity >= 8) {
             return
         }
         products.value[id].quantity++
@@ -131,6 +138,7 @@ export const useCartStore = defineStore('cart', () => {
         getProductTotalPrice,
         clearCart,
         getTotalPrice,
+        err,
         supplierIDs,
         products
     }

@@ -83,6 +83,7 @@ function formattedProducts(products, supplierID) {
   margin: 10px 20px 40px;
   font-weight: 500;
   font-size: 14px;
+  text-align: center;
 }
 
 .order-info {
@@ -92,6 +93,7 @@ function formattedProducts(products, supplierID) {
 }
 
 .order-info-left-side {
+  margin-right: 15px;
   margin-left: -20px;
   font-size: 14px;
 }
@@ -120,5 +122,36 @@ function formattedProducts(products, supplierID) {
   margin-top: 0;
   margin-bottom: 0;
   font-size: 14px;
+  text-align: right;
+}
+
+@media screen and (max-width: 1024px) {
+  .order {
+    margin-right: 75px;
+    margin-left: 75px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .order {
+    padding: 10px 20px;
+    margin-right: 40px;
+    margin-left: 40px;
+  }
+
+  .order-info-left-side {
+    margin-left: 0;
+  }
+
+  .order-info-right-side {
+    margin-right: 0;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .order {
+    margin-right: 10px;
+    margin-left: 10px;
+  }
 }
 </style>

@@ -83,6 +83,7 @@ onUnmounted(() => {
   <div class="container">
     <main>
       <SupplierBar :name="supplier.name" :desc="supplier.description" :quantity="productsLength"
+                   :imageURL="supplier.image_url"
                    class="bar"></SupplierBar>
       <div class="content">
         <CategoryList :categories="categories" class="categories"/>
@@ -114,6 +115,7 @@ onUnmounted(() => {
 
 .products {
   width: 685px;
+  min-width: 685px;
   display: flex;
   flex-direction: column;
 }
@@ -140,6 +142,7 @@ onUnmounted(() => {
 
 .categories {
   width: 170px;
+  min-width: 170px;
   height: 100%;
   position: sticky;
   top: 40px;

@@ -1,5 +1,6 @@
 <script setup>
 import {useCartStore} from "../../store";
+import {truncate} from "../../utils";
 
 const props = defineProps({
   product: Object
@@ -12,7 +13,7 @@ const useCart = useCartStore()
   <div class="product-card">
     <div class="product-left-side">
       <p class="product-name">{{ props.product.name }}</p>
-      <p class="product-desc">{{ props.product.description }}</p>
+      <p class="product-desc">{{ truncate(props.product.description, 100) }}</p>
       <p class="product-price">{{ props.product.price }} HUF</p>
     </div>
     <div class="product-right-side">

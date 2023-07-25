@@ -6,27 +6,43 @@ import {truncate} from "../../utils";
 const props = defineProps({
   name: String,
   desc: String,
-  quantity: String
+  quantity: String,
+  imageURL: String
 })
 </script>
 
 <template>
   <div class="bar">
-    <h1>{{ props.name }}</h1>
-    <p class="desc" v-if="props.desc">{{ truncate(props.desc, 100) }}</p>
-    <p class="quantity">{{ props.quantity }} available products</p>
+    <img class="bar-img" :src="props.imageURL" :alt="props.name">
+    <div class="bar-content">
+      <h1>{{ props.name }}</h1>
+      <p class="desc" v-if="props.desc">{{ truncate(props.desc, 100) }}</p>
+      <p class="quantity">{{ props.quantity }} available products</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .bar {
-  text-align: left;
+  display: flex;
+  align-items: center;
+  grid-gap: 25px;
   border-radius: 30px;
   background: rgba(243, 207, 121, 0.3);
   box-shadow: 4px 4px 7px 5px rgba(0, 0, 0, 0.1);
   padding-top: 40px;
   padding-bottom: 40px;
   padding-left: 65px;
+}
+
+.bar-img {
+  padding-top: 5px;
+  height: fit-content;
+}
+
+.bar-content {
+  text-align: left;
+  display: flex;
   flex-direction: column;
 }
 

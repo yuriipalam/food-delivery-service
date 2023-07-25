@@ -24,7 +24,6 @@ function moneySpent() {
         <path fill="currentColor"
               d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5l-8-5V6l8 5l8-5v2z"/>
       </svg>
-
       {{ props.customer.email }}
     </p>
     <p class="customer-contact">
@@ -52,8 +51,6 @@ function moneySpent() {
 .customer-info {
   border-radius: 30px;
   padding: 10px 40px;
-  margin-left: 20%;
-  margin-right: 20%;
   background-color: var(--very-trans-orange);
 }
 
@@ -104,5 +101,25 @@ function moneySpent() {
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 600;
+}
+
+@media screen and (max-width: 480px) {
+  .customer-info {
+    padding: 10px 20px;
+  }
+
+  .customer-contact {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .customer-right-side {
+    margin-right: 0;
+  }
+
+  .customer-left-side {
+    margin-left: 0;
+  }
 }
 </style>

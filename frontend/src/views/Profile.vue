@@ -111,6 +111,11 @@ h1 {
   overflow: auto;
 }
 
+.info {
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
 button.active {
   color: var(--orange);
   background: none;
@@ -130,5 +135,40 @@ button.active {
 .sign-out-button {
   background: #ffc5b4;
   color: #444444;
+}
+
+@media screen and (max-width: 1024px) {
+  .profile {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  h1 {
+    margin-top: 0;
+  }
+
+  .profile {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .info {
+    margin-left: 40px;
+    margin-right: 40px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .control-panel {
+    flex-flow: wrap;
+    grid-gap: 10px;
+  }
+
+  .info {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
 </style>

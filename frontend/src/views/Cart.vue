@@ -89,7 +89,7 @@ function closeModal() {
           <div v-if="errMsg !== ''" class="err-msg">
             <span>{{ errMsg }}</span>
           </div>
-          <input type="text" :value="useAuth.phoneRef" disabled>
+          <input v-if="useAuth.idRef !== -1" type="text" :value="useAuth.phoneRef" disabled>
 
           <span v-for="error in v$.address.$errors" :key="error.$uid" class="err-span-msg">{{ error.$message }}</span>
           <input type="text" placeholder="Address" :class="{'err': v$.address.$error}" name="address"
@@ -108,8 +108,8 @@ function closeModal() {
             <p>Payment is only by cash!</p>
           </div>
           <GoButton :type="'submit'" :disabled="Object.keys(useCart.products).length === 0">
-            <span>Confirm order</span>
-            <span>{{ useCart.getTotalPrice() }} HUF</span>
+            <span class="go-button-text-left">Confirm order</span>
+            <span class="go-button-text-right">{{ useCart.getTotalPrice() }} HUF</span>
           </GoButton>
         </form>
       </div>
@@ -271,9 +271,17 @@ input.err {
   border-bottom: 2px solid var(--light-danger);
 }
 
-input, span {
+input {
   margin-right: 5%;
   margin-left: 5%;
+}
+
+.go-button-text-left {
+  text-align: left;
+}
+
+.go-button-text-right {
+  text-align: right;
 }
 
 .modal-title {
@@ -291,5 +299,24 @@ input, span {
   margin-bottom: 50px;
   text-align: center;
   max-width: 400px;
+}
+
+@media screen and (max-width: 1024px) {
+  .cart {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  input {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cart {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 </style>

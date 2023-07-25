@@ -3,7 +3,6 @@ import Home from "../views/Home.vue";
 import Suppliers from "../views/Suppliers.vue";
 import Categories from "../views/Categories.vue";
 import Category from "../views/Category.vue"
-import ContactUs from "../views/ContactUs.vue";
 import Supplier from "../views/Supplier.vue";
 import SignUp from "../views/SignUp.vue";
 import SignIn from "../views/SignIn.vue";
@@ -17,53 +16,75 @@ const routes = [
     {
         path: '/',
         name: 'Home',
+        meta: {
+            title: 'FoodJet - Home'
+        },
         component: Home
     },
     {
         path: '/suppliers',
         name: 'Suppliers',
+        meta: {
+            title: 'FoodJet - Suppliers Flow'
+        },
         component: Suppliers
     },
     {
         path: '/suppliers/:id',
         name: 'Supplier',
+        meta: {
+            title: 'FoodJet - Explore Supplier'
+        },
         component: Supplier
     },
     {
         path: '/categories',
         name: 'Categories',
+        meta: {
+            title: 'FoodJet - Categories'
+        },
         component: Categories
     },
     {
         path: '/categories/:id',
         name: 'Category',
+        meta: {
+            title: 'FoodJet - Explore Category'
+        },
         component: Category
-    },
-    {
-        path: '/contact-us',
-        name: 'ContactUs',
-        component: ContactUs
     },
     {
         path: '/sign-up',
         name: 'SignUp',
+        meta: {
+            title: 'FoodJet - Sign Up'
+        },
         component: SignUp
     },
     {
         path: '/sign-in',
         name: 'SignIn',
+        meta: {
+            title: 'FoodJet - Sign In'
+        },
         component: SignIn
     },
     {
         path: '/profile',
         name: 'Profile',
-        meta: {requiresAuth: true},
+        meta: {
+            requiresAuth: true,
+            title: 'FoodJet - Profile'
+        },
         component: Profile
     },
     {
         path: '/profile/orders',
         name: 'ProfileOrders',
-        meta: {requiresAuth: true},
+        meta: {
+            requiresAuth: true,
+            title: 'FoodJet - Orders'
+        },
         component: Profile
     },
     // {
@@ -75,17 +96,25 @@ const routes = [
     {
         path: '/cart',
         name: 'Cart',
-        // meta: {requiresAuth: true},
+        meta: {
+            title: 'FoodJet - Cart'
+        },
         component: Cart
     },
     {
         path: '/not-found',
         name: '404',
+        meta: {
+            title: 'FoodJet - Not Found'
+        },
         component: NotFound404
     },
     {
         path: '/something-went-wrong',
         name: '500',
+        meta: {
+            title: 'FoodJet - Something Went Wrong'
+        },
         component: SomethingWentWrong
     },
     // default redirect for vue router
@@ -109,4 +138,13 @@ router.beforeEach((to, from, next) => {
     } else {
         next()
     }
+})
+
+// takes title from meta and sets it for each route
+router.beforeEach((to, from, next) => {
+    const title = to.meta.title
+    if (title) {
+        document.title = title
+    }
+    next()
 })

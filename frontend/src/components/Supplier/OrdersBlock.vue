@@ -3,8 +3,17 @@ import OrderField from "./OrderField.vue";
 import GoButton from "../GoButton.vue";
 import {useCartStore} from "../../store";
 import {useRouter} from "vue-router";
+import {watchEffect} from "vue";
 
 const useCart = useCartStore()
+
+watchEffect(async () => {
+  if (useCart.err !== '') {
+    setTimeout(newErr => {
+      useCart.err = ''
+    }, 5000)
+  }
+})
 
 const router = useRouter()
 </script>
@@ -15,6 +24,9 @@ const router = useRouter()
     <div class="orders-list">
       <OrderField :product="product.product" v-for="product in useCart.products"/>
     </div>
+    <span class="err-msg" v-if="useCart.err !== ''">
+      {{ useCart.err }}
+    </span>
     <GoButton @click="router.push({'name': 'Cart'})">
       <span>Go to checkout</span>
       <span>{{ useCart.getTotalPrice() }} HUF</span>
@@ -47,5 +59,12 @@ const router = useRouter()
 
 button {
   margin-top: auto;
+}
+
+.err-msg {
+  margin-bottom: 10px;
+}
+.err-span-msg {
+  margin-bottom: 0;
 }
 </style>

@@ -1,10 +1,11 @@
 <script setup>
-
+import Error from "../components/Error.vue";
 </script>
 
 <template>
-  <h1>404 Not found</h1>
-  <a href="">Go back Home</a>
+  <main>
+    <Error :text="'400 Not Found'"></Error>
+  </main>
 </template>
 
 <style scoped>

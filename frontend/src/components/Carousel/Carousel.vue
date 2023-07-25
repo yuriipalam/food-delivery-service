@@ -2,10 +2,35 @@
 import CarouselCard from "./CarouselCard.vue";
 import {Carousel, Navigation, Pagination, Slide} from "vue3-carousel";
 import 'vue3-carousel/dist/carousel.css'
+import {onMounted, ref} from "vue";
 
 const props = defineProps({
   name: String,
   objects: Array,
+})
+
+const itemsToShow = ref(5)
+
+function setItemsToShow() {
+  if (window.innerWidth > 1028) { // 1029+
+    itemsToShow.value = 5
+    return
+  } else if (window.innerWidth > 728) { // 729-1028
+    itemsToShow.value = 4
+    return
+  } else if (window.innerWidth > 530) { // 531-729
+    itemsToShow.value = 3
+    return
+  } else if (window.innerWidth > 480) { // 481-530
+    itemsToShow.value = 2
+    return
+  }
+  itemsToShow.value = 1
+}
+
+onMounted(() => {
+  setItemsToShow()
+  window.addEventListener('resize', setItemsToShow)
 })
 </script>
 
@@ -13,7 +38,7 @@ const props = defineProps({
   <div>
     <h3>{{ props.name }}</h3>
     <div class="container-carousel">
-      <carousel :items-to-show="5">
+      <carousel :items-to-show="itemsToShow">
         <slide v-for="obj in objects" :key="obj">
           <CarouselCard :obj="obj"/>
         </slide>
@@ -44,6 +69,26 @@ button.carousel__next {
   width: 10px !important;
   border-radius: 50% !important;
   opacity: 0.5;
+}
+
+@media screen and (max-width: 728px) {
+  button.carousel__prev {
+    margin-left: -35px;
+  }
+
+  button.carousel__next {
+    margin-right: -35px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  button.carousel__prev {
+    margin-left: -25px;
+  }
+
+  button.carousel__next {
+    margin-right: -25px;
+  }
 }
 </style>
 

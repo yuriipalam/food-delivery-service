@@ -241,7 +241,7 @@ export async function getOrders() {
         .catch(err => {
             switch (err.message) {
                 case OrderError.ordersNotFound:
-                    throw Error(ResponseError.notFound)
+                    return []
                 case REFRESH_TOKEN_EXPIRED:
                     throw Error(ResponseError.sessionExpired)
                 default:

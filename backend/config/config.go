@@ -31,10 +31,11 @@ func NewConfig() *Config {
 		log.Fatal("error importing .env file")
 	}
 
-	Root = os.Getenv("ROOT")
+	port := os.Getenv("PORT")
+	Root = os.Getenv("ROOT") + port
 
 	return &Config{
-		Port:                   os.Getenv("PORT"),
+		Port:                   port,
 		AccessTokenSecret:      os.Getenv("ACCESS_TOKEN_SECRET"),
 		RefreshTokenSecret:     os.Getenv("REFRESH_TOKEN_SECRET"),
 		AccessLifetimeMinutes:  accessMin,

@@ -2,6 +2,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 50px;
 }
 
 form {
@@ -80,4 +81,14 @@ button {
 button:hover {
     opacity: 0.75;
     cursor: pointer;
+}
+
+@media screen and (max-width: 480px) {
+    form {
+        width: 300px;
+    }
+
+    button {
+        padding: 10px 40px;
+    }
 }

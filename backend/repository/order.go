@@ -3,10 +3,12 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"food_delivery/config"
 	"food_delivery/model"
 	"food_delivery/request"
 	"food_delivery/response"
 	_ "github.com/lib/pq"
+	"strconv"
 	"time"
 )
 
@@ -170,7 +172,7 @@ func (or *OrderRepository) GetSupplierResponsesByOrderID(id int) ([]response.Ord
 			return nil, fmt.Errorf("cannot scan supplier for order_id %d", id)
 		}
 
-		supplier.SupplierImageURL = fmt.Sprintf("http://localhost:8080/images/suppliers/%s", imageName)
+		supplier.SupplierImageURL = fmt.Sprintf("%s/images/suppliers/%s/%s", config.Root, strconv.Itoa(supplier.SupplierID), imageName)
 
 		suppliers = append(suppliers, supplier)
 	}
