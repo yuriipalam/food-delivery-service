@@ -1,12 +1,13 @@
 package server
 
 import (
+	"context"
 	"database/sql"
+	"flag"
 	"fmt"
 	"food_delivery/config"
 	"food_delivery/middleware"
 	"food_delivery/repository"
-	"food_delivery/response"
 	"food_delivery/server/handler"
 	"food_delivery/utils"
 	"github.com/gorilla/handlers"
@@ -14,45 +15,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 )
 
-func getImage(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	folder, idStr, name := vars["folder"], vars["id"], vars["name"]
-
-	allowedFolders := []string{"suppliers", "categories", "products"}
-
-	if !utils.Contains(allowedFolders, folder) {
-		response.SendNotFoundError(w, fmt.Errorf("img not found"))
-		return
-	}
-
-	imagePath := fmt.Sprintf("./images/%s/%s/%s", folder, idStr, name)
-
-	result, err := utils.FileExists(imagePath)
-	if !result || err != nil {
-		response.SendNotFoundError(w, fmt.Errorf("img not found"))
-		return
-	}
-
-	imageData, err := os.ReadFile(imagePath)
-	if err != nil {
-		response.SendNotFoundError(w, fmt.Errorf("img not found"))
-		return
-	}
-
-	contentType := http.DetectContentType(imageData)
-	w.Header().Set("Content-Type", contentType)
-
-	_, err = w.Write(imageData)
-	if err != nil {
-		response.SendInternalServerError(w, fmt.Errorf("failed to write response"))
-		return
-	}
-}
-
 func Start(cfg *config.Config) {
-	connStr := "postgres://food_delivery:password@localhost:5432/food_delivery?sslmode=disable"
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cfg.DbName, cfg.DbPassword, cfg.DbServer, cfg.DbPort, cfg.DbName)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
@@ -106,12 +74,55 @@ func Start(cfg *config.Config) {
 	ordersRouter.HandleFunc("", orderHandler.CreateOrder).Methods(http.MethodPost)
 
 
-	r.HandleFunc("/images/{folder}/{id}/{name}", getImage).Methods(http.MethodGet)
+	r.HandleFunc("/images/{folder}/{id}/{name}", handler.GetImage).Methods(http.MethodGet)
 
-	fmt.Println("Server is started...")
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173", "http://127.0.0.1:8888"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
+	r.Use(handlers.CORS(originsOk, headersOk, methodsOk))
+
+	var wait time.Duration
+	flag.DurationVar(&wait, "graceful-timeout", time.Second * 15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+	flag.Parse()
+
+	srv := &http.Server{
+		Addr:         "0.0.0.0:8080",
+
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler: r, // Pass our instance of gorilla/mux in.
+
+	}
+
+	// Run our server in a goroutine so that it doesn't block.
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	fmt.Println("Server is started...")
+
+	c := make(chan os.Signal, 1)
+	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
+	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
+	signal.Notify(c, os.Interrupt)
+
+	// Block until we receive our signal.
+	<-c
+
+	// Create a deadline to wait for.
+	ctx, cancel := context.WithTimeout(context.Background(), wait)
+	defer cancel()
+	// Doesn't block if no connections, but will otherwise wait
+	// until the timeout deadline.
+	srv.Shutdown(ctx)
+	// Optionally, you could run srv.Shutdown in a goroutine and block on
+	// <-ctx.Done() if your application should wait for other services
+	// to finalize based on context cancellation.
+	log.Println("shutting down")
+	os.Exit(0)
 }
