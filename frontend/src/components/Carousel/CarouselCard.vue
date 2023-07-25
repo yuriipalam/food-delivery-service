@@ -7,9 +7,7 @@ const props = defineProps({
 
 <template>
   <a class="card" :href="obj.url">
-    <div class="circle-mask">
       <img :src="props.obj.image_url" :alt="props.obj.name" width="100" height="100">
-    </div>
     <p>{{ props.obj.name }}</p>
   </a>
 </template>
@@ -27,25 +25,20 @@ const props = defineProps({
   border-radius: 50px 50px 2px 2px;
   box-shadow: var(--card-shadow);
   text-decoration: none;
-  transition: opacity 0.7s ease;
+  transition: transform 0.4s ease-in-out;
   color: black;
 }
 
 .card:hover {
-  opacity: 0.75;
+  transform: translateY(5px);
 }
 
-.circle-mask {
+img {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
   overflow: hidden;
   margin-bottom: 15px;
   margin-top: -15px;
-}
-
-.circle-mask img {
-  object-fit: cover;
 }
 
 .card p {

@@ -34,11 +34,11 @@ const props = defineProps({
   background-color: var(--trans-yellowish);
   border-radius: 50px 50px 2px 2px;
   box-shadow: var(--card-shadow);
-  transition: opacity 0.7s ease;
+  transition: transform 0.4s ease-in-out;
 }
 
 .flow-card:hover {
-  opacity: 0.75;
+  transform: scale(1.05);
 }
 
 .circle-mask {

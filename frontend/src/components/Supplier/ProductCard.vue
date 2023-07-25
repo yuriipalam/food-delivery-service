@@ -79,20 +79,16 @@ button {
   background-color: var(--orange);
   border-radius: 0 31px 0 10px;
   padding: 10px 10px 8px;
-  transition: opacity 0.7s ease;
+  transition: border-radius 0.4s ease-in-out;
 }
 
 button:hover {
   cursor: pointer;
-  opacity: 0.75;
+  border-radius: 31px 0 0 10px;
 }
 
 img {
   height: 100px;
   margin-bottom: -5px;
-}
-
-@media screen and (max-width: 1230px) {
-
 }
 </style>
