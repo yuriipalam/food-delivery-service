@@ -1,0 +1,1 @@
+INSERT INTO public.customer (id, email, password, phone, first_name, last_name, created_at) VALUES (1, 'yurapalamarchuk111@gmail.com', '$2a$10$lWYPUnMzZSebI2Q/C30ogu/OzGIDG9NNbth9GP7mKMW6CzLBWnph.', '+36302550386', 'Yurii', 'Palamarchuk', '2023-07-24 16:47:10.083973');

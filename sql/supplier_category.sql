@@ -1,0 +1,15 @@
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (1, 1);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (1, 2);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (1, 3);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (1, 4);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (1, 5);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (2, 3);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (2, 6);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (2, 5);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (2, 4);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (2, 7);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (3, 3);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (3, 2);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (3, 5);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (3, 4);
+INSERT INTO public.supplier_category (supplier_id, category_id) VALUES (3, 7);
