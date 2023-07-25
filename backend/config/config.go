@@ -44,9 +44,9 @@ func NewConfig() *Config {
 		RefreshTokenSecret:     os.Getenv("REFRESH_TOKEN_SECRET"),
 		AccessLifetimeMinutes:  accessMin,
 		RefreshLifetimeMinutes: refreshMin,
-		DbName: os.Getenv("DB_NAME"),
-		DbPassword: os.Getenv("DB_PASSWORD"),
-		DbServer: os.Getenv("DB_SERVER"),
-		DbPort: os.Getenv("DB_PORT"),
+		DbName:                 os.Getenv("DB_NAME"),
+		DbPassword:             os.Getenv("DB_PASSWORD"),
+		DbServer:               os.Getenv("DB_SERVER"),
+		DbPort:                 os.Getenv("DB_PORT"),
 	}
 }
