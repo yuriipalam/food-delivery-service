@@ -33,4 +33,54 @@ h2 {
 .search-bar {
   max-width: 600px;
 }
+
+@media screen and (max-width: 1275px) {
+  .search-bar {
+    max-width: 460px;
+  }
+}
+
+@media screen and (max-width: 1160px) {
+  .explore-block {
+    background-image: url("../assets/img/explore-background-small-devices.png");
+    padding-top: 95px;
+  }
+
+  .search-bar {
+    max-width: 600px;
+  }
+}
+
+@media screen and (max-width: 1028px) {
+  .search-bar {
+    max-width: 400px;
+  }
+}
+
+@media screen and (max-width: 875px) {
+  .explore-block {
+    background-position-x: 200px;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .explore-block {
+    background-position-x: 150px;
+    padding-left: 35px;
+  }
+}
+
+@media screen and (max-width: 660px) {
+  .explore-block {
+    background-position-x: 200px;
+    background-image: none;
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-top: 70px;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+}
 </style>

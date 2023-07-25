@@ -90,4 +90,30 @@ p {
 .solid-button {
   margin-right: 40px;
 }
+
+@media screen and (max-width: 780px) {
+  header {
+    max-width: 450px;
+    margin-right: 30px;
+  }
+
+  p {
+    margin-bottom: 40px;
+  }
+
+  .buttons {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  .transparent-button {
+    margin-bottom: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  header {
+    padding-left: 20px;
+  }
+}
 </style>
