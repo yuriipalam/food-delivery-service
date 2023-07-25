@@ -7,6 +7,7 @@ import {onMounted, ref} from "vue";
 const props = defineProps({
   name: String,
   objects: Array,
+  autoplayTime: Number
 })
 
 const itemsToShow = ref(5)
@@ -38,7 +39,7 @@ onMounted(() => {
   <div>
     <h3>{{ props.name }}</h3>
     <div class="container-carousel">
-      <carousel :items-to-show="itemsToShow">
+      <carousel :items-to-show="itemsToShow" :autoplay="props.autoplayTime">
         <slide v-for="obj in objects" :key="obj">
           <CarouselCard :obj="obj"/>
         </slide>

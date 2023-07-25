@@ -49,7 +49,7 @@ const submitForm = async () => {
     });
 
     try {
-      await createOrder(useAuth.idRef, formData.recipient, formData.address, useCart.getTotalPrice(), useCart.supplierIDs, productRequests)
+      await createOrder(useAuth.idRef, formData.recipient, formData.address, parseFloat(useCart.getTotalPrice()), useCart.supplierIDs, productRequests)
     } catch (err) {
       switch (err.message) {
         case ResponseError.sessionExpired:

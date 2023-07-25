@@ -69,7 +69,7 @@ async function POST(url, isProtected, data) {
         method: 'POST', body: JSON.stringify(data), headers: isProtected ? {
             Authorization: 'Bearer ' + useAuthStore().accessTokenRef,
         } : {},
-    }).then(async response => await handleResponse(response, url, isProtected, GET))
+    }).then(async response => await handleResponse(response, url, isProtected, POST))
 }
 
 // ACCESSING ENDPOINTS //
@@ -225,6 +225,7 @@ export async function createOrder(customerID, recipientFullName, address, price,
         'supplier_ids': supplierIDs,
         'products': products
     }).catch(err => {
+        console.log(err)
         switch (err.message) {
             case OrderError.atMostTwoSuppliers:
                 throw Error("At most two suppliers can be chosen!")

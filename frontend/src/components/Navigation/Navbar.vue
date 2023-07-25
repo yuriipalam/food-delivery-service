@@ -209,7 +209,7 @@ svg {
   ul {
     position: absolute;
     z-index: 1;
-    top: -20%;
+    top: -100%;
     left: 0;
     gap: 0;
     flex-direction: column;
@@ -217,7 +217,7 @@ svg {
     width: 100%;
     text-align: right;
     align-items: flex-end;
-    transition: 0.4s;
+    transition: 0.7s;
     padding-right: 25px;
   }
 

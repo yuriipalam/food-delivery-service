@@ -94,7 +94,7 @@ export const useCartStore = defineStore('cart', () => {
         if (products.value[id].quantity <= 1) {
             const currProduct = products.value[id].product
             // clearing supplier list
-            if (Object.keys(products.value).filter(iterID => products.value[iterID].product.supplier_id === currProduct.supplier_id).length !== 0) {
+            if (Object.keys(products.value).filter(iterID => products.value[iterID].product.supplier_id === currProduct.supplier_id).length === 1) {
                 supplierIDs.value = supplierIDs.value.filter(iterID => iterID !== currProduct.supplier_id)
             }
             delete products.value[id]

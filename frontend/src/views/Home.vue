@@ -48,9 +48,9 @@ onMounted(async () => {
     <Header/>
     <Explore class="explore"/>
     <main>
-      <Carousel v-if="store.searchFor === ''" :name="'Top Suppliers'" :objects="suppliers"
+      <Carousel v-if="store.searchFor === ''" :name="'Top Suppliers'" :objects="suppliers" :autoplay-time="7800"
                 class="carousel-suppliers"/>
-      <Carousel v-if="store.searchFor === ''" :name="'Top Categories'" :objects="categories"
+      <Carousel v-if="store.searchFor === ''" :name="'Top Categories'" :objects="categories" :autoplay-time="3200"
                 class="carousel-categories"/>
       <Flow v-if="store.searchFor !== ''" :items="categoriesAndSuppliersFiltered"
             :name="'Results for suppliers & categories'"/>
