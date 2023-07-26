@@ -2,13 +2,14 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px;
 }
 
 form {
     display: flex;
     flex-direction: column;
     width: 360px;
+    padding-bottom: 50px;
+    padding-top: 50px;
 }
 
 h1 {
