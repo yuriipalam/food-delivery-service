@@ -48,9 +48,9 @@ const productsLength = computed(() => {
 // setting ideal height for orders-block
 function changeOrdersHeight() {
 
-    const nav = document.querySelector('nav')
-    const bar = document.querySelector('.bar')
-    const ordersBlock = document.querySelector('.orders-block.orders')
+  const nav = document.querySelector('nav')
+  const bar = document.querySelector('.bar')
+  const ordersBlock = document.querySelector('.orders-block.orders')
   if (window.innerWidth > 940) {
     ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
   } else {
@@ -152,6 +152,11 @@ onUnmounted(() => {
   padding-left: 15px;
 }
 
+.content-categories {
+  max-width: 170px;
+  min-width: 170px;
+}
+
 .categories {
   width: 170px;
   min-width: 170px;
@@ -191,9 +196,14 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 1420px) {
-.content {
-  flex-direction: column;
-}
+  .content {
+    flex-direction: column;
+  }
+
+  .content-categories {
+    min-width: initial;
+    max-width: initial;
+  }
 
   .categories {
     display: none;
@@ -202,7 +212,6 @@ onUnmounted(() => {
   .categories-horizontal {
     display: flex;
   }
-
 }
 
 @media screen and (max-width: 1230px) {
@@ -210,6 +219,7 @@ onUnmounted(() => {
     width: 380px;
     min-width: 380px;
   }
+
   .product-card {
     width: 100%;
   }
@@ -244,6 +254,7 @@ onUnmounted(() => {
   .product-card {
     width: 100%
   }
+
   .products-list {
     grid-gap: 30px;
   }
