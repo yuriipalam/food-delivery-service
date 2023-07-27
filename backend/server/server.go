@@ -50,7 +50,8 @@ func Start(cfg *config.Config) {
 	r.HandleFunc("/suppliers", supplierHandler.GetAllSuppliers).Methods(http.MethodGet)
 
 	categoryRepository := repository.NewCategoryRepository(db)
-	categoryHandler := handler.NewCategoryHandler(categoryRepository)
+	categoryService := service.NewCategoryService(cfg, db)
+	categoryHandler := handler.NewCategoryHandler(categoryRepository, categoryService)
 	r.HandleFunc("/category/{id}", categoryHandler.GetCategoryByID).Methods(http.MethodGet)
 	r.HandleFunc("/categories", categoryHandler.GetCategoriesBySupplierID).Queries("supplier_id", "{supplier_id}").Methods(http.MethodGet)
 	r.HandleFunc("/categories", categoryHandler.GetAllCategories).Methods(http.MethodGet)
