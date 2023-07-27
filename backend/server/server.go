@@ -7,6 +7,7 @@ import (
 	"food_delivery/middleware"
 	"food_delivery/repository"
 	"food_delivery/server/handler"
+	"food_delivery/service"
 	"food_delivery/utils"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -42,7 +43,8 @@ func Start(cfg *config.Config) {
 	refTokenRouter.Use(middleware.ValidateRefreshToken)
 
 	supplierRepository := repository.NewSupplierRepository(db)
-	supplierHandler := handler.NewSupplierHandler(supplierRepository)
+	supplierService := service.NewSupplierService(cfg, db)
+	supplierHandler := handler.NewSupplierHandler(supplierRepository, supplierService)
 	r.HandleFunc("/supplier/{id}", supplierHandler.GetSupplierByID).Methods(http.MethodGet)
 	r.HandleFunc("/suppliers", supplierHandler.GetSuppliersByCategoryID).Queries("category_id", "{category_id}").Methods(http.MethodGet)
 	r.HandleFunc("/suppliers", supplierHandler.GetAllSuppliers).Methods(http.MethodGet)

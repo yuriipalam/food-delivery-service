@@ -1,23 +1,23 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
-	"food_delivery/config"
-	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
+	"food_delivery/service"
 	"food_delivery/utils"
 	"net/http"
 )
 
 type SupplierHandler struct {
 	repo repository.SupplierRepositoryI
+	service *service.SupplierService
 }
 
-func NewSupplierHandler(repo repository.SupplierRepositoryI) *SupplierHandler {
+func NewSupplierHandler(repo repository.SupplierRepositoryI, service *service.SupplierService) *SupplierHandler {
 	return &SupplierHandler{
 		repo: repo,
+		service: service,
 	}
 }
 
@@ -37,7 +37,7 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	supplierRes, err := sh.getSupplierResponseFromModel(supplier)
+	supplierRes, err := sh.service.GetSupplierResponseBySupplierID(supplier.ID)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -62,7 +62,7 @@ func (sh *SupplierHandler) GetSuppliersByCategoryID(w http.ResponseWriter, r *ht
 		return
 	}
 
-	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
+	supplierRes, err := sh.service.GetSupplierResponses(suppliers)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -81,50 +81,11 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	supplierRes, err := sh.getSupplierResponsesFromModel(suppliers)
+	supplierRes, err := sh.service.GetSupplierResponses(suppliers)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
 	}
 
 	response.SendOK(w, supplierRes)
-}
-
-func (sh *SupplierHandler) getSupplierResponseFromModel(supplier *model.Supplier) (*response.SupplierResponse, error) {
-	var supplierRes response.SupplierResponse
-
-	supplierMarshaled, err := json.Marshal(supplier)
-	if err != nil {
-		return nil, fmt.Errorf("cannot marshal supplier from db")
-	}
-
-	err = json.Unmarshal(supplierMarshaled, &supplierRes)
-	if err != nil {
-		return nil, fmt.Errorf("cannot unmarshal supplier from db into response")
-	}
-
-	supplierRes.URL = fmt.Sprintf("/suppliers/%d", supplier.ID)
-	supplierRes.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
-
-	supplierRes.Categories, err = sh.repo.GetCategoryResponsesBySupplierID(supplier.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &supplierRes, nil
-}
-
-func (sh *SupplierHandler) getSupplierResponsesFromModel(suppliers []model.Supplier) ([]response.SupplierResponse, error) {
-	var suppliersRes []response.SupplierResponse
-
-	for _, supplier := range suppliers {
-		supplierRes, err := sh.getSupplierResponseFromModel(&supplier)
-		if err != nil {
-			return nil, err
-		}
-
-		suppliersRes = append(suppliersRes, *supplierRes)
-	}
-
-	return suppliersRes, nil
 }

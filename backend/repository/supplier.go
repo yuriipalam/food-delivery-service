@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"food_delivery/model"
-	"food_delivery/response"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
@@ -13,7 +12,6 @@ type SupplierRepositoryI interface {
 	GetSupplierByID(int) (*model.Supplier, error)
 	GetSuppliersByCategoryIDs([]int) ([]model.Supplier, error)
 	GetAllSuppliers() ([]model.Supplier, error)
-	GetCategoryResponsesBySupplierID(int) ([]response.SupplierCategoryResponse, error)
 }
 
 type SupplierRepository struct {
@@ -133,34 +131,4 @@ func (sr *SupplierRepository) GetAllSuppliers() ([]model.Supplier, error) {
 	}
 
 	return suppliers, nil
-}
-
-func (sr *SupplierRepository) GetCategoryResponsesBySupplierID(id int) ([]response.SupplierCategoryResponse, error) {
-	stmt, err := sr.db.Prepare("SELECT id, name FROM category WHERE id = ANY(SELECT category_id FROM supplier_category WHERE supplier_id = $1)")
-	if err != nil {
-		return nil, fmt.Errorf("cannot prepare statement for supplier_id %d", id)
-	}
-
-	rows, err := stmt.Query(id)
-	if err != nil {
-		return nil, fmt.Errorf("cannot run query for supplier_id %d", id)
-	}
-
-	var categories []response.SupplierCategoryResponse
-
-	for rows.Next() {
-		var category response.SupplierCategoryResponse
-
-		err := rows.Scan(
-			&category.CategoryID,
-			&category.CategoryName,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("cannot scan category for supplier_id %d", id)
-		}
-
-		categories = append(categories, category)
-	}
-
-	return categories, nil
 }
