@@ -10,6 +10,7 @@ import (
 	"food_delivery/service"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strings"
 )
 
 type AuthHandler struct {
@@ -31,6 +32,8 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		response.SendBadRequestError(w, fmt.Errorf("cannot decode json"))
 		return
 	}
+
+	req.Email = strings.ToLower(req.Email)
 
 	customer, err := ah.repo.GetCustomerByEmail(req.Email)
 	if err != nil || customer == nil {
@@ -63,6 +66,8 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		response.SendBadRequestError(w, fmt.Errorf("cannot decode json"))
 		return
 	}
+
+	req.Email = strings.ToLower(req.Email)
 
 	if req.Password != req.RepeatPassword {
 		response.SendBadRequestError(w, fmt.Errorf("password mismatch"))
