@@ -3,8 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"food_delivery/config"
-	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/request"
 	"food_delivery/response"
@@ -14,13 +12,13 @@ import (
 
 type OrderHandler struct {
 	repo repository.OrderRepositoryI
-	cfg  *config.Config
+	service *service.OrderService
 }
 
-func NewOrderHandler(repo repository.OrderRepositoryI, cfg *config.Config) *OrderHandler {
+func NewOrderHandler(repo repository.OrderRepositoryI, service *service.OrderService) *OrderHandler {
 	return &OrderHandler{
 		repo: repo,
-		cfg:  cfg,
+		service: service,
 	}
 }
 
@@ -42,7 +40,7 @@ func (oh *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := oh.getOrderResponsesFromModels(orders)
+	res, err := oh.service.GetAllOrderResponses(claims.ID, orders)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
@@ -84,52 +82,5 @@ func (oh *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := oh.getOrderResponseFromModel(order)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, res)
-}
-
-func (oh *OrderHandler) getOrderResponseFromModel(order *model.Order) (*response.OrderResponse, error) {
-	var orderRes response.OrderResponse
-
-	orderMarshaled, err := json.Marshal(order)
-	if err != nil {
-		return nil, fmt.Errorf("cannot marshal order from db")
-	}
-
-	err = json.Unmarshal(orderMarshaled, &orderRes)
-	if err != nil {
-		return nil, fmt.Errorf("cannot unmarshal order from db into response")
-	}
-
-	orderRes.Suppliers, err = oh.repo.GetSupplierResponsesByOrderID(order.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	orderRes.Products, err = oh.repo.GetProductResponsesByOrderID(order.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &orderRes, nil
-}
-
-func (oh *OrderHandler) getOrderResponsesFromModels(orders []model.Order) ([]response.OrderResponse, error) {
-	var orderResponses []response.OrderResponse
-
-	for _, order := range orders {
-		orderRes, err := oh.getOrderResponseFromModel(&order)
-		if err != nil {
-			return nil, err
-		}
-
-		orderResponses = append(orderResponses, *orderRes)
-	}
-
-	return orderResponses, nil
+	response.SendOK(w, order)
 }

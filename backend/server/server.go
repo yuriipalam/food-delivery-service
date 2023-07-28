@@ -65,7 +65,8 @@ func Start(cfg *config.Config) {
 	r.HandleFunc("/products", productHandler.GetAllProducts).Methods(http.MethodGet)
 
 	orderRepository := repository.NewOrderRepository(db)
-	orderHandler := handler.NewOrderHandler(orderRepository, cfg)
+	orderService := service.NewOrderService(cfg, db)
+	orderHandler := handler.NewOrderHandler(orderRepository, orderService)
 	ordersRouter := r.PathPrefix("/orders").Subrouter()
 	ordersRouter.Use(middleware.ValidateAccessToken)
 	ordersRouter.HandleFunc("", orderHandler.GetOrders).Methods(http.MethodGet)
