@@ -64,8 +64,8 @@ onMounted(async () => {
 
   try {
     supplier.value = await getSupplierByID(id)
-    categories.value = await getCategoriesBySupplierID(id)
     products.value = await getProductsBySupplierID(id)
+    categories.value = supplier.value.categories
   } catch (err) {
     switch (err.message) {
       case ResponseError.notFound:
@@ -106,7 +106,6 @@ onUnmounted(() => {
           </div>
           <OrdersBlock class="orders"/>
         </div>
-
       </div>
     </main>
   </div>

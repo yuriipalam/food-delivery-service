@@ -20,9 +20,9 @@ function selectCategory(id, name) {
       <CategoryHorizontal @click="selectCategory(0, 'All products')" :is-active="useFilters.selectedCategory === 0">
         All products
       </CategoryHorizontal>
-      <CategoryHorizontal @click="selectCategory(category.id, category.name)"
-                          :is-active="useFilters.selectedCategory === category.id" v-for="category in categories"
-                          :key="category.id">{{ category.name }}
+      <CategoryHorizontal @click="selectCategory(category.category_id, category.category_name)"
+                          :is-active="useFilters.selectedCategory === category.category_id" v-for="category in categories"
+                          :key="category.category_id">{{ category.category_name }}
       </CategoryHorizontal>
     </div>
   </div>

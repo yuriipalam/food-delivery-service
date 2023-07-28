@@ -37,7 +37,7 @@ func (sh *SupplierHandler) GetSupplierByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	supplierRes, err := sh.service.GetSupplierResponseBySupplierID(supplier.ID)
+	supplierRes, err := sh.service.GetSupplierResponseFromModel(supplier)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return

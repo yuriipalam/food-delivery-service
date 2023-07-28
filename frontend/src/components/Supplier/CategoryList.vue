@@ -17,7 +17,7 @@ function selectCategory(id, name) {
   <div class="category-list">
     <p class="categories-title">Categories:</p>
     <div class="list">
-      <Category @click="selectCategory(category.id, category.name)" :is-active="useFilters.selectedCategory === category.id" v-for="category in categories" :key="category.id">{{ category.name }}</Category>
+      <Category @click="selectCategory(category.category_id, category.category_name)" :is-active="useFilters.selectedCategory === category.category_id" v-for="category in categories" :key="category.category_id">{{ category.category_name }}</Category>
       <Category @click="selectCategory(0, 'All products')" :is-active="useFilters.selectedCategory === 0">All products</Category>
     </div>
   </div>
