@@ -35,14 +35,13 @@ const v$ = useVuelidate(rules, formData)
 const submitForm = async () => {
   const result = await v$.value.$validate()
   if (result) {
-    await signUp(formData.email, formData.phone, formData.firstName, formData.lastName, formData.password, formData.repeatPassword)
-        .catch(err => errMsg.value = err.message)
-
-    await signIn(formData.email, formData.password).then(data => {
-      router.push({name: 'Home'})
-    }).catch(err => {
+    try {
+      await signUp(formData.email, formData.phone, formData.firstName, formData.lastName, formData.password, formData.repeatPassword)
+      await signIn(formData.email, formData.password)
+      await router.push({name: 'Home'})
+    } catch (err) {
       errMsg.value = err.message
-    })
+    }
   }
 }
 
