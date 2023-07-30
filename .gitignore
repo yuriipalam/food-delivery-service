@@ -1,6 +1,7 @@
 .idea/
 .env
 .source
+foodjet
 
 # Logs
 logs
