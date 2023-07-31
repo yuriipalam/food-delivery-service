@@ -34,7 +34,11 @@ func (cs *CategoryService) GetCategoryResponseFromModel(category *model.Category
 	}
 
 	categoryRes.URL = fmt.Sprintf("/categories/%d", category.ID)
-	categoryRes.ImageURL = fmt.Sprintf("%s/images/categories/%d/%s", config.Root, category.ID, category.Image)
+	// prod
+	categoryRes.ImageURL = fmt.Sprintf("/images/categories/%d/%s", category.ID, category.Image)
+
+	// dev
+	// categoryRes.ImageURL = fmt.Sprintf("%s/images/categories/%d/%s", config.Root, category.ID, category.Image)
 
 	return &categoryRes, nil
 }

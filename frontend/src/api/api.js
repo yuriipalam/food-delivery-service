@@ -12,7 +12,11 @@ import {
 } from "./errors";
 import {useAuthStore} from "../store";
 
-const root = "http://localhost:8080"
+// for development
+// const root = "http://localhost:8080"
+
+// for production
+const root = "/api"
 
 async function apiFetch(url, init) {
     return await fetch(root + url, init)

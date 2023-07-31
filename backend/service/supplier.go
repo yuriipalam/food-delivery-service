@@ -51,7 +51,12 @@ func (ss *SupplierService) GetSupplierResponseFromModel(supplier *model.Supplier
 	}
 
 	supplierResponse.URL = fmt.Sprintf("/suppliers/%d", supplier.ID)
-	supplierResponse.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
+
+	// production
+	supplierResponse.ImageURL = fmt.Sprintf("/images/suppliers/%d/%s", supplier.ID, supplier.Image)
+
+	// development
+	// supplierResponse.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
 
 	return &supplierResponse, nil
 }
@@ -87,7 +92,11 @@ func (ss *SupplierService) GetSupplierResponses(suppliers []model.Supplier) ([]r
 		}
 
 		supplierResponse.URL = fmt.Sprintf("/suppliers/%d", supplier.ID)
-		supplierResponse.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
+		// prod
+		supplierResponse.ImageURL = fmt.Sprintf("/images/suppliers/%d/%s", supplier.ID, supplier.Image)
+
+		// dev
+		// supplierResponse.ImageURL = fmt.Sprintf("%s/images/suppliers/%d/%s", config.Root, supplier.ID, supplier.Image)
 
 		supplierResponses = append(supplierResponses, supplierResponse)
 	}

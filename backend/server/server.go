@@ -72,11 +72,12 @@ func Start(cfg *config.Config) {
 	ordersRouter.HandleFunc("", orderHandler.GetOrders).Methods(http.MethodGet)
 	ordersRouter.HandleFunc("", orderHandler.CreateOrder).Methods(http.MethodPost)
 
-
-	r.HandleFunc("/images/{folder}/{id}/{name}", handler.GetImage).Methods(http.MethodGet)
+	// only for development
+	// for production serve images with web server
+	// r.HandleFunc("/images/{folder}/{id}/{name}", handler.GetImage).Methods(http.MethodGet)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173", "http://127.0.0.1:8888"})
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	fmt.Println("Server is started...")
