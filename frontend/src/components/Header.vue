@@ -10,9 +10,15 @@ let resizeTimout = 0
 onMounted(() => {
   document.body.className = 'home';
   document.documentElement.className = 'home';
-  calculateMargins()
-  window.addEventListener('resize', calculateMargins)
-  resizeTimout = 500
+  if (!isSafariOnIphone()) {
+    calculateMargins()
+    window.addEventListener('resize', calculateMargins)
+    resizeTimout = 500
+  } else {
+    const header = document.querySelector('header')
+    header.style.marginTop = 80 + 'px'
+    header.style.marginBottom = 120 + 'px'
+  }
 })
 
 onUnmounted(() => {
@@ -21,6 +27,16 @@ onUnmounted(() => {
   document.documentElement.classList.remove('home')
 })
 
+function isSafariOnIphone() {
+  // Check for Safari and exclude Chrome and Android
+  const safariTest = /^((?!chrome|android).)*safari/i;
+
+  // Check if device is an iPhone
+  const iPhoneTest = /iPhone/i;
+
+  return safariTest.test(navigator.userAgent) && iPhoneTest.test(navigator.userAgent);
+}
+
 function calculateMargins() {
   const header = document.querySelector('header')
   const nav = document.querySelector('nav')
@@ -28,14 +44,8 @@ function calculateMargins() {
   const space = ((window.innerHeight - containerHeader.offsetHeight) / 2) - nav.offsetHeight
 
   setTimeout(() => {
-    if (window.innerHeight >= 500) {
-      header.style.marginTop = space + 'px'
-      header.style.marginBottom = space + nav.offsetHeight + 'px'
-    }
-    else {
-      header.style.marginTop = 10 + 'px'
-      header.style.marginBottom = 30 + 'px'
-    }
+    header.style.marginTop = space + 'px'
+    header.style.marginBottom = space + nav.offsetHeight + 'px'
   }, resizeTimout)
 }
 
