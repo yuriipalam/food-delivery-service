@@ -71,8 +71,14 @@ h1 {
 @media screen and (max-width: 780px) {
   .bar {
     justify-content: center;
+    flex-flow: wrap;
+    grid-gap: 30px;
     padding-left: 30px;
     padding-right: 30px;
+  }
+
+  .bar-content h1, p {
+    text-align: center;
   }
 }
 
@@ -80,6 +86,10 @@ h1 {
   .bar {
     padding-left: 15px;
     padding-right: 15px;
+  }
+
+  .bar-content h1 {
+    word-break: break-all;
   }
 }
 </style>

@@ -5,11 +5,14 @@ import {useRouter} from "vue-router";
 
 const router = useRouter()
 
+let resizeTimout = 0
+
 onMounted(() => {
   document.body.className = 'home';
   document.documentElement.className = 'home';
   calculateMargins()
   window.addEventListener('resize', calculateMargins)
+  resizeTimout = 500
 })
 
 onUnmounted(() => {
@@ -18,13 +21,22 @@ onUnmounted(() => {
   document.documentElement.classList.remove('home')
 })
 
-function calculateMargins(e) {
+function calculateMargins() {
   const header = document.querySelector('header')
   const nav = document.querySelector('nav')
   const containerHeader = document.querySelector('.container header')
   const space = ((window.innerHeight - containerHeader.offsetHeight) / 2) - nav.offsetHeight
-  header.style.marginTop = space + 'px'
-  header.style.marginBottom = space + nav.offsetHeight + 'px'
+
+  setTimeout(() => {
+    if (window.innerHeight >= 500) {
+      header.style.marginTop = space + 'px'
+      header.style.marginBottom = space + nav.offsetHeight + 'px'
+    }
+    else {
+      header.style.marginTop = 10 + 'px'
+      header.style.marginBottom = 30 + 'px'
+    }
+  }, resizeTimout)
 }
 
 function orderClick() {
@@ -111,9 +123,19 @@ p {
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-height: 500px) {
   header {
-    padding-left: 20px;
+    max-width: 400px;
+  }
+
+  .buttons {
+    flex-direction: row;
+  }
+}
+
+@media screen and (max-height: 440px) {
+  .transparent-button {
+    background-color: var(--blackish);
   }
 }
 </style>

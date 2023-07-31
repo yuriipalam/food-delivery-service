@@ -29,7 +29,7 @@ function hamburgerMenu() {
     ul.classList.toggle('active')
   })
 
-  document.querySelectorAll('a').forEach(link => {
+  document.querySelectorAll('a, #li-sign-in-button, #li-profile-button').forEach(link => {
     link.addEventListener('click', () => {
       hamburger.classList.remove('active')
       ul.classList.remove('active')
@@ -92,11 +92,11 @@ onMounted(() => {
           <NavLink :route-name="'Categories'" :is-light="props.isLight">Categories</NavLink>
         </li>
         <li v-if="isSmallScreen()">
-          <PrimaryButton v-if="useAuth.idRef === -1" @click="router.push({name: 'SignIn'})" :class="'header-button'">
+          <PrimaryButton id="li-sign-in-button" v-if="useAuth.idRef === -1" @click="router.push({name: 'SignIn'})" :class="'header-button'">
             Sign
             in
           </PrimaryButton>
-          <PrimaryButton v-if="useAuth.idRef !== -1" @click="router.push({name: 'Profile'})" :class="'header-button'">
+          <PrimaryButton id="li-profile-button" v-if="useAuth.idRef !== -1" @click="router.push({name: 'Profile'})" :class="'header-button'">
             Profile
           </PrimaryButton>
         </li>
@@ -229,7 +229,8 @@ svg {
   }
 
   ul.active {
-    top: 90px;
+    padding-top: 75px;
+    top: 0;
   }
 }
 
@@ -241,7 +242,7 @@ svg {
 
 @media screen and (max-width: 480px) {
   ul li, ul li:last-child {
-    margin: 16px 10px;
+    margin: 16px 20px;
   }
 }
 </style>

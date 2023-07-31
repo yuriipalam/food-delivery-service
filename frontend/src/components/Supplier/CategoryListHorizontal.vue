@@ -46,10 +46,6 @@ function selectCategory(id, name) {
   margin-bottom: 0;
 }
 
-.categories-title-horizontal {
-
-}
-
 .list-horizontal {
   display: flex;
   grid-gap: 25px;
@@ -59,5 +55,22 @@ function selectCategory(id, name) {
   justify-content: space-between;
   padding-top: 15px;
   padding-bottom: 15px;
+}
+
+@media screen and (max-width: 480px) {
+  .category-list-horizontal {
+    overflow: initial;
+    justify-content: center;
+    flex-flow: wrap;
+  }
+
+  .categories-title-horizontal {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .list-horizontal {
+    overflow-x: auto;
+  }
 }
 </style>
