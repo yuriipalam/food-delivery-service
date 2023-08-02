@@ -31,7 +31,8 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 100px;
+  margin-top: 2vh;
+  margin-bottom: 10vh;
 }
 
 h1 {
@@ -46,5 +47,25 @@ a {
   text-decoration: none;
   font-weight: 600;
   color: var(--orange)
+}
+
+@media screen and (max-width: 600px) {
+  h1 {
+    font-size: 62px;
+  }
+
+  a {
+    font-size: 36px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 58px;
+  }
+
+  a {
+    font-size: 34px;
+  }
 }
 </style>

@@ -1,22 +1,23 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
-	"food_delivery/model"
 	"food_delivery/repository"
 	"food_delivery/response"
+	"food_delivery/service"
 	"food_delivery/utils"
 	"net/http"
 )
 
 type ProductHandler struct {
 	repo repository.ProductRepositoryI
+	service *service.ProductService
 }
 
-func NewProductHandler(repo repository.ProductRepositoryI) *ProductHandler {
+func NewProductHandler(repo repository.ProductRepositoryI, service *service.ProductService) *ProductHandler {
 	return &ProductHandler{
 		repo: repo,
+		service: service,
 	}
 }
 
@@ -27,41 +28,29 @@ func (ph *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	product, err := ph.repo.GetProductByID(id)
+	productResp, err := ph.service.GetProductResponseByID(id)
 	if err != nil {
 		response.SendBadRequestError(w, err)
 		return
-	} else if product == nil {
+	} else if productResp == nil {
 		response.SendNotFoundError(w, fmt.Errorf("product not found"))
 		return
 	}
 
-	productRes, err := ph.getProductResponseFromModel(product)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, productRes)
+	response.SendOK(w, productResp)
 }
 
 func (ph *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := ph.repo.GetAllProducts()
+	productResponses, err := ph.service.GetAllProductResponses()
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	} else if len(products) == 0 {
+	} else if len(productResponses) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
-	productsRes, err := ph.getProductResponsesFromModels(products)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, productsRes)
+	response.SendOK(w, productResponses)
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *http.Request) {
@@ -71,22 +60,16 @@ func (ph *ProductHandler) GetAllProductsBySupplierID(w http.ResponseWriter, r *h
 		return
 	}
 
-	products, err := ph.repo.GetAllProductsBySupplierID(supplierID)
+	productResponses, err := ph.service.GetProductResponsesBySupplierID(supplierID)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	} else if len(products) == 0 {
+	} else if len(productResponses) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
-	productsRes, err := ph.getProductResponsesFromModels(products)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, productsRes)
+	response.SendOK(w, productResponses)
 }
 
 func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *http.Request) {
@@ -96,22 +79,16 @@ func (ph *ProductHandler) GetAllProductsByCategoryID(w http.ResponseWriter, r *h
 		return
 	}
 
-	products, err := ph.repo.GetAllProductsByCategoryID(categoryID)
+	productResponses, err := ph.service.GetProductResponsesByCategoryID(categoryID)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	} else if len(products) == 0 {
+	} else if len(productResponses) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
-	productsRes, err := ph.getProductResponsesFromModels(products)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, productsRes)
+	response.SendOK(w, productResponses)
 }
 
 func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.ResponseWriter, r *http.Request) {
@@ -127,67 +104,14 @@ func (ph *ProductHandler) GetAllProductsBySupplierIDAndCategoryID(w http.Respons
 		return
 	}
 
-	products, err := ph.repo.GetAllProductsBySupplierIDAndCategoryID(supplierID, categoryID)
+	productResponses, err := ph.service.GetProductResponsesBySupplierIDAndCategoryID(supplierID, categoryID)
 	if err != nil {
 		response.SendInternalServerError(w, err)
 		return
-	} else if len(products) == 0 {
+	} else if len(productResponses) == 0 {
 		response.SendNotFoundError(w, fmt.Errorf("no products found"))
 		return
 	}
 
-	productsRes, err := ph.getProductResponsesFromModels(products)
-	if err != nil {
-		response.SendInternalServerError(w, err)
-		return
-	}
-
-	response.SendOK(w, productsRes)
-}
-
-func (ph *ProductHandler) getProductResponseFromModel(product *model.Product) (*response.ProductResponse, error) {
-	var productRes response.ProductResponse
-
-	productMarshaled, err := json.Marshal(product)
-	if err != nil {
-		return nil, fmt.Errorf("cannot marshal product from db")
-	}
-
-	err = json.Unmarshal(productMarshaled, &productRes)
-	if err != nil {
-		return nil, fmt.Errorf("cannot unmarshal product from db into response")
-	}
-
-	productRes.SupplierName, err = ph.repo.GetSupplierNameByID(product.SupplierID)
-	if err != nil {
-		return nil, err
-	}
-	productRes.CategoryName, err = ph.repo.GetCategoryNameByID(product.CategoryID)
-	if err != nil {
-		return nil, err
-	}
-
-	productRes.URL = fmt.Sprintf("/products/%d", product.ID)
-	// prod
-	productRes.ImageURL = fmt.Sprintf("/images/products/%d/%s", product.SupplierID, product.Image)
-
-	// dev
-	// productRes.ImageURL = fmt.Sprintf("%s/images/products/%d/%s", config.Root, product.SupplierID, product.Image)
-
-	return &productRes, nil
-}
-
-func (ph *ProductHandler) getProductResponsesFromModels(products []model.Product) ([]response.ProductResponse, error) {
-	var productsRes []response.ProductResponse
-
-	for _, product := range products {
-		productRes, err := ph.getProductResponseFromModel(&product)
-		if err != nil {
-			return nil, err
-		}
-
-		productsRes = append(productsRes, *productRes)
-	}
-
-	return productsRes, nil
+	response.SendOK(w, productResponses)
 }

@@ -4,7 +4,7 @@ import Error from "../components/Error.vue";
 
 <template>
   <main>
-    <Error :text="'400 Not Found'"></Error>
+    <Error :text="'404 Not Found'"></Error>
   </main>
 </template>
 

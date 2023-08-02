@@ -9,11 +9,6 @@ import (
 type ProductRepositoryI interface {
 	GetProductByID(int) (*model.Product, error)
 	GetAllProducts() ([]model.Product, error)
-	GetAllProductsBySupplierID(int) ([]model.Product, error)
-	GetAllProductsByCategoryID(int) ([]model.Product, error)
-	GetAllProductsBySupplierIDAndCategoryID(int, int) ([]model.Product, error)
-	GetSupplierNameByID(int) (string, error)
-	GetCategoryNameByID(int) (string, error)
 }
 
 type ProductRepository struct {
@@ -59,68 +54,12 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 }
 
 func (pr *ProductRepository) GetAllProducts() ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product")
-}
-
-func (pr *ProductRepository) GetAllProductsBySupplierID(id int) ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1", id)
-}
-
-func (pr *ProductRepository) GetAllProductsByCategoryID(id int) ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product WHERE category_id = $1", id)
-}
-
-func (pr *ProductRepository) GetAllProductsBySupplierIDAndCategoryID(sID int, cID int) ([]model.Product, error) {
-	return pr.selectProductsQuery("SELECT * FROM product WHERE supplier_id = $1 AND category_id = $2", sID, cID)
-}
-
-func (pr *ProductRepository) GetSupplierNameByID(id int) (string, error) {
-	stmt, err := pr.db.Prepare("SELECT name FROM supplier WHERE id = $1")
-	if err != nil {
-		return "", fmt.Errorf("cannot prepare statement for supplier id %d", id)
-	}
-
-	row := stmt.QueryRow(id)
-	if row.Err() != nil {
-		return "", fmt.Errorf("cannot run query for supplier id %d", id)
-	}
-
-	var name string
-
-	if err := row.Scan(&name); err != nil {
-		return "", fmt.Errorf("cannot scan supplier name")
-	}
-
-	return name, nil
-}
-
-func (pr *ProductRepository) GetCategoryNameByID(id int) (string, error) {
-	stmt, err := pr.db.Prepare("SELECT name FROM category WHERE id = $1")
-	if err != nil {
-		return "", fmt.Errorf("cannot prepare statement for category id %d", id)
-	}
-
-	row := stmt.QueryRow(id)
-	if row.Err() != nil {
-		return "", fmt.Errorf("cannot run query for category id %d", id)
-	}
-
-	var name string
-
-	if err := row.Scan(&name); err != nil {
-		return "", fmt.Errorf("cannot scan category name")
-	}
-
-	return name, nil
-}
-
-func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]model.Product, error) {
-	stmt, err := pr.db.Prepare(query)
+	stmt, err := pr.db.Prepare("SELECT * FROM product")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare statement")
 	}
 
-	rows, err := stmt.Query(data...)
+	rows, err := stmt.Query()
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query")
 	}
@@ -148,5 +87,3 @@ func (pr *ProductRepository) selectProductsQuery(query string, data ...any) ([]m
 
 	return products, nil
 }
-
-
