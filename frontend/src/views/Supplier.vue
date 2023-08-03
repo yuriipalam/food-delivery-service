@@ -163,7 +163,7 @@ onUnmounted(() => {
   flex-grow: 1;
   top: 40px;
   position: sticky;
-  height: 85vh;
+  height: calc(100vh - 120px);
 }
 
 @media screen and (min-width: 1421px) {
