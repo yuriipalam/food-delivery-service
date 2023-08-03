@@ -2,6 +2,8 @@
 
 Final project for the Fullstack (GoLang + Vue) course
 
+**Demo:** https://foodjet.yuriipalamarchuk.com/
+
 Complete Food Delivery application where customers can order food from different suppliers.
 
 **Supplier First Flow** - choose desired supplier.
