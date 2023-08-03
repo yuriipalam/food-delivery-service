@@ -4,7 +4,7 @@ import {nextTick, onMounted, ref} from "vue";
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getSuppliers} from "../api/api";
-import {scrollToExploreBlock, setMainHeight} from "../utils";
+import {scrollToExploreBlock} from "../utils";
 import {ResponseError} from "../api/errors";
 import router from "../router";
 
@@ -26,7 +26,6 @@ onMounted(async () => {
 
   await nextTick()
 
-  setMainHeight()
   scrollToExploreBlock()
 })
 </script>
@@ -36,11 +35,13 @@ onMounted(async () => {
     <Header/>
     <main>
       <Explore class="explore"/>
-      <Flow :items="suppliers" :name="'Suppliers'"/>
+      <Flow class="flow" :items="suppliers" :name="'Suppliers'"/>
     </main>
   </div>
 </template>
 
 <style scoped>
-
+.flow {
+  min-height: 60vh;
+}
 </style>

@@ -62,7 +62,6 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', changeOrdersHeight)
   useFilters.reset()
 })
 </script>

@@ -3,10 +3,9 @@ import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import Carousel from "../components/Carousel/Carousel.vue";
 import {useFiltersStore} from "../store";
-import {computed, nextTick, onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import Flow from "../components/Flow/Flow.vue";
 import {getCategories, getSuppliers} from "../api/api";
-import {setMainHeight} from "../utils";
 import {ResponseError} from "../api/errors";
 import router from "../router";
 
@@ -26,7 +25,7 @@ onMounted(async () => {
   try {
     suppliers.value = await getSuppliers()
     categories.value = await getCategories()
-  } catch(err) {
+  } catch (err) {
     switch (err.message) {
       case ResponseError.notFound:
         await router.push({name: '404'})
@@ -36,10 +35,6 @@ onMounted(async () => {
         return
     }
   }
-
-  await nextTick()
-
-  setMainHeight()
 })
 </script>
 
@@ -59,6 +54,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+main {
+  min-height: 60vh;
+}
+
 .carousel-suppliers {
   margin-bottom: 55px;
 }

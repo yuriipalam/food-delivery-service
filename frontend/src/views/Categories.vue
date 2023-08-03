@@ -4,7 +4,7 @@ import {nextTick, onMounted, onUnmounted, ref} from "vue";
 import Header from "../components/Header.vue";
 import Explore from "../components/Explore.vue";
 import {getCategories} from "../api/api";
-import {scrollToExploreBlock, setMainHeight} from "../utils";
+import {scrollToExploreBlock} from "../utils";
 import {ResponseError} from "../api/errors";
 import router from "../router";
 
@@ -31,7 +31,6 @@ onMounted(async () => {
 
   await nextTick()
 
-  setMainHeight()
   scrollToExploreBlock()
 
   // when user clicks we save scroll position that on the next page his scroll position
@@ -53,11 +52,13 @@ onUnmounted(() => {
     <Header/>
     <main>
       <Explore class="explore"/>
-      <Flow :items="categories" :name="'Categories'"/>
+      <Flow class="flow" :items="categories" :name="'Categories'"/>
     </main>
   </div>
 </template>
 
 <style scoped>
-
+.flow {
+  min-height: 60vh;
+}
 </style>
