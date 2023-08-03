@@ -13,7 +13,7 @@ import {
 import {useAuthStore} from "../store";
 
 // for development
-//const root = "http://localhost:8080"
+// const root = "http://localhost:8080"
 
 // for production
 const root = "/api"

@@ -63,6 +63,7 @@ button {
 
 .go-button-span-left {
   text-align: left;
+  margin-right: 20px;
 }
 
 .go-button-span-right {
@@ -72,6 +73,7 @@ button {
 .err-msg {
   margin-bottom: 10px;
 }
+
 .err-span-msg {
   margin-bottom: 0;
 }

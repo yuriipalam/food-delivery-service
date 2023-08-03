@@ -7,8 +7,7 @@ import OrdersBlock from "../components/Supplier/OrdersBlock.vue";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useRoute, useRouter} from 'vue-router'
 import {useFiltersStore} from "../store";
-import {getCategoriesBySupplierID, getProductsBySupplierID, getSupplierByID} from "../api/api";
-import {getElmHeight} from "../utils";
+import {getProductsBySupplierID, getSupplierByID} from "../api/api";
 import {ResponseError} from "../api/errors";
 import CategoryListHorizontal from "../components/Supplier/CategoryListHorizontal.vue";
 
@@ -45,23 +44,7 @@ const productsLength = computed(() => {
   return products.value.length.toString()
 })
 
-// setting ideal height for orders-block
-function changeOrdersHeight() {
-
-  const nav = document.querySelector('nav')
-  const bar = document.querySelector('.bar')
-  const ordersBlock = document.querySelector('.orders-block.orders')
-  if (window.innerWidth > 940) {
-    ordersBlock.style.height = (window.innerHeight - getElmHeight(nav) - getElmHeight(bar)) + 'px'
-  } else {
-    ordersBlock.style.height = 400 + 'px'
-  }
-}
-
 onMounted(async () => {
-  changeOrdersHeight()
-  window.addEventListener('resize', changeOrdersHeight)
-
   try {
     supplier.value = await getSupplierByID(id)
     products.value = await getProductsBySupplierID(id)
@@ -181,7 +164,7 @@ onUnmounted(() => {
   flex-grow: 1;
   top: 40px;
   position: sticky;
-
+  height: 85vh;
 }
 
 @media screen and (min-width: 1421px) {
@@ -240,6 +223,10 @@ onUnmounted(() => {
 
   .product-card {
     width: 43%;
+  }
+
+  .orders {
+    height: 60vh;
   }
 }
 
