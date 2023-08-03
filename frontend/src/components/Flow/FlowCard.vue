@@ -46,7 +46,6 @@ const props = defineProps({
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  margin-bottom: 15px;
   margin-top: -15px;
 }
 
@@ -59,7 +58,8 @@ const props = defineProps({
 }
 
 .card-name {
-  margin: 0;
+  margin-top: 15px;
+  margin-bottom: 0;
   padding-bottom: 8px;
 }
 

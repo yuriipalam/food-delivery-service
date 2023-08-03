@@ -20,8 +20,8 @@ const filteredItems = computed(() => {
 watchEffect(async () => {
   if (props.items.length !== 0) {
     await nextTick()
-    const neededHeight = window.getComputedStyle(document.querySelector('.flow-card')).getPropertyValue('height')
     const allFlowCards = document.querySelectorAll('.flow-card')
+    let neededHeight = Array.from(document.querySelectorAll('*')).reduce((maxHeight, currentElem) => Math.max(maxHeight, currentElem.offsetHeight), 0);
     allFlowCards.forEach(flowCard => {
       flowCard.style.height = neededHeight
     })

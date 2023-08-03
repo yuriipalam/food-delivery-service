@@ -13,7 +13,7 @@ onMounted(() => {
   if (!isSafariOnIphone()) {
     calculateMargins()
     window.addEventListener('resize', calculateMargins)
-    resizeTimout = 500
+    resizeTimout = 300
   } else {
     const header = document.querySelector('header')
     header.style.marginTop = 80 + 'px'
